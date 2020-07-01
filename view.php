@@ -55,15 +55,25 @@ echo $OUTPUT->heading($wordcloud->name);
 
 
 //wörter generator block
-$sql = 'SELECT sum(count) 
+$sql = 'SELECT min(count) as mincount, max(count) as maxcount
           FROM {wordcloud_map} 
          WHERE wordcloudid = :wordcloudid';
-$wordcnt = $DB->get_field_sql($sql, ['wordcloudid' => $wordcloud->id]);
+$wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloud->id]);
 
 $records = $DB->get_records('wordcloud_map',['wordcloudid' => $wordcloud->id]);
 $cloudhtml = '';
+
+$range = max(.01, $wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
+if ($range >= 6) {
+    $steps = 6;
+} else {
+    $steps = 1;
+}
+
 foreach ($records as $row) {
-    $cloudhtml .= "<p>$row->word</p>";
+    $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
+    $fontsize = 12 + 6 * $weight;
+    $cloudhtml .= "<span style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
 }
 $templatecontext['cloudhtml'] = $cloudhtml;
 //wörter generator block ende
