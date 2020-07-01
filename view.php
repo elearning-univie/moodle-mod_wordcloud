@@ -58,4 +58,9 @@ if (has_capability('mod/flashcards:teacherview', $context) ) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($wordcloud->name);
+
+$renderer = $PAGE->get_renderer('core');
+
+echo $renderer->render_from_template('mod_wordcloud/wordcloud', array());
+
 echo $OUTPUT->footer();

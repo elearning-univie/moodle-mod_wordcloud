@@ -1,0 +1,19 @@
+#oberebox {
+    background-color: #e5e5e5;
+}
+
+#wordcloudbox {
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    width: 60%;
+}
+
+#submitbutton {
+    width: 96px;
+    height: 39px;
+    margin: auto;
+}
+
+#answer {
+    width: 100%;
+}
