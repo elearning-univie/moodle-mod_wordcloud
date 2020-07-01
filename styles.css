@@ -17,3 +17,9 @@
 #answer {
     width: 100%;
 }
+
+.mod_wordcloud_word {
+    margin: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}

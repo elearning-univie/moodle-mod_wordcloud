@@ -51,7 +51,6 @@ $PAGE->set_heading($course->shortname);
 }*/
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($wordcloud->name);
 
 
 //wörter generator block
@@ -73,8 +72,10 @@ if ($range >= 6) {
 foreach ($records as $row) {
     $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
     $fontsize = 12 + 6 * $weight;
-    $cloudhtml .= "<span style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
+    $cloudhtml .= "<span class='mod_wordcloud_word' style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
 }
+
+$templatecontext['heading'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = $cloudhtml;
 //wörter generator block ende
 
