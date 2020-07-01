@@ -27,4 +27,5 @@ $string['modulenameplural'] = 'Wordclouds';
 $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
 $string['pluginname'] = 'Wordcloud';
+$string['privacy:metadata'] = 'The wordcloud plugin does not store any personal data.';
 $string['wordcloudname'] = 'Wordcloud activity name';
