@@ -24,7 +24,7 @@
 require('../../config.php');
 require_once('lib.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $COURSE, $USER, $DB;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
@@ -48,19 +48,27 @@ $PAGE->set_heading($course->shortname);
 /*if (has_capability('mod/flashcards:studentview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
     redirect($redirecturl);
-}
-if (has_capability('mod/flashcards:teacherview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id));
-    redirect($redirecturl);
-} else {
-    print("hier kommt die Auswahl für beide hin.");
 }*/
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($wordcloud->name);
 
+
+//wörter generator block
+$sql = 'SELECT sum(count) 
+          FROM {wordcloud_map} 
+         WHERE wordcloudid = :wordcloudid';
+$wordcnt = $DB->get_field_sql($sql, ['wordcloudid' => $wordcloud->id]);
+
+$records = $DB->get_records('wordcloud_map',['wordcloudid' => $wordcloud->id]);
+$cloudhtml = '';
+foreach ($records as $row) {
+    $cloudhtml .= "<p>$row->word</p>";
+}
+$templatecontext['cloudhtml'] = $cloudhtml;
+//wörter generator block ende
+
+
 $renderer = $PAGE->get_renderer('core');
-
-echo $renderer->render_from_template('mod_wordcloud/wordcloud', array());
-
+echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $OUTPUT->footer();
