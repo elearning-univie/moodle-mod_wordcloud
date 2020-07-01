@@ -23,8 +23,8 @@
  */
 
 $string['modulename'] = 'Wordcloud';
-$string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';
-$string['modulenameplural'] = 'Flash Cards';
+$string['modulenameplural'] = 'Wordclouds';
 $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
 $string['pluginname'] = 'Wordcloud';
+$string['wordcloudname'] = 'Wordcloud activity name';

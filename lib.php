@@ -32,150 +32,29 @@ defined('MOODLE_INTERNAL') || die;
  */
 function wordcloud_add_instance($wordcloud)
 {
-    global $DB;
+    global $COURSE, $DB;
 
-    //$flashcardsdb = flashcards_get_database_object($wordcloud);
-    //$id = $DB->insert_record('flashcards', $flashcardsdb);
-    $id = $DB->insert_record('wordcloud', $wordcloud);
+    $wordclouddb = new stdClass();
+    $wordclouddb->course = $COURSE->id;
+    $wordclouddb->name = $wordcloud->name;
+
+    $id = $DB->insert_record('wordcloud', $wordclouddb);
     return $id;
 }
 
 /**
- *
- * flashcards_check_category
- *
- * @param stdClass $flashcards
- * @param int $courseid
- * @return number
- */
-function flashcards_check_category($flashcards, $courseid)
-{
-    global $CFG;
-    require_once($CFG->dirroot . '/question/editlib.php');
-    require_once($CFG->dirroot . '/question/category_class.php');
-
-    $context = [];
-    $context[] = context_course::instance($courseid);
-    $coursecontext = context_course::instance($courseid);
-    $contexts = [$coursecontext->id => $coursecontext];
-
-    $defaultcategoryobj = question_make_default_categories($contexts);
-    $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
-
-    $categorylist = [];
-
-    foreach ($coursecategorylist as $category) {
-        list($catid, $catcontextid) = explode(",", $category);
-        $categorylist = array_merge(question_categorylist($catid), $categorylist);
-    }
-
-    list($catid, $catcontextid) = explode(",", $flashcards->category);
-
-    if (!in_array($catid, $categorylist)) {
-        print_error('invalidcategoryid');
-        return;
-    }
-
-    if ($flashcards->newcategory) {
-        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
-        $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
-        $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
-        return $categoryid;
-    } else {
-        return $catid;
-    }
-}
-
-/**
- * flashcards_delete_instance
+ * wordcloud_delete_instance
  *
  * @param int $id
  * @return bool
  */
-function flashcards_delete_instance(int $id)
+function wordcloud_delete_instance(int $id)
 {
     global $DB;
 
-    $DB->delete_records('flashcards', ['id' => $id]);
+    $DB->delete_records('wordcloud', ['id' => $id]);
 
     return true;
-}
-
-/**
- *
- * flashcards_get_database_object
- *
- * @param stdClass $flashcards
- * @return stdClass
- */
-function flashcards_get_database_object($flashcards)
-{
-    global $COURSE;
-    require_once('locallib.php');
-
-    $courseid = $COURSE->id;
-
-    $flashcardsdb = new stdClass();
-
-    $flashcardsdb->course = $courseid;
-    $flashcardsdb->name = $flashcards->name;
-
-    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
-
-    if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
-        $flashcardsdb->inclsubcats = 0;
-    } else {
-        $flashcardsdb->inclsubcats = 1;
-    }
-
-    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
-        $flashcardsdb->intro = '';
-    } else {
-        $flashcardsdb->intro = $flashcards->intro;
-    }
-
-    if (property_exists($flashcards, 'introformat') || is_integer($flashcards->introformat)) {
-        $flashcardsdb->introformat = 1;
-    } else {
-        $flashcardsdb->introformat = $flashcards->introformat;
-    }
-    $flashcardsdb->timemodified = time();
-
-    return $flashcardsdb;
-}
-
-/**
- * Serves the flashcards files.
- *
- * @param stdClass $course course settings object
- * @param stdClass $context context object
- * @param string $component the name of the component we are serving files for.
- * @param string $filearea the name of the file area.
- * @param int $qubaid the attempt usage id.
- * @param int $slot the id of a question in this quiz attempt.
- * @param array $args the remaining bits of the file path.
- * @param bool $forcedownload whether the user must be forced to download the file.
- * @param array $options additional options affecting the file serving
- * @return bool false if file not found, does not return if found - justsend the file
- * @package  mod_flashcards
- * @category files
- */
-function flashcards_question_pluginfile($course, $context, $component,
-                                        $filearea, $qubaid, $slot, $args, $forcedownload, array $options = array())
-{
-
-    list($context, $course, $cm) = get_context_info_array($context->id);
-    require_login($course, false, $cm);
-
-    $fs = get_file_storage();
-    $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/$component/$filearea/$relativepath";
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-        send_file_not_found();
-    }
-
-    send_stored_file($file, 0, 0, $forcedownload, $options);
 }
 
 /**
