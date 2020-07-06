@@ -67,6 +67,6 @@ function wordcloud_update_instance($wordcloud) {
     $wordclouddb = new stdClass();
     $wordclouddb->course = $COURSE->id;
     $wordclouddb->name = $wordcloud->name;
-    
+
     return $DB->update_record('wordcloud', $wordclouddb);
 }
