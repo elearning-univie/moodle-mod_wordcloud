@@ -54,3 +54,19 @@ function wordcloud_delete_instance(int $id) {
 
     return true;
 }
+
+/**
+ * wordcloud_update_instance
+ *
+ * @param array $wordcloud
+ * @return bool
+ */
+function wordcloud_update_instance($wordcloud) {
+    global $COURSE, $DB;
+
+    $wordclouddb = new stdClass();
+    $wordclouddb->course = $COURSE->id;
+    $wordclouddb->name = $wordcloud->name;
+    
+    return $DB->update_record('wordcloud', $wordclouddb);
+}
