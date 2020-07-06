@@ -31,14 +31,11 @@ defined('MOODLE_INTERNAL') || die;
  * @return bool
  */
 function wordcloud_add_instance($wordcloud) {
-    global $COURSE, $DB;
+    global $DB;
 
-    $wordclouddb = new stdClass();
-    $wordclouddb->course = $COURSE->id;
-    $wordclouddb->name = $wordcloud->name;
+    $wordcloud->timecreated = time();
 
-    $id = $DB->insert_record('wordcloud', $wordclouddb);
-    return $id;
+    return $DB->insert_record('wordcloud', $wordcloud);
 }
 
 /**
@@ -67,11 +64,9 @@ function wordcloud_delete_instance($id) {
  * @return bool
  */
 function wordcloud_update_instance($wordcloud) {
-    global $COURSE, $DB;
+    global $DB;
 
-    $wordclouddb = new stdClass();
-    $wordclouddb->course = $COURSE->id;
-    $wordclouddb->name = $wordcloud->name;
+    $wordcloud->timemodified = time();
 
-    return $DB->update_record('wordcloud', $wordclouddb);
+    return $DB->update_record('wordcloud', $wordcloud);
 }

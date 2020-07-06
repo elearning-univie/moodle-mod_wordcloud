@@ -68,7 +68,7 @@ class mod_wordcloud_external extends external_api {
 
         self::validate_context($context);
         require_capability('mod/wordcloud:use', $context);
-        require_login($course, true, $cm);
+        require_login($course, false, $cm);
 
         if (strlen($params['word']) > 40) {
             $warnings[] = [
