@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * creates the wordcloud html
  *
- * @param $wordcloudid
+ * @param int $wordcloudid
  * @return string
  * @throws dml_exception
  */
