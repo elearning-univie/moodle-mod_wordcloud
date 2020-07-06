@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
+require_once(__DIR__ . '/locallib.php');
 
 /**
  * Class mod_wordcloud_external
@@ -68,23 +69,17 @@ class mod_wordcloud_external extends external_api {
         if (!$record) {
             $wordscount = $DB->count_records('wordcloud_map', ['wordcloudid' => $params['aid']]);
 
-            if ($wordscount > 10) {
+            if ($wordscount > 128) {
                 return "too many words";
             }
 
-            $retval = $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word'], 'count' => 1]);
-            return $retval;
+            $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word'], 'count' => 1]);
         } else {
             $record->count++;
-            if ($DB->update_record('wordcloud_map', $record)) {
-                return "updated";
-            }
-            return "found";
+            $DB->update_record('wordcloud_map', $record);
         }
 
-        /*$qid = mod_flashcards_get_next_question($params['fid'], $params['boxid']);
-        $questionrenderer = new renderer($USER->id, $params['boxid'], $params['fid'], $qid);*/
-        return "stuff";
+        return mod_wordcloud_get_cloudhtml($params['aid']);
     }
 
     /**
@@ -93,7 +88,6 @@ class mod_wordcloud_external extends external_api {
      * @return external_value
      */
     public static function add_word_returns() {
-        //return null; PARAM_RAW
-        return new external_value(PARAM_TEXT, 'new question');
+        return new external_value(PARAM_RAW, 'wordcloud html code');
     }
 }

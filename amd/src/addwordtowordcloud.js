@@ -9,6 +9,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
                     done: function ($return) {
                         //window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + cmid);
                         window.console.log($return);
+                        $('#unterebox').html($return);
                     },
                     fail: notification.exception
                 }]);

@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/wordcloud/lib.php');
+require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir.'/formslib.php');
 
 /*define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
@@ -39,12 +39,15 @@ define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));*/
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_wordcloud_mod_form extends moodleform_mod {
+
+    /**
+     * definition
+     * @throws coding_exception
+     */
     public function definition() {
         //global $DB, $PAGE, $COURSE;
 
         $mform =& $this->_form;
-        //$courseid = $COURSE->id;
-        //$context = context_course::instance($courseid);
 
         $mform->addElement('text', 'name', get_string('wordcloudname', 'wordcloud'), array('size' => '64'));
         $mform->setType('name', PARAM_TEXT);

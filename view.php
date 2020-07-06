@@ -22,7 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require_once('lib.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $PAGE, $OUTPUT, $DB;
 
@@ -54,29 +55,8 @@ if (!has_capability('mod/wordcloud:view', $context) ) {
 echo $OUTPUT->header();
 $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
 
-$sql = 'SELECT min(count) as mincount, max(count) as maxcount
-          FROM {wordcloud_map} 
-         WHERE wordcloudid = :wordcloudid';
-$wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloud->id]);
-
-$records = $DB->get_records('wordcloud_map',['wordcloudid' => $wordcloud->id]);
-$cloudhtml = '';
-
-$range = max(.01, $wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
-if ($range >= 6) {
-    $steps = 6;
-} else {
-    $steps = 1;
-}
-
-foreach ($records as $row) {
-    $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
-    $fontsize = 12 + 6 * $weight;
-    $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
-}
-
 $templatecontext['heading'] = $wordcloud->name;
-$templatecontext['cloudhtml'] = $cloudhtml;
+$templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['aid'] = $wordcloud->id;
 
 $renderer = $PAGE->get_renderer('core');
