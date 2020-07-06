@@ -46,7 +46,7 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-if (!has_capability('mod/wordcloud:view', $context) ) {
+if (!has_capability('mod/wordcloud:use', $context) ) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();

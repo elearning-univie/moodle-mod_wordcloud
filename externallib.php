@@ -60,7 +60,16 @@ class mod_wordcloud_external extends external_api {
         global $DB;
 
         $warnings = [];
+
         $params = self::validate_parameters(self::add_word_parameters(), array('aid' => $aid, 'word' => $word));
+        $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $context = context_module::instance($cm->id);
+
+        self::validate_context($context);
+        require_capability('mod/wordcloud:use', $context);
+        require_login($course, true, $cm);
+
         if (strlen($params['word']) > 40) {
             $warnings[] = [
                     'warningcode' => 'errorwordoverflow',

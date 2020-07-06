@@ -35,8 +35,8 @@ $capabilities = array(
         ),
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
-    'mod/wordcloud:view' => array(
-        'captype' => 'read',
+    'mod/wordcloud:use' => array(
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'guest' => CAP_PROHIBIT,
