@@ -35,16 +35,16 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     global $DB;
 
     $sql = 'SELECT min(count) as mincount, max(count) as maxcount
-          FROM {wordcloud_map}
-         WHERE wordcloudid = :wordcloudid';
+              FROM {wordcloud_map}
+             WHERE wordcloudid = :wordcloudid';
     $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
 
-    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid]);
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid], 'id');
     $cloudhtml = '';
 
     // the range is slightly too large to make sure that even the largest element is rounded down.
     $range = max(.01, $wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
-    if ($range >= 6) {
+    if ($range >= 2) {
         $steps = 6;
     } else {
         $steps = 1;
