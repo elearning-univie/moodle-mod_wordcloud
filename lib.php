@@ -44,7 +44,7 @@ function wordcloud_add_instance($wordcloud) {
 /**
  * wordcloud_delete_instance
  *
- * @param $id
+ * @param int $id
  * @return bool
  */
 function wordcloud_delete_instance($id) {
