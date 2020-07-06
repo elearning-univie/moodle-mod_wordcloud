@@ -24,7 +24,7 @@
 require('../../config.php');
 require_once('lib.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER, $DB;
+global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
@@ -45,15 +45,15 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-/*if (has_capability('mod/flashcards:studentview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
-    redirect($redirecturl);
-}*/
+if (!has_capability('mod/wordcloud:view', $context) ) {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
 
 echo $OUTPUT->header();
+$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
 
-
-//wörter generator block
 $sql = 'SELECT min(count) as mincount, max(count) as maxcount
           FROM {wordcloud_map} 
          WHERE wordcloudid = :wordcloudid';
@@ -72,13 +72,12 @@ if ($range >= 6) {
 foreach ($records as $row) {
     $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
     $fontsize = 12 + 6 * $weight;
-    $cloudhtml .= "<span class='mod_wordcloud_word' style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
+    $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
 }
 
 $templatecontext['heading'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = $cloudhtml;
-//wörter generator block ende
-
+$templatecontext['aid'] = $wordcloud->id;
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);

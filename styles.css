@@ -1,25 +1,35 @@
-#oberebox {
+.header {
     background-color: #e5e5e5;
+    padding: 1em;
 }
 
 #wordcloudbox {
     background-color: #f3f3f3;
     border-radius: 5px;
-    width: 60%;
-}
-
-#submitbutton {
-    width: 96px;
-    height: 39px;
-    margin: auto;
+    overflow: hidden;
 }
 
 #answer {
     width: 100%;
+    height: 100%;
+    border: 0px;
+    border-radius: .25rem;
+    padding-left: 1em;
 }
 
 .mod_wordcloud_word {
-    margin: auto;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+#unterebox {
+    padding: 1em;
+}
+
+.mod-wordcloud-btn {
+    width: 100%;
+}
+
+.mod-wordcloud-center {
+    margin: auto;
 }
