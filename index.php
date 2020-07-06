@@ -27,7 +27,7 @@ defined(MOODLE_INTERNAL) || die();
 
 $id = required_param('id', PARAM_INT);   // Course id.
 
-if (!$course = $DB->get_record('course', array('id'=> $id))) {
+if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('Course ID is incorrect');
 }
 $coursecontext = context_course::instance($course->id);
@@ -45,9 +45,10 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
+$strwordclouds = get_string("modulenameplural", "wordcloud");
 
 if (!$wordclouds = get_all_instances_in_course('wordcloud', $course)) {
-    notice(get_string('nomediagallerys', 'wordcloud'), new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(get_string('thereareno', 'moodle', $strwordclouds), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $table = new html_table();
@@ -81,6 +82,6 @@ foreach ($wordclouds as $wordcloud) {
     }
 }
 
-echo $OUTPUT->heading(get_string('modulenameplural', 'wordcloud'), 2);
+echo $OUTPUT->heading($strwordclouds, 2);
 echo html_writer::table($table);
 echo $OUTPUT->footer();
