@@ -42,10 +42,10 @@ class mod_wordcloud_external extends external_api {
      */
     public static function add_word_parameters() {
         return new external_function_parameters(
-            array(
-                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'word' => new external_value(PARAM_TEXT, 'word to be added')
-            )
+                array(
+                        'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+                        'word' => new external_value(PARAM_TEXT, 'word to be added')
+                )
         );
     }
 
@@ -59,9 +59,14 @@ class mod_wordcloud_external extends external_api {
     public static function add_word($aid, $word) {
         global $DB;
 
+        $warnings = [];
         $params = self::validate_parameters(self::add_word_parameters(), array('aid' => $aid, 'word' => $word));
         if (strlen($params['word']) > 40) {
-            return "word too long";
+            $warnings[] = [
+                    'warningcode' => 'errorwordoverflow',
+                    'message' => get_string('errorwordoverflow', 'mod_wordcloud')
+            ];
+            return ['cloudhtml' => '', 'warnings' => $warnings];
         }
 
         $record = $DB->get_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word']]);
@@ -70,7 +75,11 @@ class mod_wordcloud_external extends external_api {
             $wordscount = $DB->count_records('wordcloud_map', ['wordcloudid' => $params['aid']]);
 
             if ($wordscount > 128) {
-                return "too many words";
+                $warnings[] = [
+                        'warningcode' => 'errortoomanywords',
+                        'message' => get_string('errortoomanywords', 'mod_wordcloud')
+                ];
+                return ['cloudhtml' => '', 'warnings' => $warnings];
             }
 
             $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word'], 'count' => 1]);
@@ -79,7 +88,7 @@ class mod_wordcloud_external extends external_api {
             $DB->update_record('wordcloud_map', $record);
         }
 
-        return mod_wordcloud_get_cloudhtml($params['aid']);
+        return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid']), 'warnings' => $warnings];
     }
 
     /**
@@ -88,6 +97,9 @@ class mod_wordcloud_external extends external_api {
      * @return external_value
      */
     public static function add_word_returns() {
-        return new external_value(PARAM_RAW, 'wordcloud html code');
+        return new external_single_structure(array(
+                'cloudhtml' => new external_value(PARAM_RAW, 'wordcloud html code'),
+                'warnings' => new external_warnings()
+        ));
     }
 }

@@ -33,3 +33,27 @@
 .mod-wordcloud-center {
     margin: auto;
 }
+
+.mod-wordcloud-w1 {
+    font-size: 18px;
+}
+
+.mod-wordcloud-w2 {
+    font-size: 24px;
+}
+
+.mod-wordcloud-w3 {
+    font-size: 30px;
+}
+
+.mod-wordcloud-w4 {
+    font-size: 36px;
+}
+
+.mod-wordcloud-w5 {
+    font-size: 42px;
+}
+
+.mod-wordcloud-w6 {
+    font-size: 48px;
+}

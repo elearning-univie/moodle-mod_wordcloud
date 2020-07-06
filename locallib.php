@@ -51,9 +51,9 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
 
     foreach ($records as $row) {
         $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
-        $fontsize = 12 + 6 * $weight;
-        $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: "
-                . $fontsize . "px;' title='$row->count'>$row->word</span>";
+        $fontsize = 'mod-wordcloud-w' . $weight;
+        $cloudhtml .= '<span class="mod_wordcloud_word mod-wordcloud-center ' . $fontsize . '"
+                title="' . $row->count . '">' . $row->word . '</span>';
     }
     return $cloudhtml;
 }

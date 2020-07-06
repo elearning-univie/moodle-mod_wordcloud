@@ -54,8 +54,8 @@ function wordcloud_delete_instance($id) {
         return false;
     }
 
-    $DB->delete_records('wordcloud', ['id' => $id]);
     $DB->delete_records('wordcloud_map', ['wordcloudid' => $id]);
+    $DB->delete_records('wordcloud', ['id' => $id]);
 
     return true;
 }
