@@ -44,13 +44,18 @@ function wordcloud_add_instance($wordcloud) {
 /**
  * wordcloud_delete_instance
  *
- * @param int $id
+ * @param $id
  * @return bool
  */
-function wordcloud_delete_instance(int $id) {
+function wordcloud_delete_instance($id) {
     global $DB;
 
+    if (! $wordcloud = $DB->get_record('wordcloud', ['id' => $id])) {
+        return false;
+    }
+
     $DB->delete_records('wordcloud', ['id' => $id]);
+    $DB->delete_records('wordcloud_map', ['wordcloudid' => $id]);
 
     return true;
 }
