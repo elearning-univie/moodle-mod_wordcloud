@@ -1,15 +1,10 @@
-.header {
-    background-color: #e5e5e5;
-    padding: 1em;
-}
-
-#wordcloudbox {
+#mod-wordcloud-div {
     background-color: #f3f3f3;
     border-radius: 5px;
     overflow: hidden;
 }
 
-#answer {
+#mod-wordcloud-new-word {
     width: 100%;
     height: 100%;
     border: 0px;
@@ -17,12 +12,17 @@
     padding-left: 1em;
 }
 
+.mod-wordcloud-header {
+    background-color: #e5e5e5;
+    padding: 1em;
+}
+
 .mod_wordcloud_word {
     padding-left: 0.5em;
     padding-right: 0.5em;
 }
 
-#unterebox {
+.mod-wordcloud-words-box {
     padding: 1em;
 }
 

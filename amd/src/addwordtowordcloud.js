@@ -2,14 +2,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
     return {
         init: function () {
             $.mod_wordcloud_add_word = function (aid) {
-                var word = $('#answer').val();
+                var word = $('#mod-wordcloud-new-word').val();
                 ajax.call([{
                     methodname: 'mod_wordcloud_add_word',
                     args: {aid: aid, word: word},
                     done: function ($return) {
-                        //window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + cmid);
-                        window.console.log($return);
-                        $('#unterebox').html($return);
+                        $('#mod-wordcloud-words-box').html($return);
                     },
                     fail: notification.exception
                 }]);

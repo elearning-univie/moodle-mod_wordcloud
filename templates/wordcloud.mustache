@@ -15,14 +15,13 @@
   along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 <section>
-    <div id="wordcloudbox" class="container m-auto">
-        <div class="header row">
+    <div id="mod-wordcloud-div" class="container m-auto">
+        <div class="mod-wordcloud-header row">
             <div class="col-sm-12">
                 <p>{{heading}}</p>
                 <div class="row">
                     <div class="col-md-10 col-xs-12">
-                        <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="answer" class="answer"
-                               name="answer" maxlength="40" autofocus="">
+                        <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
                     </div>
                     <div class="col-md-2 col-xs-12">
                         <button class="btn btn-primary mod-wordcloud-btn" onclick="$.mod_wordcloud_add_word({{aid}})">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
@@ -30,7 +29,7 @@
                 </div>
             </div>
         </div>
-        <div id="unterebox" class="row">
+        <div id="mod-wordcloud-words-box" class="row">
             {{{cloudhtml}}}
         </div>
     </div>
