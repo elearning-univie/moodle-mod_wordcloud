@@ -57,7 +57,7 @@ class mod_wordcloud_external extends external_api {
      * @return string|null
      */
     public static function add_word($aid, $word) {
-        global $USER, $DB;
+        global $DB;
 
         $params = self::validate_parameters(self::add_word_parameters(), array('aid' => $aid, 'word' => $word));
         if (strlen($params['word']) > 40) {

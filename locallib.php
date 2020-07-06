@@ -31,15 +31,16 @@ defined('MOODLE_INTERNAL') || die;
  * @return string
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid) {
+function mod_wordcloud_get_cloudhtml($wordcloudid)
+{
     global $DB;
 
     $sql = 'SELECT min(count) as mincount, max(count) as maxcount
-          FROM {wordcloud_map} 
+          FROM {wordcloud_map}
          WHERE wordcloudid = :wordcloudid';
     $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
 
-    $records = $DB->get_records('wordcloud_map',['wordcloudid' => $wordcloudid]);
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid]);
     $cloudhtml = '';
 
     $range = max(.01, $wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
@@ -52,7 +53,8 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     foreach ($records as $row) {
         $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
         $fontsize = 12 + 6 * $weight;
-        $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: " . $fontsize . "px;' title='$row->count'>$row->word</span>";
+        $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: "
+            . $fontsize . "px;' title='$row->count'>$row->word</span>";
     }
     return $cloudhtml;
 }

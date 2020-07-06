@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die;
  * @param array $wordcloud
  * @return bool
  */
-function wordcloud_add_instance($wordcloud)
-{
+function wordcloud_add_instance($wordcloud) {
     global $COURSE, $DB;
 
     $wordclouddb = new stdClass();
@@ -48,29 +47,10 @@ function wordcloud_add_instance($wordcloud)
  * @param int $id
  * @return bool
  */
-function wordcloud_delete_instance(int $id)
-{
+function wordcloud_delete_instance(int $id) {
     global $DB;
 
     $DB->delete_records('wordcloud', ['id' => $id]);
-
-    return true;
-}
-
-/**
- * flashcards_update_instance
- *
- * @param array $flashcards
- * @return bool
- */
-function flashcards_update_instance($flashcards)
-{
-    global $DB;
-    require_once('locallib.php');
-
-    $flashcardsdb = flashcards_get_database_object($flashcards);
-    $flashcardsdb->id = $flashcards->instance;
-    $DB->update_record('flashcards', $flashcardsdb);
 
     return true;
 }

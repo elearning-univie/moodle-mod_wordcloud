@@ -28,9 +28,6 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir.'/formslib.php');
 
-/*define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
-define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));*/
-
 /**
  * Settings form for the wordcloud module
  *
@@ -45,8 +42,6 @@ class mod_wordcloud_mod_form extends moodleform_mod {
      * @throws coding_exception
      */
     public function definition() {
-        //global $DB, $PAGE, $COURSE;
-
         $mform =& $this->_form;
 
         $mform->addElement('text', 'name', get_string('wordcloudname', 'wordcloud'), array('size' => '64'));
