@@ -33,7 +33,7 @@ if (!$course = $DB->get_record('course', array('id'=> $id))) {
 $coursecontext = context_course::instance($course->id);
 
 require_course_login($course);
-echo "lolololol"
+
 $event = \mod_wordcloud\event\course_module_instance_list_viewed::create(array(
         'context' => $coursecontext
 ));
