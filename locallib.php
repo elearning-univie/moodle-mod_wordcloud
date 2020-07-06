@@ -31,8 +31,7 @@ defined('MOODLE_INTERNAL') || die;
  * @return string
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid)
-{
+function mod_wordcloud_get_cloudhtml($wordcloudid) {
     global $DB;
 
     $sql = 'SELECT min(count) as mincount, max(count) as maxcount
@@ -54,7 +53,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid)
         $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
         $fontsize = 12 + 6 * $weight;
         $cloudhtml .= "<span class='mod_wordcloud_word mod-wordcloud-center' style='font-size: "
-            . $fontsize . "px;' title='$row->count'>$row->word</span>";
+                . $fontsize . "px;' title='$row->count'>$row->word</span>";
     }
     return $cloudhtml;
 }
