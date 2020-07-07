@@ -45,16 +45,16 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     $cloudhtml = '';
 
     // the range is slightly too large to make sure that even the largest element is rounded down.
-    $range = max(.01, $wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
-    if ($range >= 2) {
-        $steps = 6;
-    } else {
-        $steps = 1;
-    }
+    $range = $wordcnt->maxcount - $wordcnt->mincount * 1.0001;
+    $steps = 6;
 
     foreach ($records as $row) {
         // logarithmic function to calculate the fontsize
-        $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
+        if ($range >= 3) {
+            $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
+        } else {
+            $weight = 1;
+        }
         $fontsize = 'mod-wordcloud-w' . $weight;
         $cloudhtml .= '<span class="mod_wordcloud_word mod-wordcloud-center ' . $fontsize . '"
                 title="' . $row->count . '">' . $row->word . '</span>';
