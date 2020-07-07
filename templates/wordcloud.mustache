@@ -1,0 +1,36 @@
+{{!
+  This file is part of Moodle - http://moodle.org/
+
+  Moodle is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Moodle is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<section>
+    <div id="mod-wordcloud-div" class="container m-auto">
+        <div class="mod-wordcloud-header row">
+            <div class="col-sm-12">
+                <p>{{heading}}</p>
+                <div class="row">
+                    <div class="col-md-10 col-xs-12">
+                        <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
+                    </div>
+                    <div class="col-md-2 col-xs-12">
+                        <button class="btn btn-primary mod-wordcloud-btn" onclick="$.mod_wordcloud_add_word({{aid}})">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="mod-wordcloud-words-box" class="row">
+            {{{cloudhtml}}}
+        </div>
+    </div>
+</section>

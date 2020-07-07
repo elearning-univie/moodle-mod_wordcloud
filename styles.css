@@ -1,0 +1,59 @@
+#mod-wordcloud-div {
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#mod-wordcloud-new-word {
+    width: 100%;
+    height: 100%;
+    border: 0px;
+    border-radius: .25rem;
+    padding-left: 1em;
+}
+
+#mod-wordcloud-words-box {
+    padding: 1em;
+}
+
+.mod-wordcloud-header {
+    background-color: #e5e5e5;
+    padding: 1em;
+}
+
+.mod_wordcloud_word {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.mod-wordcloud-btn {
+    width: 100%;
+}
+
+.mod-wordcloud-center {
+    margin: auto;
+}
+
+.mod-wordcloud-w1 {
+    font-size: 18px;
+}
+
+.mod-wordcloud-w2 {
+    font-size: 24px;
+}
+
+.mod-wordcloud-w3 {
+    font-size: 30px;
+}
+
+.mod-wordcloud-w4 {
+    font-size: 36px;
+}
+
+.mod-wordcloud-w5 {
+    font-size: 42px;
+}
+
+.mod-wordcloud-w6 {
+    font-size: 48px;
+}
