@@ -44,12 +44,11 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid], 'id');
     $cloudhtml = '';
 
-    // the range is slightly too large to make sure that even the largest element is rounded down.
+    // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
     $range = $wordcnt->maxcount - $wordcnt->mincount * 1.0001;
     $steps = 6;
 
     foreach ($records as $row) {
-        // logarithmic function to calculate the fontsize
         if ($range >= 3) {
             $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
         } else {
