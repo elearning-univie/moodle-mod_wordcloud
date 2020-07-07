@@ -45,7 +45,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     $cloudhtml = '';
 
     // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
-    $range = $wordcnt->maxcount - $wordcnt->mincount * 1.0001;
+    $range = ($wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
     $steps = 6;
 
     foreach ($records as $row) {
