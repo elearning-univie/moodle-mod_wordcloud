@@ -23,6 +23,8 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
+define('WORDCLOUD_WORD_LENGTH', 40);
+define('WORDCLOUD_MAX_WORDS', 128);
 
 /**
  * creates the wordcloud html

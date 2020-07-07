@@ -70,7 +70,7 @@ class mod_wordcloud_external extends external_api {
         require_capability('mod/wordcloud:use', $context);
         require_login($course, false, $cm);
 
-        if (strlen($params['word']) > 40) {
+        if (strlen($params['word']) > WORDCLOUD_WORD_LENGTH) {
             $warnings[] = [
                     'warningcode' => 'errorwordoverflow',
                     'message' => get_string('errorwordoverflow', 'mod_wordcloud')
@@ -83,7 +83,7 @@ class mod_wordcloud_external extends external_api {
         if (!$record) {
             $wordscount = $DB->count_records('wordcloud_map', ['wordcloudid' => $params['aid']]);
 
-            if ($wordscount > 128) {
+            if ($wordscount > WORDCLOUD_MAX_WORDS) {
                 $warnings[] = [
                         'warningcode' => 'errortoomanywords',
                         'message' => get_string('errortoomanywords', 'mod_wordcloud')
