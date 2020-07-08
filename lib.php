@@ -67,6 +67,7 @@ function wordcloud_update_instance($wordcloud) {
     global $DB;
 
     $wordcloud->timemodified = time();
+    $wordcloud->id = $wordcloud->instance;
 
     return $DB->update_record('wordcloud', $wordcloud);
 }

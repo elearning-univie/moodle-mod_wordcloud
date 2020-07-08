@@ -16,6 +16,10 @@
     padding: 1em;
 }
 
+#mod-wordcloud-btn {
+    width: 100%;
+}
+
 .mod-wordcloud-header {
     background-color: #e5e5e5;
     padding: 1em;
@@ -24,10 +28,6 @@
 .mod_wordcloud_word {
     padding-left: 0.5em;
     padding-right: 0.5em;
-}
-
-.mod-wordcloud-btn {
-    width: 100%;
 }
 
 .mod-wordcloud-center {
@@ -59,6 +59,6 @@
 }
 
 .mod-wordcloud-export {
-    margin-right: 0;
-    margin-left:auto;
+    display: block;
+    text-align: center;
 }

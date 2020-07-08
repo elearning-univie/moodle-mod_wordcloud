@@ -2,6 +2,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
     function ($, ajax, notification, ModalFactory, str) {
         return {
             init: function () {
+                $('#mod-wordcloud-new-word').keypress(function (e) {
+                    if (e.keyCode === 13) {
+                        $('#mod-wordcloud-btn').click();
+                    }
+                });
                 $.mod_wordcloud_add_word = function (aid) {
                     var word = $('#mod-wordcloud-new-word').val();
                     ajax.call([{
@@ -18,6 +23,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                                 });
                             } else {
                                 $('#mod-wordcloud-words-box').html($return.cloudhtml);
+                                $('#mod-wordcloud-new-word').val('');
                             }
                         },
                         fail: notification.exception
