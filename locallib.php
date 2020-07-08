@@ -64,6 +64,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
 /**
  * Download the wordcloud as csv file
  *
+ * @param int $wordcloudid
  * @throws coding_exception
  * @throws dml_exception
  */
