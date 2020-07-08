@@ -24,6 +24,7 @@
 
 $string['errorwordoverflow'] = 'New entry is too long!';
 $string['errortoomanywords'] = 'Max amount of words reached!';
+$string['exportcsv'] = 'Export CSV';
 $string['modulename'] = 'Wordcloud';
 $string['modulenameplural'] = 'Wordclouds';
 $string['pagetitle'] = 'Moodle Wordcloud';
@@ -33,6 +34,8 @@ $string['privacy:metadata'] = 'The wordcloud plugin does not store any personal 
 $string['submitbtn'] = 'Submit';
 $string['textbox'] = 'Add a word here...';
 $string['warning'] = 'Warning';
+$string['word'] = 'Word';
+$string['count'] = 'Count';
 $string['wordcloudname'] = 'Wordcloud activity name';
 $string['wordcloud:addinstance'] = 'Create wordcloud activity';
 $string['wordcloud:webservice'] = 'Submit new words';

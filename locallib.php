@@ -60,3 +60,27 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
     }
     return $cloudhtml;
 }
+
+/**
+ * Download the wordcloud as csv file
+ *
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function mod_wordcloud_download_csv($wordcloudid) {
+    global $DB, $CFG;
+    require_once($CFG->libdir . '/csvlib.class.php');
+
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid]);
+
+    $csvexport = new csv_export_writer();
+    $filename = get_string('pluginname', 'mod_wordcloud');
+    $filename .= clean_filename('-' . gmdate("Ymd_Hi")) . '.csv';
+    $csvexport->filename = $filename;
+    $csvexport->add_data([get_string('word', 'mod_wordcloud'), get_string('count', 'mod_wordcloud')]);
+
+    foreach ($records as $record) {
+        $csvexport->add_data([$record->word, $record->count]);
+    }
+    $csvexport->download_file();
+}

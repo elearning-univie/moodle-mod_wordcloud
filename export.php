@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Wordcloud view
+ * Wordcloud export page
  *
  * @package    mod_wordcloud
  * @copyright  2020 University of Vienna
@@ -36,7 +36,7 @@ require_login($course, false, $cm);
 
 $wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
 
-$PAGE->set_url(new moodle_url("/mod/wordcloud/view.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/wordcloud/export.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_wordcloud', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -50,16 +50,7 @@ if (!has_capability('mod/wordcloud:use', $context) ) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
+} else {
+    mod_wordcloud_download_csv($wordcloud->id);
+    die();
 }
-
-echo $OUTPUT->header();
-$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
-
-$templatecontext['heading'] = $wordcloud->name;
-$templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
-$templatecontext['aid'] = $wordcloud->id;
-$templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
-
-$renderer = $PAGE->get_renderer('core');
-echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
-echo $OUTPUT->footer();
