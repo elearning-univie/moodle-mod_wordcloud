@@ -57,3 +57,8 @@
 .mod-wordcloud-w6 {
     font-size: 48px;
 }
+
+.mod-wordcloud-export {
+    margin-right: 0;
+    margin-left:auto;
+}
