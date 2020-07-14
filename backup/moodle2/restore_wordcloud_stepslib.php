@@ -15,6 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Class for the structure used to restore one wordcloud activity.
+ *
+ * @package   mod_wordcloud
+ * @copyright 2020 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die;
+
+/**
  * Structure step to restore one wordcloud activity
  *
  * @package   mod_wordcloud

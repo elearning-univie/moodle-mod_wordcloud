@@ -14,10 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Class for the structure used to backup one wordcloud activity.
+ *
+ * @package   mod_wordcloud
+ * @copyright 2020 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * Define the complete jitsi structure for backup, with file and id annotations
+ * Define the complete wordcloud structure for backup, with file and id annotations
  *
  * @package   mod_wordcloud
  * @category  backup
