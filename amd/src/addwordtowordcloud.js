@@ -3,6 +3,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
         return {
             init: function () {
                 $('#mod-wordcloud-new-word').keypress(function (e) {
+                    // filter enter key to auto commit the word
                     if (e.keyCode === 13) {
                         $('#mod-wordcloud-btn').click();
                     }
