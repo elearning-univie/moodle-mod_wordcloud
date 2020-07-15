@@ -27,7 +27,7 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="uk_word" TYPE="unique" FIELDS="word"/>
+                <KEY NAME="uk_word" TYPE="unique" FIELDS="wordcloudid, word"/>
             </KEYS>
         </TABLE>
     </TABLES>

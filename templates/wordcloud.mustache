@@ -17,23 +17,19 @@
 <section>
     <div id="mod-wordcloud-div" class="container m-auto">
         <div class="mod-wordcloud-header row">
-            <div class="col-sm-12">
-                <p>{{heading}}</p>
-                <div class="row">
-                    <div class="col-md-10 col-xs-12">
-                        <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
-                    </div>
-                    <div class="col-md-2 col-xs-12">
-                        <button class="btn btn-primary mod-wordcloud-btn" onclick="$.mod_wordcloud_add_word({{aid}})">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
-                    </div>
-                </div>
+            <div class="col-md-10 col-xs-12">
+                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word({{aid}})">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
             </div>
         </div>
         <div id="mod-wordcloud-words-box" class="row">
             {{{cloudhtml}}}
         </div>
-        <div class="row">
-            <a class="btn btn-secondary mod-wordcloud-export" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
-        </div>
+    </div>
+    <br>
+    <div class="mod-wordcloud-export">
+        <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
     </div>
 </section>

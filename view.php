@@ -53,13 +53,15 @@ if (!has_capability('mod/wordcloud:use', $context) ) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading($wordcloud->name);
+
 $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
 
-$templatecontext['heading'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['aid'] = $wordcloud->id;
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
 $renderer = $PAGE->get_renderer('core');
+
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $OUTPUT->footer();

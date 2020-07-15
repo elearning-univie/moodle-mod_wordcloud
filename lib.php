@@ -25,6 +25,25 @@
 defined('MOODLE_INTERNAL') || die;
 
 /**
+ * Returns the information on whether the module supports a feature
+ *
+ * @param string $feature FEATURE_xx constant for requested feature
+ * @return mixed true if the feature is supported, null if unknown
+ */
+function wordcloud_supports($feature) {
+    switch($feature) {
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        default:
+            return null;
+    }
+}
+
+/**
  * wordcloud_add_instance
  *
  * @param array $wordcloud
@@ -67,6 +86,7 @@ function wordcloud_update_instance($wordcloud) {
     global $DB;
 
     $wordcloud->timemodified = time();
+    $wordcloud->id = $wordcloud->instance;
 
     return $DB->update_record('wordcloud', $wordcloud);
 }
