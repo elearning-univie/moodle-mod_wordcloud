@@ -38,5 +38,5 @@ $string['word'] = 'Word';
 $string['count'] = 'Count';
 $string['wordcloudname'] = 'Wordcloud activity name';
 $string['wordcloud:addinstance'] = 'Create wordcloud activity';
-$string['wordcloud:use'] = 'View and change the wordcloud';
+$string['wordcloud:view'] = 'View the wordcloud';
 $string['wordcloud:webservice'] = 'Submit new words';

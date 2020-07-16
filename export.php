@@ -33,6 +33,7 @@ list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
+require_capability('mod/wordcloud:view', $context);
 
 $wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
 
@@ -46,11 +47,5 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-if (!has_capability('mod/wordcloud:use', $context) ) {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
-} else {
-    mod_wordcloud_download_csv($wordcloud->id);
-    die();
-}
+mod_wordcloud_download_csv($wordcloud->id);
+die();
