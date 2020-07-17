@@ -46,7 +46,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/wordcloud:webservice' => array(
+    'mod/wordcloud:submit' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
