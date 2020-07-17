@@ -28,7 +28,7 @@ $services = array(
     'wordcloudservice' => array(
         'functions' => array('mod_wordcloud_add_word'),
         'shortname' => 'wordcloud',
-        'requiredcapability' => 'mod/wordcloud:webservice',
+        'requiredcapability' => 'mod/wordcloud:submit',
         'restrictedusers' => 0,
         'enabled' => 1,
     )

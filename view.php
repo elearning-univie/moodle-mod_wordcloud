@@ -33,6 +33,7 @@ list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
+require_capability('mod/wordcloud:view', $context);
 
 $wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
 
@@ -46,14 +47,15 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-if (!has_capability('mod/wordcloud:use', $context) ) {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
-}
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading($wordcloud->name);
+
+if (trim(strip_tags($wordcloud->intro))) {
+    $formatoptions = new stdClass();
+    $formatoptions->noclean = true;
+    echo $OUTPUT->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
+            'generalbox', 'intro');
+}
 
 $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
 
