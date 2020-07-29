@@ -56,8 +56,10 @@ if (trim(strip_tags($wordcloud->intro))) {
     echo $OUTPUT->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
             'generalbox', 'intro');
 }
+$wordcloudconfig = get_config('wordcloud');
+print_object($wordcloudconfig->refresh);
 
-$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
+$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh]);
 
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['aid'] = $wordcloud->id;

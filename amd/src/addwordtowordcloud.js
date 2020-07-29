@@ -1,7 +1,12 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/str'],
     function ($, ajax, notification, ModalFactory, str) {
         return {
-            init: function () {
+            init: function (refreshtime) {
+                /*setInterval($.mod_wordcloud_refresh(),refreshtime);*/
+                window.console.log(refreshtime);
+                setInterval(function(){
+                    location.reload();
+                },refreshtime*1000);
                 $('#mod-wordcloud-new-word').keypress(function (e) {
                     // filter enter key to auto commit the word
                     if (e.keyCode === 13) {
