@@ -56,13 +56,12 @@ if (trim(strip_tags($wordcloud->intro))) {
     echo $OUTPUT->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
             'generalbox', 'intro');
 }
-
-$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init');
+$wordcloudconfig = get_config('wordcloud');
 
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
-$templatecontext['aid'] = $wordcloud->id;
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
+$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);

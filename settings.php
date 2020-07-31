@@ -15,20 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
+ * Admin settings of the wordcloud plugin
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
- *
- * @package   mod_wordcloud
- * @copyright 2020 University of Vienna
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_wordcloud
+ * @copyright  2020 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2020072900;
-$plugin->requires = 2019111800;
-$plugin->release = 'v1.0.0';
-$plugin->component = 'mod_wordcloud';
-$plugin->maturity = MATURITY_STABLE;
+if ($ADMIN->fulltree) {
+    require_once($CFG->dirroot.'/mod/wordcloud/lib.php');
+
+    $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
+        get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
+}

@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['count'] = 'Count';
 $string['errorwordoverflow'] = 'New entry is too long!';
 $string['errortoomanywords'] = 'Max amount of words reached!';
 $string['exportcsv'] = 'Export CSV';
@@ -31,11 +32,12 @@ $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
 $string['pluginname'] = 'Wordcloud';
 $string['privacy:metadata'] = 'The wordcloud plugin does not store any personal data.';
+$string['refreshtime'] = 'Refresh time';
+$string['refreshtimedesc'] = 'Set the auto refresh interval time in seconds';
 $string['submitbtn'] = 'Submit';
 $string['textbox'] = 'Add a word here...';
 $string['warning'] = 'Warning';
 $string['word'] = 'Word';
-$string['count'] = 'Count';
 $string['wordcloudname'] = 'Wordcloud activity name';
 $string['wordcloud:addinstance'] = 'Create wordcloud activity';
 $string['wordcloud:submit'] = 'Submit new words';

@@ -50,11 +50,25 @@ class mod_wordcloud_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_words_parameters() {
+        return new external_function_parameters(
+                array(
+                        'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+                        'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change')
+                )
+        );
+    }
+
+    /**
      * Add a new word or increase the count of the word
      *
      * @param int $aid
      * @param string $word
-     * @return string|null
+     * @return array|null
      */
     public static function add_word($aid, $word) {
         global $DB;
@@ -97,7 +111,39 @@ class mod_wordcloud_external extends external_api {
             $DB->update_record('wordcloud_map', $record);
         }
 
+        $DB->set_field('wordcloud', 'lastwordchange', time(), ['id' => $params['aid']]);
         return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid']), 'warnings' => $warnings];
+    }
+
+    /**
+     * Get the latest wordcloud html
+     *
+     * @param int $aid
+     * @param int $timestamphtml
+     * @return array|null
+     */
+    public static function get_words($aid, $timestamphtml) {
+        global $DB;
+
+        $warnings = [];
+
+        $params = self::validate_parameters(self::get_words_parameters(), array('aid' => $aid, 'timestamphtml' => $timestamphtml));
+        $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $context = context_module::instance($cm->id);
+
+        self::validate_context($context);
+        require_login($course, false, $cm);
+        require_capability('mod/wordcloud:view', $context);
+
+        $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
+
+        if ($record->lastwordchange > $timestamphtml) {
+            return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid']), 'timestamphtml' => $record->lastwordchange,
+                    'warnings' => $warnings];
+        }
+
+        return ['cloudhtml' => '', 'timestamphtml' => 0, 'warnings' => $warnings];
     }
 
     /**
@@ -108,6 +154,19 @@ class mod_wordcloud_external extends external_api {
     public static function add_word_returns() {
         return new external_single_structure(array(
                 'cloudhtml' => new external_value(PARAM_RAW, 'wordcloud html code'),
+                'warnings' => new external_warnings()
+        ));
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function get_words_returns() {
+        return new external_single_structure(array(
+                'cloudhtml' => new external_value(PARAM_RAW, 'wordcloud html code'),
+                'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
                 'warnings' => new external_warnings()
         ));
     }
