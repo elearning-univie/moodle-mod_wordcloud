@@ -27,6 +27,7 @@ $string['errorwordoverflow'] = 'New entry is too long!';
 $string['errortoomanywords'] = 'Max amount of words reached!';
 $string['exportcsv'] = 'Export CSV';
 $string['modulename'] = 'Wordcloud';
+$string['modulename_help'] = 'This module allows teachers to visualize a list of tags as a word cloud. The importance of a tag is shown with fontsize, according to the number of mentions.';
 $string['modulenameplural'] = 'Wordclouds';
 $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
