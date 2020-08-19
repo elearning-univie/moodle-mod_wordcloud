@@ -66,7 +66,7 @@ function wordcloud_add_instance($wordcloud) {
 function wordcloud_delete_instance($id) {
     global $DB;
 
-    if (!$wordcloud = $DB->get_record('wordcloud', ['id' => $id])) {
+    if (!$DB->record_exists('wordcloud', ['id' => $id])) {
         return false;
     }
 
