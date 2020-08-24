@@ -40,13 +40,13 @@ function xmldb_wordcloud_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2020071900) {
+    if ($oldversion < 2020081900 && !$dbman->field_exists('wordcloud', 'lastwordchange')) {
         $table = new xmldb_table('wordcloud');
         $field = new xmldb_field('lastwordchange', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         $dbman->add_field($table, $field);
 
-        upgrade_mod_savepoint(true, 2020071900, 'wordcloud');
+        upgrade_mod_savepoint(true, 2020081900, 'wordcloud');
     }
 
     return true;
