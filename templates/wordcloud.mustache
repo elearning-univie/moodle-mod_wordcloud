@@ -14,22 +14,29 @@
   You should have received a copy of the GNU General Public License
   along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<section>
-    <div id="mod-wordcloud-div" class="container m-auto">
-        <div class="mod-wordcloud-header row">
-            <div class="col-md-10 col-xs-12">
-                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
-            </div>
-            <div class="col-md-2 col-xs-12">
-                <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word()">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
-            </div>
+{{!
+    @template mod_wordcloud/wordcloud
+
+    Example context (json):
+    {
+        "cloudhtml": "<span class="mod_wordcloud_word mod-wordcloud-center mod-wordcloud-w1" title="2">testwort1</span>",
+        "exportlink": "https://csvexportlink"
+    }
+}}
+<div id="mod-wordcloud-div" class="container m-auto">
+    <div class="mod-wordcloud-header row">
+        <div class="col-md-10 col-xs-12">
+            <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
         </div>
-        <div id="mod-wordcloud-words-box" class="row">
-            {{{cloudhtml}}}
+        <div class="col-md-2 col-xs-12">
+            <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word()">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
         </div>
     </div>
-    <br>
-    <div class="mod-wordcloud-export">
-        <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
+    <div id="mod-wordcloud-words-box" class="row">
+        {{{cloudhtml}}}
     </div>
-</section>
+</div>
+<br>
+<div class="mod-wordcloud-export">
+    <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
+</div>
