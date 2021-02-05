@@ -25,6 +25,6 @@ Feature: As a student I can add words to a wordcloud
   Scenario: I submit a word to a wordcloud as a student
     Given I am on "Course 1" course homepage
     And I follow "Test wordcloud"
-    And I set the field "mod-wordcloud-new-word" to "testword"
+    And I set the field "mod-wordcloud-new-word" to "ääääääääääääääääääääääääääääääääääääääää"
     And I press "mod-wordcloud-btn"
-    Then I should see "testword"
+    Then I should see "ääääääääääääääääääääääääääääääääääääääää"
