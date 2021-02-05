@@ -23,7 +23,7 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="wordcloudid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="word" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="word" TYPE="char" LENGTH="160" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="count" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>

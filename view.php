@@ -61,7 +61,13 @@ $wordcloudconfig = get_config('wordcloud');
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
-$PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
+if (has_capability('mod/wordcloud:submit', $context)) {
+    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
+    $templatecontext['writeaccess'] = true;
+} else {
+    $templatecontext['writeaccess'] = false;
+}
+
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
