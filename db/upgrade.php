@@ -54,7 +54,7 @@ function xmldb_wordcloud_upgrade($oldversion) {
     if ($oldversion < 2021020401) {
         $table = new xmldb_table('wordcloud_map');
         $field = new xmldb_field('word', XMLDB_TYPE_CHAR, '160', null, XMLDB_NOTNULL, null);
-        $key = new xmldb_key('uk_word', 'unique', ['wordcloudid','word']);
+        $key = new xmldb_key('uk_word', 'unique', ['wordcloudid', 'word']);
 
         $dbman->drop_key($table, $key);
         $dbman->change_field_precision($table, $field);
