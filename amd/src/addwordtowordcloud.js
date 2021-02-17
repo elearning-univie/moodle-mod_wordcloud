@@ -10,6 +10,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                 });
                 $.mod_wordcloud_add_word = function () {
                     var word = $('#mod-wordcloud-new-word').val();
+
+                    if (!word.trim()) {
+                        return;
+                    }
+
                     ajax.call([{
                         methodname: 'mod_wordcloud_add_word',
                         args: {aid: aid, word: word},
