@@ -84,11 +84,15 @@ class mod_wordcloud_external extends external_api {
         require_login($course, false, $cm);
         require_capability('mod/wordcloud:submit', $context);
 
+        $params['word'] = trim($params['word']);
+
         if (mb_strlen($params['word'], 'UTF-8') > WORDCLOUD_WORD_LENGTH) {
             $warnings[] = [
                     'warningcode' => 'errorwordoverflow',
                     'message' => get_string('errorwordoverflow', 'mod_wordcloud')
             ];
+            return ['cloudhtml' => '', 'warnings' => $warnings];
+        } else if (strlen($params['word']) == 0) {
             return ['cloudhtml' => '', 'warnings' => $warnings];
         }
 
