@@ -26,6 +26,7 @@ $string['count'] = 'Anzahl';
 $string['errorwordoverflow'] = 'Eingabe ist zu lang!';
 $string['errortoomanywords'] = 'Maximale Anzahl an Wörtern erreicht!';
 $string['exportcsv'] = 'Export als CSV';
+$string['fullscreen'] = 'Vollbild';
 $string['modulename'] = 'Wordcloud';
 $string['modulename_help'] = 'Mit der Worcloud wird eine Liste von Wörtern in Form einer Schlagwortwolke visualisiert. Die Wörter werden entsprechend der Anzahl ihrer Nennungen im Verhältnis größer oder kleiner dargestellt.';
 $string['modulenameplural'] = 'Wordclouds';
