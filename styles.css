@@ -62,3 +62,7 @@
     display: block;
     text-align: center;
 }
+
+.mod-wordcloud-fs-btn {
+    float: right;
+}
