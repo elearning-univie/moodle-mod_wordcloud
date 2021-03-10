@@ -14,6 +14,14 @@ define(['jquery'],
                         document.exitFullscreen();
                     }
                 };
+                document.onfullscreenchange = function () {
+                    var fs_icon = document.getElementById('mod-wordcloud-fs-icon');
+                    if (document.fullscreenElement === null) {
+                        fs_icon.className = fs_icon.className.replace(/\bfa-compress\b/g, "fa-expand");
+                    } else {
+                        fs_icon.className = fs_icon.className.replace(/\bfa-expand\b/g, "fa-compress");
+                    }
+                };
             }
         };
     });
