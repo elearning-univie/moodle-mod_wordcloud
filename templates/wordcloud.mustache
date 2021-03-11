@@ -23,24 +23,27 @@
         "exportlink": "https://csvexportlink"
     }
 }}
-<div id="mod-wordcloud-fs-btn-div">
-    <button class="mod-wordcloud-fs-btn btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}" onclick="$.mod_wordcloud_fs_toggle()">
-        <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
-    </button>
-</div>
-<div id="mod-wordcloud-div" class="container m-auto">
-    {{#writeaccess}}
-    <div class="mod-wordcloud-header row">
-        <div class="col-md-10 col-xs-12">
-            <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
+<div id="mod-wordcloud-content">
+    <h2>
+        <button class="mod-wordcloud-fs-btn btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}" onclick="$.mod_wordcloud_fs_toggle()">
+            <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
+        </button>
+        {{wordcloudname}}
+    </h2>
+    <div id="mod-wordcloud-div" class="container m-auto">
+        {{#writeaccess}}
+        <div class="mod-wordcloud-header row">
+            <div class="col-md-10 col-xs-12">
+                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word()">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
+            </div>
         </div>
-        <div class="col-md-2 col-xs-12">
-            <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word()">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
+        {{/writeaccess}}
+        <div id="mod-wordcloud-words-box" class="row">
+            {{{cloudhtml}}}
         </div>
-    </div>
-    {{/writeaccess}}
-    <div id="mod-wordcloud-words-box" class="row">
-        {{{cloudhtml}}}
     </div>
 </div>
 <br>
