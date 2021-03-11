@@ -24,12 +24,10 @@
     }
 }}
 <div id="mod-wordcloud-content">
-    <h2>
-        <button class="mod-wordcloud-fs-btn btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}" onclick="$.mod_wordcloud_fs_toggle()">
-            <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
-        </button>
-        {{wordcloudname}}
-    </h2>
+    <h2><button class="mod-wordcloud-fs-btn btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}" onclick="$.mod_wordcloud_fs_toggle()">
+        <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
+    </button>
+    {{wordcloudname}}</h2>
     <div id="mod-wordcloud-div" class="container m-auto">
         {{#writeaccess}}
         <div class="mod-wordcloud-header row">
