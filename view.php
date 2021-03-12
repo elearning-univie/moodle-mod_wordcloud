@@ -57,7 +57,7 @@ if (trim(strip_tags($wordcloud->intro))) {
 }
 $wordcloudconfig = get_config('wordcloud');
 
-$templatecontext['wordcloudname'] = $wordcloud->name;
+$templatecontext['wordcloudname'] = '<h2>' . $wordcloud->name . '</h2>';
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
