@@ -67,3 +67,6 @@
     background-color: white;
 }
 
+.mod-wordcloud-heading.col-md-auto {
+    padding-left: 0px;
+}
