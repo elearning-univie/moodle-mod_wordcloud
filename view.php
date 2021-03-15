@@ -47,14 +47,6 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-echo $OUTPUT->header();
-
-if (trim(strip_tags($wordcloud->intro))) {
-    $formatoptions = new stdClass();
-    $formatoptions->noclean = true;
-    echo $OUTPUT->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
-            'generalbox', 'intro');
-}
 $wordcloudconfig = get_config('wordcloud');
 
 $templatecontext['wordcloudname'] = $wordcloud->name;
@@ -70,5 +62,14 @@ if (has_capability('mod/wordcloud:submit', $context)) {
 
 $renderer = $PAGE->get_renderer('core');
 
+echo $renderer->header();
+
+if (trim(strip_tags($wordcloud->intro))) {
+    $formatoptions = new stdClass();
+    $formatoptions->noclean = true;
+    $templatecontext['intro'] = $renderer->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
+            'generalbox', 'intro');
+}
+
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
-echo $OUTPUT->footer();
+echo $renderer->footer();
