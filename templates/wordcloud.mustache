@@ -28,9 +28,9 @@
         <div class="container">
             <div class="row mb-3">
                 <div class="col-md-auto">
-                    <section>
+                    {{#wordcloudname}}
                         <h2>{{wordcloudname}}</h2>
-                    </section>
+                    {{/wordcloudname}}
                 </div>
                 <div class="col">
                     <button class="mod-wordcloud-fs-btn btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}" onclick="$.mod_wordcloud_fs_toggle()">
