@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021031000;
+$plugin->version = 2021031100;
 $plugin->requires = 2019111800;
 $plugin->release = 'v1.0.0';
 $plugin->component = 'mod_wordcloud';

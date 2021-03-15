@@ -63,6 +63,7 @@
     text-align: center;
 }
 
-.mod-wordcloud-fs-btn {
-    float: right;
+#mod-wordcloud-content:fullscreen {
+    background-color: white;
 }
+

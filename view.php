@@ -48,7 +48,6 @@ $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($wordcloud->name);
 
 if (trim(strip_tags($wordcloud->intro))) {
     $formatoptions = new stdClass();
@@ -58,6 +57,7 @@ if (trim(strip_tags($wordcloud->intro))) {
 }
 $wordcloudconfig = get_config('wordcloud');
 
+$templatecontext['wordcloudname'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
