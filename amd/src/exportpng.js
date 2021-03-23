@@ -14,3 +14,11 @@ export const exportpng = () => {
         window.open(base64image , "_blank");
     });
 };
+
+export const showTheThing = thingToShow => {
+// Load the module for this thing.
+    import(local_examples/local/types/type_${thingToShow.modname}).then(thingModule => {
+        window.console.log(The ${thingToShow.modname} is now available under thingModule within this scope);
+        return thingModule;
+    });
+};
