@@ -43,7 +43,12 @@ class restore_wordcloud_activity_structure_step extends restore_activity_structu
 
         $paths = array();
         $paths[] = new restore_path_element('wordcloud', '/activity/wordcloud');
-        $paths[] = new restore_path_element('wordcloudmap', '/activity/wordcloud/wordcloudmap');
+
+        $userinfo = $this->get_setting_value('userinfo');
+
+        if ($userinfo) {
+            $paths[] = new restore_path_element('wordcloudmap', '/activity/wordcloud/wordcloudmap');
+        }
 
         return $this->prepare_activity_structure($paths);
     }

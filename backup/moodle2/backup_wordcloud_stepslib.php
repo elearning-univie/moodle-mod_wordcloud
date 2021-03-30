@@ -41,14 +41,19 @@ class backup_wordcloud_activity_structure_step extends backup_activity_structure
      */
     protected function define_structure() {
 
+        $userinfo = $this->get_setting_value('userinfo');
+
         $wordcloud = new backup_nested_element('wordcloud', array('id'),
                 array('course', 'name', 'intro', 'introformat', 'timecreated', 'timemodified'));
-        $wordcloudmap = new backup_nested_element('wordcloudmap', array('id'), array('wordcloudid', 'word', 'count'));
-
-        $wordcloud->add_child($wordcloudmap);
 
         $wordcloud->set_source_table('wordcloud', array('id' => backup::VAR_ACTIVITYID));
-        $wordcloudmap->set_source_table('wordcloud_map', array('wordcloudid' => backup::VAR_PARENTID));
+
+        if ($userinfo) {
+            $wordcloudmap = new backup_nested_element('wordcloudmap', array('id'), array('wordcloudid', 'word', 'count'));
+
+            $wordcloud->add_child($wordcloudmap);
+            $wordcloudmap->set_source_table('wordcloud_map', array('wordcloudid' => backup::VAR_PARENTID));
+        }
 
         $wordcloud->annotate_files('mod_wordcloud', 'intro', null);
         return $this->prepare_activity_structure($wordcloud);
