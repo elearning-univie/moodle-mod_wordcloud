@@ -71,6 +71,7 @@ if (trim(strip_tags($wordcloud->intro))) {
             'generalbox', 'intro');
 }
 
+$PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng','init', null);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $renderer->footer();
