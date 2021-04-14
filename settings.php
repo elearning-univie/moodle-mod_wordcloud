@@ -32,7 +32,7 @@ if ($ADMIN->fulltree) {
 
     $colors = ['0063A6', '11897A', '94C154', 'F6A800', 'DD4814', 'A71C49'];
 
-    for ($i = 1; $i <= 6; $i++) {
+    for ($i = 1; $i <= count($colors); $i++) {
         $settingname = 'wordcloud/fontcolor' . $i;
         $visiblename = get_string('fontcolor', 'wordcloud', $i);
         $description = get_string('fontcolordesc', 'wordcloud', $i);

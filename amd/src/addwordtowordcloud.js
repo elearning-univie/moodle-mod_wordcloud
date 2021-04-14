@@ -52,7 +52,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                 var stylerules = '';
                 var editCSS = document.createElement('style');
 
-                for (var i = 1; i <= 6; i++) {
+                for (var i = 1; i <= colors.length; i++) {
                     stylerules += '.mod-wordcloud-w' + i + ' {color: #' + colors[i-1] + ';} \n';
                 }
 
