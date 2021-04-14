@@ -60,12 +60,13 @@ $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
 if (has_capability('mod/wordcloud:submit', $context)) {
-    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time(), $colors]);
+    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
     $templatecontext['writeaccess'] = true;
 } else {
     $templatecontext['writeaccess'] = false;
 }
 
+$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->header();

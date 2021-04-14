@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/str'],
     function ($, ajax, notification, ModalFactory, str) {
         return {
-            init: function (refreshtime, aid, timestamphtml, colors) {
+            init: function (refreshtime, aid, timestamphtml) {
                 $('#mod-wordcloud-new-word').keypress(function (e) {
                     // filter enter key to auto commit the word
                     if (e.keyCode === 13) {
@@ -48,16 +48,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                         fail: notification.exception
                     }]);
                 },refreshtime*1000);
-
-                var stylerules = '';
-                var editCSS = document.createElement('style');
-
-                for (var i = 1; i <= colors.length; i++) {
-                    stylerules += '.mod-wordcloud-w' + i + ' {color: #' + colors[i-1] + ';} \n';
-                }
-
-                editCSS.innerHTML = stylerules;
-                document.body.appendChild(editCSS);
             }
         };
     });
