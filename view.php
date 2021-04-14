@@ -49,7 +49,7 @@ $PAGE->set_heading($course->shortname);
 
 $wordcloudconfig = get_config('wordcloud');
 
-for ($i = 1; $i<=6; $i++) {
+for ($i = 1; $i <= 6; $i++) {
     $fontcolor = 'fontcolor' . $i;
     $colors[] = $wordcloudconfig->$fontcolor;
 }
