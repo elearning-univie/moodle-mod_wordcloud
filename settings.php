@@ -36,6 +36,6 @@ if ($ADMIN->fulltree) {
         $settingname = 'wordcloud/fontcolor' . $i;
         $visiblename = get_string('fontcolor', 'wordcloud', $i);
         $description = get_string('fontcolordesc', 'wordcloud', $i);
-        $settings->add(new admin_setting_configtext($settingname, $visiblename, $description, $colors[$i-1], PARAM_ALPHANUM));
+        $settings->add(new admin_setting_configtext($settingname, $visiblename, $description, $colors[$i - 1], PARAM_ALPHANUM));
     }
 }
