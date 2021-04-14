@@ -29,4 +29,13 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
         get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
+
+    $colors = ['0063A6', '11897A', '94C154', 'F6A800', 'DD4814', 'A71C49'];
+
+    for ($i = 1; $i <= count($colors); $i++) {
+        $settingname = 'wordcloud/fontcolor' . $i;
+        $visiblename = get_string('fontcolor', 'wordcloud', $i);
+        $description = get_string('fontcolordesc', 'wordcloud', $i);
+        $settings->add(new admin_setting_configtext($settingname, $visiblename, $description, $colors[$i - 1], PARAM_ALPHANUM));
+    }
 }

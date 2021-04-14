@@ -49,12 +49,18 @@ $PAGE->set_heading($course->shortname);
 
 $wordcloudconfig = get_config('wordcloud');
 
+// 1 to 6 to match the wordcloud text css classes.
+for ($i = 1; $i <= 6; $i++) {
+    $fontcolor = 'fontcolor' . $i;
+    $colors[] = $wordcloudconfig->$fontcolor;
+}
+
 $templatecontext['wordcloudname'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 
 if (has_capability('mod/wordcloud:submit', $context)) {
-    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
+    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time(), $colors]);
     $templatecontext['writeaccess'] = true;
 } else {
     $templatecontext['writeaccess'] = false;
