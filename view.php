@@ -58,6 +58,7 @@ for ($i = 1; $i <= 6; $i++) {
 $templatecontext['wordcloudname'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
+$templatecontext['colors'] = $colors;
 
 if (has_capability('mod/wordcloud:submit', $context)) {
     $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
@@ -66,7 +67,6 @@ if (has_capability('mod/wordcloud:submit', $context)) {
     $templatecontext['writeaccess'] = false;
 }
 
-$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->header();
@@ -78,5 +78,6 @@ if (trim(strip_tags($wordcloud->intro))) {
             'generalbox', 'intro');
 }
 
+$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $renderer->footer();
