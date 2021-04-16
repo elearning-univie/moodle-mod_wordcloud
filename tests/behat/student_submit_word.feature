@@ -1,4 +1,4 @@
-@mod @mod_wordcloud @amc
+@mod @mod_wordcloud
 
 Feature: As a student I can add words to a wordcloud
 
