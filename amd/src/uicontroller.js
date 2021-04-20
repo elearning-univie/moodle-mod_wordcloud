@@ -22,7 +22,7 @@ export const init = colors => {
         }
 
         editCSS.innerHTML = stylerules;
-        document.body.appendChild(editCSS);
+        document.head.appendChild(editCSS);
     }
 
     var fs_btn = document.getElementById('mod-wordcloud-fs-btn');
