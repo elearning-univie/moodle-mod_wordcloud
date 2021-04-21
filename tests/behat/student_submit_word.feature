@@ -1,4 +1,4 @@
-@mod @mod_wordcloud @amc
+@mod @mod_wordcloud
 
 Feature: As a student I can add words to a wordcloud
 
@@ -19,11 +19,11 @@ Feature: As a student I can add words to a wordcloud
     And I add a "Wordcloud" to section "1" and I fill the form with:
       | Wordcloud activity name | Test wordcloud |
     And I log out
-    Then I log in as "student"
 
   @javascript
   Scenario: I submit a word to a wordcloud as a student
-    Given I am on "Course 1" course homepage
+    Given I log in as "student"
+    And I am on "Course 1" course homepage
     And I follow "Test wordcloud"
     And I set the field "mod-wordcloud-new-word" to "ääääääääääääääääääääääääääääääääääääääää"
     And I press "mod-wordcloud-btn"
