@@ -27,9 +27,3 @@ Feature: As a teacher I want to export the wordcloud
     When I am on the "C1" "Course" page
     And I follow "Test wordcloud"
     Then following "Export CSV" should download between "80" and "110" bytes
-
-  @javascript
-  Scenario: Export wordcloud as png
-    When I am on the "C1" "Course" page
-    And I follow "Test wordcloud"
-    Then following "Export PNG" should download between "1000" and "2000" bytes
