@@ -4,9 +4,9 @@ Feature: As a teacher I want to export the wordcloud
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname | email               |
-      | teacher  | John   | Doe  | teacher@example.com |
-      | student  | Derpina   | Knowsalot  | student@example.com |
+      | username | firstname | lastname  | email               |
+      | teacher  | John      | Doe       | teacher@example.com |
+      | student  | Derpina   | Knowsalot | student@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
@@ -25,11 +25,11 @@ Feature: As a teacher I want to export the wordcloud
   @javascript
   Scenario: Export wordcloud as csv
     When I am on the "C1" "Course" page
-     And I follow "Test wordcloud"
+    And I follow "Test wordcloud"
     Then following "Export CSV" should download between "80" and "110" bytes
 
   @javascript
   Scenario: Export wordcloud as png
     When I am on the "C1" "Course" page
-     And I follow "Test wordcloud"
+    And I follow "Test wordcloud"
     Then following "Export PNG" should download between "1000" and "2000" bytes
