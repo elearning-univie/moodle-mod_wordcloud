@@ -26,6 +26,7 @@ $string['count'] = 'Anzahl';
 $string['errorwordoverflow'] = 'Eingabe ist zu lang!';
 $string['errortoomanywords'] = 'Maximale Anzahl an Wörtern erreicht!';
 $string['exportcsv'] = 'Export als CSV';
+$string['exportpng'] = 'Export als PNG';
 $string['fontcolor'] = 'Textfarbe {$a}';
 $string['fontcolordesc'] = 'Setzen Sie hiermit die Textfarbe {$a}. Farbwerte müssen als Hexcode angegeben werden. Die Wörter werden nur gefärbt wenn alle Textfarben gesetzt sind.';
 $string['fullscreen'] = 'Vollbild';

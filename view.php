@@ -79,5 +79,7 @@ if (trim(strip_tags($wordcloud->intro))) {
 }
 
 $PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
+$PAGE->requires->js_call_amd('mod_wordcloud/config');
+$PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $renderer->footer();
