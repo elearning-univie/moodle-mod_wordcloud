@@ -67,6 +67,15 @@ if (has_capability('mod/wordcloud:submit', $context)) {
     $templatecontext['writeaccess'] = false;
 }
 
+$params = array(
+        'objectid' => $cm->id,
+        'context' => $context
+);
+
+$event = \mod_wordcloud\event\course_module_viewed::create($params);
+$event->add_record_snapshot('wordcloud', $wordcloud);
+$event->trigger();
+
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->header();
