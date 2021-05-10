@@ -15,20 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
+ * The mod_wordcloud course module viewed event class.
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
- *
- * @package   mod_wordcloud
- * @copyright 2020 University of Vienna
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_wordcloud
+ * @copyright  2021 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_wordcloud\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021042202;
-$plugin->requires = 2019111800;
-$plugin->release = 'v1.0.0';
-$plugin->component = 'mod_wordcloud';
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * The mod_wordcloud course module viewed event class.
+ *
+ * @package    mod_wordcloud
+ * @copyright  2021 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_viewed extends \core\event\course_module_viewed {
+    /**
+     * Init method.
+     */
+    protected function init() {
+        $this->data['objecttable'] = 'wordcloud';
+        parent::init();
+    }
+}
