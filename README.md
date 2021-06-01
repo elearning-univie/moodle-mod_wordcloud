@@ -1,11 +1,11 @@
 Wordcloud Module
 ==========================
 
-*Author:*    Adrian Czermak, Angela Baier, Thomas Wedekind
+*Author:* Adrian Czermak, Angela Baier, Thomas Wedekind
 
-*Copyright:* 2021 [University of Vienna](https://www.univie.ac.at/)
+*Copyright:* 2020 [University of Vienna](https://www.univie.ac.at/)
 
-*License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
+*License:* [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
 
 Description
@@ -15,8 +15,7 @@ Desc
 
 Requirements
 ------------
-The plugin/s were available including core patches for Moodle 3.10+.  
-This core patch free version is for Moodle 3.11.
+The plugin is available for Moodle 3.10+.
 
 
 Installation
@@ -38,6 +37,17 @@ Admin Settings
 
 * Textcolor 1 (... to 6)  
   Desc
+
+
+Documentation
+-------------
+You can find further information to the plugin on the [Github wiki](https://github.com/elearning-univie/moodle-mod_wordcloud/wiki/)
+
+
+Third-party Libraries
+---------------------
+This plugin uses the following third-party libraries:
+* JavaScript HTML renderer from [html2canvas](https://github.com/niklasvh/html2canvas)
 
 
 Bug Reports / Support
