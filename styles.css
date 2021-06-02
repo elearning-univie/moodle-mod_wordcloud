@@ -20,7 +20,7 @@
     width: 100%;
 }
 
-.path-mod-wordcloud .header {
+.path-mod-wordcloud .wordcloud-header {
     background-color: #e5e5e5;
     padding: 1em;
 }
@@ -58,7 +58,7 @@
     font-size: 48px;
 }
 
-.path-mod-wordcloud .export {
+.path-mod-wordcloud .wordcloud-export {
     display: block;
     text-align: center;
 }

@@ -10,7 +10,7 @@ Wordcloud Module
 
 Description
 -----------
-Desc
+With the wordcloud activity, it is possible to collect terms together with your course participants in a brainstorming process and to display them graphically in order of frequency. This can be used, for example, to capture a picture of the mood or to create a basis for a discussion.
 
 
 Requirements
