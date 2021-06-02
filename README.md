@@ -44,10 +44,10 @@ The font colors of the wordcloud are also adjustable in the settings.
 _Site administration -> Plugins -> Activity modules -> Wordcloud_
 
 * Refresh time (wordcloud | refresh)  
-  auto refresh interval in seconds
+  Auto refresh interval in seconds.
 
-* Textcolor 1 to 6 (wordcloud | fontcolor1)  
-  Textcolor for font size 1 to 6. Colors are set as RGB hexcode.
+* Textcolor 1 to 6 (wordcloud | fontcolor1 ... fontcolor6)  
+  Textcolor for font size 1 to 6. Colors are set as hexcode.
 
 
 Documentation
