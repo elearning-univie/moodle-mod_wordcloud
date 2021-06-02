@@ -21,14 +21,17 @@
  * See https://docs.moodle.org/dev/version.php for more info.
  *
  * @package   mod_wordcloud
+ * @author    Adrian Czermak
+ * @author    Angela Baier
+ * @author    Thomas Wedekind
  * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021051000;
-$plugin->requires = 2019111800;
-$plugin->release = 'v1.0.0';
+$plugin->version = 2021060200;
+$plugin->requires = 2021051700;
+$plugin->release = 'v3.11.0';
 $plugin->component = 'mod_wordcloud';
 $plugin->maturity = MATURITY_STABLE;

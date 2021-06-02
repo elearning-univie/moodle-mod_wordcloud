@@ -54,8 +54,8 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
         } else {
             $weight = 1;
         }
-        $fontsize = 'mod-wordcloud-w' . $weight;
-        $cloudhtml .= '<span class="mod_wordcloud_word mod-wordcloud-center ' . $fontsize . '"
+        $fontsize = 'w' . $weight;
+        $cloudhtml .= '<span class="word center ' . $fontsize . '"
                 title="' . $row->count . '">' . $row->word . '</span>';
     }
     return $cloudhtml;

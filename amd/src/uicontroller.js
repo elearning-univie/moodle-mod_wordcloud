@@ -18,7 +18,7 @@ export const init = colors => {
         }
 
         for (let i = 1; i <= colors.length; i++) {
-            stylerules += '.mod-wordcloud-w' + i + ' {color: #' + colors[i - 1] + ';} \n';
+            stylerules += '.path-mod-wordcloud .w' + i + ' {color: #' + colors[i - 1] + ';} \n';
         }
 
         editCSS.innerHTML = stylerules;
