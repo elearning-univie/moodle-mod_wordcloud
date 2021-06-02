@@ -13,6 +13,13 @@ Description
 With the wordcloud activity, it is possible to collect terms together with your course participants in a brainstorming process and to display them graphically in order of frequency. This can be used, for example, to capture a picture of the mood or to create a basis for a discussion.
 
 
+Examples
+--------
+* Use the Wordcloud as an introduction to a new topic.
+* Query the prior knowledge of your students.
+* Get a mood picture on a topic.
+
+
 Requirements
 ------------
 The plugin is available for Moodle 3.10+.
@@ -31,12 +38,16 @@ Installation
 
 Admin Settings
 --------------
-### Global Settings
-* Refresh time  
-  Desc
+An administrator can adjust the instance wide refresh time for the wordcloud, which sets the interval on how often the client ask the server if there is a change to a specific wordcloud. 
+The font colors of the wordcloud are also adjustable in the settings.
 
-* Textcolor 1 (... to 6)  
-  Desc
+_Site administration -> Plugins -> Activity modules -> Wordcloud_
+
+* Refresh time (wordcloud | refresh)  
+  auto refresh interval in seconds
+
+* Textcolor 1 to 6 (wordcloud | fontcolor1)  
+  Textcolor for font size 1 to 6. Colors are set as RGB hexcode.
 
 
 Documentation
