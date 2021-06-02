@@ -25,8 +25,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    require_once($CFG->dirroot.'/mod/wordcloud/lib.php');
-
     $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
         get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
 
