@@ -21,6 +21,9 @@
  * See https://docs.moodle.org/dev/version.php for more info.
  *
  * @package   mod_wordcloud
+ * @author    Adrian Czermak
+ * @author    Angela Baier
+ * @author    Thomas Wedekind
  * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
