@@ -63,5 +63,22 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021020401, 'wordcloud');
     }
 
+    if ($oldversion < 2021120900) {
+        $table = new xmldb_table('wordcloud');
+        $field = new xmldb_field('timeopen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('timeclose', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2021120900, 'wordcloud');
+    }
+
     return true;
 }
