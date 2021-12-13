@@ -22,6 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['activityopen'] = 'Open the wordcloud';
+$string['activityclose'] = 'Close the wordcloud';
+$string['activityopenclose'] = 'Open and close dates';
+$string['activityopenclose_help'] = 'Students can only enter words between the open and the close time.';
+$string['close'] = 'Closes: ';
 $string['count'] = 'Count';
 $string['errorwordoverflow'] = 'New entry is too long!';
 $string['errortoomanywords'] = 'Max amount of words reached!';
@@ -33,6 +38,7 @@ $string['fullscreen'] = 'Fullscreen';
 $string['modulename'] = 'Wordcloud';
 $string['modulename_help'] = 'This module allows teachers to visualize a list of tags as a word cloud. The importance of a tag is shown with fontsize, according to the number of mentions.';
 $string['modulenameplural'] = 'Wordclouds';
+$string['open'] = 'Opens: ';
 $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
 $string['pluginname'] = 'Wordcloud';
@@ -41,6 +47,7 @@ $string['refreshtime'] = 'Refresh time';
 $string['refreshtimedesc'] = 'Set the auto refresh interval time in seconds';
 $string['submitbtn'] = 'Submit';
 $string['textbox'] = 'Add a word here...';
+$string['timing'] = 'Timing';
 $string['warning'] = 'Warning';
 $string['word'] = 'Word';
 $string['wordcloudname'] = 'Wordcloud activity name';

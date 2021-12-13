@@ -84,6 +84,14 @@ class mod_wordcloud_external extends external_api {
         require_login($course, false, $cm);
         require_capability('mod/wordcloud:submit', $context);
 
+        $wordcloud = $DB->get_record('wordcloud', array('id' => $params['aid']));
+        $time = time();
+        $timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
+
+        if (!($time >= $wordcloud->timeopen && $time <= $timeclose)) {
+            return ['cloudhtml' => '', 'warnings' => $warnings];
+        }
+
         $params['word'] = trim($params['word']);
 
         if (mb_strlen($params['word'], 'UTF-8') > WORDCLOUD_WORD_LENGTH) {

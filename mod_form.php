@@ -36,6 +36,8 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_wordcloud_mod_form extends moodleform_mod {
+    /** @var array options to be used with date_time_selector fields in the quiz. */
+    public static $datefieldoptions = array('optional' => true);
 
     /**
      * definition
@@ -49,6 +51,14 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
 
         $this->standard_intro_elements();
+
+        $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
+        $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
+            self::$datefieldoptions);
+        $mform->addHelpButton('timeopen', 'activityopenclose', 'wordcloud');
+        $mform->addElement('date_time_selector', 'timeclose', get_string('activityclose', 'wordcloud'),
+            self::$datefieldoptions);
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }

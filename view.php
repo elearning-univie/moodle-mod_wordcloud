@@ -27,6 +27,8 @@ require_once(__DIR__ . '/locallib.php');
 
 global $PAGE, $OUTPUT, $DB;
 
+use \core_privacy\local\request\transform;
+
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
 
@@ -55,12 +57,20 @@ for ($i = 1; $i <= 6; $i++) {
     $colors[] = $wordcloudconfig->$fontcolor;
 }
 
+$time = time();
+$timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
+if ($wordcloud->timeopen || $wordcloud->timeclose) {
+    $templatecontext['timeopen'] = $wordcloud->timeopen ? transform::datetime($wordcloud->timeopen) : null;
+    $templatecontext['timeclose'] = $wordcloud->timeclose ? transform::datetime($wordcloud->timeclose) : null;
+    $templatecontext['timing'] = 1;
+}
+
 $templatecontext['wordcloudname'] = $wordcloud->name;
 $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
 $templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 $templatecontext['colors'] = $colors;
 
-if (has_capability('mod/wordcloud:submit', $context)) {
+if (has_capability('mod/wordcloud:submit', $context) && ($time >= $wordcloud->timeopen && $time <= $timeclose)) {
     $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
     $templatecontext['writeaccess'] = true;
 } else {
@@ -77,7 +87,6 @@ $event->add_record_snapshot('wordcloud', $wordcloud);
 $event->trigger();
 
 $renderer = $PAGE->get_renderer('core');
-
 echo $renderer->header();
 
 if (trim(strip_tags($wordcloud->intro))) {
