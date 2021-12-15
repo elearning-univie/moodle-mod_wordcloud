@@ -28,6 +28,12 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
         get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
 
+    $settings->add(new admin_setting_configtext('wordcloud/divergentcolor1', get_string('divergentcolor1', 'wordcloud'),
+        get_string('divergentcolor1desc', 'wordcloud'), '000BAD', PARAM_ALPHANUM));
+
+    $settings->add(new admin_setting_configtext('wordcloud/divergentcolor2', get_string('divergentcolor2', 'wordcloud'),
+        get_string('divergentcolor2desc', 'wordcloud'), 'AD8A00', PARAM_ALPHANUM));
+
     $colors = ['0063A6', '11897A', '94C154', 'F6A800', 'DD4814', 'A71C49'];
 
     for ($i = 1; $i <= count($colors); $i++) {
