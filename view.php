@@ -95,8 +95,11 @@ if (trim(strip_tags($wordcloud->intro))) {
     $templatecontext['intro'] = $renderer->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
             'generalbox', 'intro');
 }
+print_object($colors);
+$colors2 = ['#000BAD', '#AD8A00'];
+print_object($colors2);
 
-$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
+$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors2]);
 $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
