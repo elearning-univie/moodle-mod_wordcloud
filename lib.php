@@ -88,5 +88,9 @@ function wordcloud_update_instance($wordcloud) {
     $wordcloud->timemodified = time();
     $wordcloud->id = $wordcloud->instance;
 
+    if (!property_exists($wordcloud, 'usedivcolor') || !$wordcloud->usedivcolor) {
+        $wordcloud->usedivcolor = 0;
+    }
+
     return $DB->update_record('wordcloud', $wordcloud);
 }

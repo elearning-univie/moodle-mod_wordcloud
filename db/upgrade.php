@@ -80,5 +80,16 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021120900, 'wordcloud');
     }
 
+    if ($oldversion < 2021121500) {
+        $table = new xmldb_table('wordcloud');
+        $field = new xmldb_field('usedivcolor', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2021121500, 'wordcloud');
+    }
+
     return true;
 }

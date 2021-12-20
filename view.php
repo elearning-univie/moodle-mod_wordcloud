@@ -51,10 +51,15 @@ $PAGE->set_heading($course->shortname);
 
 $wordcloudconfig = get_config('wordcloud');
 
-// 1 to 6 to match the wordcloud text css classes.
-for ($i = 1; $i <= 6; $i++) {
-    $fontcolor = 'fontcolor' . $i;
-    $colors[] = $wordcloudconfig->$fontcolor;
+if ($wordcloud->usedivcolor) {
+    $colors[] = '#' . $wordcloudconfig->divcolor1;
+    $colors[] = '#' . $wordcloudconfig->divcolor2;
+} else {
+    // 1 to 6 to match the wordcloud text css classes.
+    for ($i = 1; $i <= 6; $i++) {
+        $fontcolor = 'fontcolor' . $i;
+        $colors[] = $wordcloudconfig->$fontcolor;
+    }
 }
 
 $time = time();
