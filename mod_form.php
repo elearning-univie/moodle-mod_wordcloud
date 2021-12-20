@@ -52,6 +52,9 @@ class mod_wordcloud_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements();
 
+        $mform->addElement('checkbox', 'usedivcolor', get_string('usedivcolor', 'wordcloud'));
+        $mform->addHelpButton('usedivcolor', 'usedivcolor', 'wordcloud');
+
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
         $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
             self::$datefieldoptions);

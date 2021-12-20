@@ -33,10 +33,10 @@ const mod_wordcloud_hex_to_hsl = (color) => {
 };
 
 export const init = colors => {
-    if (colors.length == 6) {
-        var stylerules = '';
-        var editCSS = document.createElement('style');
+    var stylerules = '';
+    var editCSS = document.createElement('style');
 
+    if (colors.length == 6) {
         for (let i = colors.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [colors[i], colors[j]] = [colors[j], colors[i]];
@@ -49,22 +49,25 @@ export const init = colors => {
         editCSS.innerHTML = stylerules;
         document.head.appendChild(editCSS);
     } else if (colors.length == 2) {
-        var stylerules = '';
-        var editCSS = document.createElement('style');
-        var j = 0;
-        stylerules += '.path-mod-wordcloud .w3 {color: hsl(0, 0%, 95%);} \n';
+        var invert = true;
 
         for (let i = 0; i < colors.length; i++) {
             var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[i]);
 
-            if (l >= 90) {
+            if (l >= 80) {
                 l = 10;
             }
 
-            var nextstep = Math.round((90 - l) / 3);
+            var nextstep = Math.round((80 - l) / 2);
+            var j = invert ? 0 : 7;
 
-            stylerules += '.path-mod-wordcloud .w' + j + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
-            stylerules += '.path-mod-wordcloud .w' + (j+1) + ' {color: hsl(' + h + ', ' + s + '%, ' + (l + nextstep) + '%);} \n';
+            while (j != 3 && j != 4) {
+                j = invert ? j + 1 : j - 1;
+                stylerules += '.path-mod-wordcloud .w' + j + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
+                l = l + nextstep;
+            }
+
+            invert = false;
         }
 
         editCSS.innerHTML = stylerules;

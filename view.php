@@ -51,10 +51,15 @@ $PAGE->set_heading($course->shortname);
 
 $wordcloudconfig = get_config('wordcloud');
 
-// 1 to 6 to match the wordcloud text css classes.
-for ($i = 1; $i <= 6; $i++) {
-    $fontcolor = 'fontcolor' . $i;
-    $colors[] = $wordcloudconfig->$fontcolor;
+if ($wordcloud->usedivcolor) {
+    $colors[] = '#' . $wordcloudconfig->divcolor1;
+    $colors[] = '#' . $wordcloudconfig->divcolor2;
+} else {
+    // 1 to 6 to match the wordcloud text css classes.
+    for ($i = 1; $i <= 6; $i++) {
+        $fontcolor = 'fontcolor' . $i;
+        $colors[] = $wordcloudconfig->$fontcolor;
+    }
 }
 
 $time = time();
@@ -95,11 +100,8 @@ if (trim(strip_tags($wordcloud->intro))) {
     $templatecontext['intro'] = $renderer->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
             'generalbox', 'intro');
 }
-print_object($colors);
-$colors2 = ['#000BAD', '#AD8A00'];
-print_object($colors2);
 
-$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors2]);
+$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
 $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
