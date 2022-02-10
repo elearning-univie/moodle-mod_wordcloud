@@ -64,6 +64,22 @@ class mod_wordcloud_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function update_entry_parameters() {
+        return new external_function_parameters(
+            array(
+                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+                'wordid' => new external_value(PARAM_INT, 'id of the word to change'),
+                'newword' => new external_value(PARAM_TEXT, 'new word to change to'),
+                'newcount' => new external_value(PARAM_INT, 'new word count to change to')
+            )
+        );
+    }
+
+    /**
      * Add a new word or increase the count of the word
      *
      * @param int $aid
@@ -159,6 +175,53 @@ class mod_wordcloud_external extends external_api {
     }
 
     /**
+     * Add a new word or increase the count of the word
+     *
+     * @param int $aid
+     * @param int $wordid
+     * @param string $newword
+     * @param int $newcount
+     * @return array
+     */
+    public static function update_entry($aid, $wordid, $newword, $newcount) {
+        global $DB;
+
+        $warnings = [];
+
+        $params = self::validate_parameters(self::update_entry_parameters(),
+            array('aid' => $aid, 'wordid' => $wordid, 'newword' => $newword, 'newcount' => $newcount));
+        $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $context = context_module::instance($cm->id);
+
+        self::validate_context($context);
+        require_login($course, false, $cm);
+        require_capability('mod/wordcloud:editentry', $context);
+
+        $params['newword'] = trim($params['newword']);
+
+        if (mb_strlen($params['newword'], 'UTF-8') > WORDCLOUD_WORD_LENGTH) {
+            $warnings[] = [
+                'warningcode' => 'errorwordoverflow',
+                'message' => get_string('errorwordoverflow', 'mod_wordcloud')
+            ];
+            return ['success' => false, 'warnings' => $warnings];
+        } else if (strlen($params['newword']) == 0) {
+            return ['success' => false, 'warnings' => $warnings];
+        }
+
+        $record = $DB->get_record('wordcloud_map', ['id' => $params['wordid']]);
+
+        if ($record) {
+            $record->word = $params['newword'];
+            $record->count = $params['newcount'];
+            $DB->update_record('wordcloud_map', $record);
+        }
+
+        return ['success' => true, 'warnings' => $warnings];
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
@@ -180,6 +243,18 @@ class mod_wordcloud_external extends external_api {
                 'cloudhtml' => new external_value(PARAM_RAW, 'wordcloud html code'),
                 'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
                 'warnings' => new external_warnings()
+        ));
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function update_entry_returns() {
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful, false otherwise'),
+            'warnings' => new external_warnings()
         ));
     }
 }

@@ -71,3 +71,50 @@
 .path-mod-wordcloud .heading.col-md-auto {
     padding-left: 0;
 }
+
+.path-mod-wordcloud .success {
+    color: green;
+    opacity: 0;
+}
+
+.path-mod-wordcloud .fade {
+    animation-name: mod-wordcloud-fade-effect;
+    animation-duration: 4s;
+}
+
+@keyframes mod-wordcloud-fade-effect {
+    0% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.path-mod-wordcloud th.remove,
+.path-mod-wordcloud td.remove,
+.path-mod-wordcloud th.save,
+.path-mod-wordcloud td.save {
+    width: 10%;
+    text-align: center;
+}
+
+.path-mod-wordcloud th.count,
+.path-mod-wordcloud td.count {
+    width: 20%;
+    text-align: center;
+}
+
+.path-mod-wordcloud th.word,
+.path-mod-wordcloud td.word {
+    width: 40%;
+    text-align: center;
+}
+
+.path-mod-wordcloud .tablewidth {
+    max-width: 1024px;
+    margin: auto;
+}

@@ -82,6 +82,10 @@ if (has_capability('mod/wordcloud:submit', $context) && ($time >= $wordcloud->ti
     $templatecontext['writeaccess'] = false;
 }
 
+if (has_capability('mod/wordcloud:editentry', $context)) {
+    $templatecontext['editlink'] = new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]);
+}
+
 $params = array(
         'objectid' => $cm->id,
         'context' => $context
