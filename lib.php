@@ -94,3 +94,37 @@ function wordcloud_update_instance($wordcloud) {
 
     return $DB->update_record('wordcloud', $wordcloud);
 }
+
+/**
+ * Add a get_coursemodule_info function in case any wordcloud type wants to add 'extra' information
+ * for the course (see resource).
+ *
+ * Given a course_module object, this function returns any "extra" information that may be needed
+ * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
+ *
+ * @param stdClass $coursemodule The coursemodule object (record).
+ * @return cached_cm_info An object on information that the courses
+ *                        will know about (most noticeably, an icon).
+ */
+function wordcloud_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    $dbparams = array('id' => $coursemodule->instance);
+    $fields = 'id, course, name, timeopen, timeclose';
+    if (! $wordcloud = $DB->get_record('wordcloud', $dbparams, $fields)) {
+        return false;
+    }
+
+    $result = new cached_cm_info();
+    $result->name = $wordcloud->name;
+
+    // Populate some other values that can be used in calendar or on dashboard.
+    if ($wordcloud->timeopen) {
+        $result->customdata['timeopen'] = $wordcloud->timeopen;
+    }
+    if ($wordcloud->timeclose) {
+        $result->customdata['timeclose'] = $wordcloud->timeclose;
+    }
+
+    return $result;
+}
