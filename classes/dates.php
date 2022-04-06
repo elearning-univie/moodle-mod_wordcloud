@@ -42,10 +42,8 @@ class dates extends activity_dates {
      * @return array
      */
     protected function get_dates(): array {
-        global $DB;
-
-        $timeopen = $this->cm->customdata['timeopen'];
-        $timeclose = $this->cm->customdata['timeclose'];
+        $timeopen = $this->cm->customdata['timeopen'] ?? null;
+        $timeclose = $this->cm->customdata['timeclose'] ?? null;
 
         $now = time();
         $dates = [];
