@@ -27,8 +27,6 @@ require_once(__DIR__ . '/locallib.php');
 
 global $PAGE, $OUTPUT, $DB;
 
-use \core_privacy\local\request\transform;
-
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
 
@@ -51,9 +49,8 @@ $PAGE->set_heading($course->shortname);
 
 $wordcloudconfig = get_config('wordcloud');
 
-if ($wordcloud->usedivcolor) {
-    $colors[] = '#' . $wordcloudconfig->divcolor1;
-    $colors[] = '#' . $wordcloudconfig->divcolor2;
+if ($wordcloud->usemonocolor) {
+    $colors[] = '#' . $wordcloudconfig->monocolor;
 } else {
     // 1 to 6 to match the wordcloud text css classes.
     for ($i = 1; $i <= 6; $i++) {
@@ -62,24 +59,21 @@ if ($wordcloud->usedivcolor) {
     }
 }
 
-$time = time();
-$timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
-if ($wordcloud->timeopen || $wordcloud->timeclose) {
-    $templatecontext['timeopen'] = $wordcloud->timeopen ? transform::datetime($wordcloud->timeopen) : null;
-    $templatecontext['timeclose'] = $wordcloud->timeclose ? transform::datetime($wordcloud->timeclose) : null;
-    $templatecontext['timing'] = 1;
-}
+$cansubmit = mod_wordcloud_can_submit($wordcloud, $context);
 
-$templatecontext['wordcloudname'] = $wordcloud->name;
-$templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id);
-$templatecontext['exportlink'] = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
-$templatecontext['colors'] = $colors;
+$templatecontext = [
+    'timeopen' => $cansubmit['timeopen'],
+    'timeclose' => $cansubmit['timeclose'],
+    'timing' => $cansubmit['timing'],
+    'writeaccess' => $cansubmit['writeaccess'],
+    'wordcloudname' => $wordcloud->name,
+    'cloudhtml' => mod_wordcloud_get_cloudhtml($wordcloud->id),
+    'exportlink' => new moodle_url("/mod/wordcloud/export.php", ['id' => $id]),
+    'colors' => $colors
+];
 
-if (has_capability('mod/wordcloud:submit', $context) && ($time >= $wordcloud->timeopen && $time <= $timeclose)) {
+if ($cansubmit['writeaccess']) {
     $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
-    $templatecontext['writeaccess'] = true;
-} else {
-    $templatecontext['writeaccess'] = false;
 }
 
 if (has_capability('mod/wordcloud:editentry', $context)) {

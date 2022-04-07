@@ -1,0 +1,32 @@
+.w1 {
+    font-size: 18px;
+}
+
+.w2 {
+    font-size: 24px;
+}
+
+.w3 {
+    font-size: 30px;
+}
+
+.w4 {
+    font-size: 36px;
+}
+
+.w5 {
+    font-size: 42px;
+}
+
+.w6 {
+    font-size: 48px;
+}
+
+.word {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+#mod-wordcloud-words-box {
+    width: 100%;
+}
