@@ -27,6 +27,8 @@ define('WORDCLOUD_WORD_LENGTH', 40);
 define('WORDCLOUD_MAX_WORDS', 128);
 define('WORDCLOUD_MAX_TIME', 2147483647);
 
+use \core_privacy\local\request\transform;
+
 /**
  * creates the wordcloud html
  *
@@ -86,4 +88,34 @@ function mod_wordcloud_download_csv($wordcloudid) {
         $csvexport->add_data([$word, $record->count]);
     }
     $csvexport->download_file();
+}
+
+/**
+ * Check if user con submit a word
+ *
+ * @param object $wordcloud
+ * @param object $context
+ * @return array
+ * @throws coding_exception
+ */
+function mod_wordcloud_can_submit($wordcloud, $context) {
+    $time = time();
+    $timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
+
+    $result = [
+        'timeopen' => $wordcloud->timeopen ? transform::datetime($wordcloud->timeopen) : null,
+        'timeclose' => $wordcloud->timeclose ? transform::datetime($wordcloud->timeclose) : null,
+        'timing' => null
+    ];
+
+    if ($wordcloud->timeopen || $wordcloud->timeclose) {
+        $result['timing'] = 1;
+    }
+
+    if (has_capability('mod/wordcloud:submit', $context) && ($time >= $wordcloud->timeopen && $time <= $timeclose)) {
+        $result['writeaccess'] = true;
+    } else {
+        $result['writeaccess'] = false;
+    }
+    return $result;
 }

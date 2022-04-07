@@ -1,0 +1,44 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_wordcloud/mobile_view_page
+    This template renders the mobile page.
+
+    Example context (json):
+    {
+    }
+}}
+{{=<% %>=}}
+<core-course-module-description description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>"></core-course-module-description>
+<%# timing %>
+<ion-item padding-top="1em">
+    <%# timeopen %>{{ 'plugin.mod_wordcloud.open' | translate }}<% timeopen %><br/><%/ timeopen %>
+    <%# timeclose %>{{ 'plugin.mod_wordcloud.close' | translate }}<% timeclose %><%/ timeclose %>
+</ion-item>
+<%/ timing %>
+<%# writeaccess %>
+<ion-item padding-top="1em">
+    <ion-input placeholder="{{ 'plugin.mod_wordcloud.textbox' | translate }}" maxlength="40" [(ngModel)]="CONTENT_OTHERDATA.word"></ion-input>
+    <ion-button core-site-plugins-call-ws
+          name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word}"
+          [preSets]="{getFromCache: 0, saveToCache: 0}" confirmMessage
+          [useOtherData]="['userid']" (onSuccess)="addWordCallDone($event)">
+       {{ 'plugin.mod_wordcloud.submitbtn' | translate }}
+    </ion-button>
+</ion-item>
+<%/ writeaccess %>
+<br>
+<ion-item padding>
+    <div id="mod-wordcloud-words-box"></div>
+</ion-item>

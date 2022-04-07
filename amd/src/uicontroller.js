@@ -45,34 +45,20 @@ export const init = colors => {
         for (let i = 1; i <= colors.length; i++) {
             stylerules += '.path-mod-wordcloud .w' + i + ' {color: #' + colors[i - 1] + ';} \n';
         }
+    } else if (colors.length == 1) {
+        var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[0]);
+        var nextstep = 10;
 
-        editCSS.innerHTML = stylerules;
-        document.head.appendChild(editCSS);
-    } else if (colors.length == 2) {
-        var invert = true;
+        l = 80;
 
-        for (let i = 0; i < colors.length; i++) {
-            var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[i]);
-
-            if (l >= 80) {
-                l = 10;
-            }
-
-            var nextstep = Math.round((80 - l) / 2);
-            var j = invert ? 0 : 7;
-
-            while (j != 3 && j != 4) {
-                j = invert ? j + 1 : j - 1;
-                stylerules += '.path-mod-wordcloud .w' + j + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
-                l = l + nextstep;
-            }
-
-            invert = false;
+        for (let i = 1; i < 7; i++) {
+            stylerules += '.path-mod-wordcloud .w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
+            l = l - nextstep;
         }
-
-        editCSS.innerHTML = stylerules;
-        document.head.appendChild(editCSS);
     }
+
+    editCSS.innerHTML = stylerules;
+    document.head.appendChild(editCSS);
 
     var fs_btn = document.getElementById('mod-wordcloud-fs-btn');
 

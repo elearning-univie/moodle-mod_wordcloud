@@ -42,7 +42,8 @@ $functions = array(
         'description' => 'Update question progress of a student',
         'type' => 'write',
         'ajax' => true,
-        'loginrequired' => true
+        'loginrequired' => true,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'mod_wordcloud_get_words' => array(
         'classname' => 'mod_wordcloud_external',

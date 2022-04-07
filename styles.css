@@ -1,6 +1,4 @@
 .path-mod-wordcloud #mod-wordcloud-div {
-    background-color: #f3f3f3;
-    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -13,6 +11,8 @@
 }
 
 .path-mod-wordcloud #mod-wordcloud-words-box {
+    border: 1px solid #e5e5e5;
+    border-radius: 0 0 5px 5px;
     padding: 1em;
 }
 
@@ -22,6 +22,8 @@
 
 .path-mod-wordcloud .wordcloud-header {
     background-color: #e5e5e5;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px 5px 0 0;
     padding: 1em;
 }
 
