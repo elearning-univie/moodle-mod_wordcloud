@@ -91,7 +91,7 @@ function mod_wordcloud_download_csv($wordcloudid) {
 }
 
 /**
- * Check if user con submit a word
+ * Check if user is allowed to submit a word
  *
  * @param object $wordcloud
  * @param object $context

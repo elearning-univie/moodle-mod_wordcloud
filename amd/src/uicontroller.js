@@ -47,9 +47,9 @@ export const init = colors => {
         }
     } else if (colors.length == 1) {
         var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[0]);
-        var nextstep = 10;
+        var nextstep = 8;
 
-        l = 80;
+        l = 70;
 
         for (let i = 1; i < 7; i++) {
             stylerules += '.path-mod-wordcloud .w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';

@@ -67,9 +67,13 @@ class mobile {
 
         $cansubmit = mod_wordcloud_can_submit($wordcloud, $context);
 
-        for ($i = 1; $i <= 6; $i++) {
-            $fontcolor = 'fontcolor' . $i;
-            $colors .= '.w' . $i . ' {color: #' . $wordcloudconfig->$fontcolor . ';} ';
+        if ($wordcloud->usemonocolor) {
+            $colors = '#' . $wordcloudconfig->monocolor;
+        } else {
+            for ($i = 1; $i <= 6; $i++) {
+                $fontcolor = 'fontcolor' . $i;
+                $colors .= '.w' . $i . ' {color: #' . $wordcloudconfig->$fontcolor . ';} ';
+            }
         }
 
         $data = [

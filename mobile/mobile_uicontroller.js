@@ -22,17 +22,59 @@
 
 var that = this;
 
+function mod_wordcloud_hex_to_hsl(color) {
+    var [r, g, b] = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b)
+        .substring(1).match(/.{2}/g).map(x => parseInt(x, 16));
+
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if (max == min) {
+        h = s = 0;
+    } else {
+        var d = (max - min);
+        s = l >= 0.5 ? d / (2 - (max + min)) : d / (max + min);
+        switch (max) {
+            case r: h = ((g - b) / d + 0)*60; break;
+            case g: h = ((b - r) / d + 2)*60; break;
+            case b: h = ((r - g) / d + 4)*60; break;
+        }
+    }
+    return [Math.round(h), Math.round(s*100), Math.round(l*100)];
+};
+
 (function() {
     var editCSS = document.createElement('style');
 
-    editCSS.innerHTML = that.CONTENT_OTHERDATA.colors;
-    document.head.appendChild(editCSS);
+    if (that.CONTENT_OTHERDATA.colors.charAt(0) == '#') {
+        var [h, s, l] = mod_wordcloud_hex_to_hsl(that.CONTENT_OTHERDATA.colors);
+        var stylerules = '';
+        var nextstep = 8;
+
+        l = 70;
+
+        for (let i = 1; i < 7; i++) {
+            stylerules += '.w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
+            l = l - nextstep;
+        }
+        editCSS.innerHTML = stylerules;
+        document.head.appendChild(editCSS);
+    } else {
+        editCSS.innerHTML = that.CONTENT_OTHERDATA.colors;
+        document.head.appendChild(editCSS);
+    }
+    setTimeout(function() {
+        document.getElementById('mod-wordcloud-words-box').innerHTML = that.CONTENT_OTHERDATA.cloudhtml;
+    });
 })();
 
-that.ionViewDidEnter = function () {
-    document.getElementById('mod-wordcloud-words-box').innerHTML = that.CONTENT_OTHERDATA.cloudhtml;
-};
-
-that.addWordCallDone = function (response) {
-    document.getElementById('mod-wordcloud-words-box').innerHTML = response.cloudhtml;
+that.addWordCallDone = function(response) {
+    if (response.cloudhtml) {
+        document.getElementById('mod-wordcloud-words-box').innerHTML = response.cloudhtml;
+    }
+    document.getElementById('mod-wordcloud-new-word').value = '';
 };

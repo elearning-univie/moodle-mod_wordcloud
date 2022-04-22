@@ -1,6 +1,13 @@
 CHANGELOG
 =========
-
+3.11.1
+------------------
+* Added moodle mobile app support
+* Added edit entry page to customize entries
+* Added a second color scheme (monochrome color scheme)
+* Added timing display in course view
+* Removed the background color of the wordcloud
+* Last version with Moodle 3.10 support
 
 3.11.0
 ------------------

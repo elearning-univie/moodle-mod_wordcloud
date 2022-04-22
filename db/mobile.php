@@ -35,14 +35,15 @@ $addons = [
                 ],
                 'styles' => [
                     'url' => $CFG->wwwroot . '/mod/wordcloud/mobile/mobile_styles.css',
-                    'version' => '3.2'
-                ]
+                    'version' => '1.0'
+                ],
             ],
         ],
         'lang' => [
             ['close', 'wordcloud'],
             ['open', 'wordcloud'],
             ['pluginname', 'wordcloud'],
+            ['refreshtext', 'wordcloud'],
             ['submitbtn', 'wordcloud'],
             ['textbox', 'wordcloud']
         ],
