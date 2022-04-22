@@ -25,8 +25,9 @@
 .word {
     padding-left: 0.5em;
     padding-right: 0.5em;
+    white-space: nowrap;
 }
 
-#mod-wordcloud-words-box {
-    width: 100%;
+.center {
+    text-align: center;
 }

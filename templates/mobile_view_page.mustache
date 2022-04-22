@@ -20,25 +20,29 @@
     }
 }}
 {{=<% %>=}}
-<core-course-module-description description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>"></core-course-module-description>
 <%# timing %>
 <ion-item padding-top="1em">
     <%# timeopen %>{{ 'plugin.mod_wordcloud.open' | translate }}<% timeopen %><br/><%/ timeopen %>
     <%# timeclose %>{{ 'plugin.mod_wordcloud.close' | translate }}<% timeclose %><%/ timeclose %>
 </ion-item>
 <%/ timing %>
-<%# writeaccess %>
-<ion-item padding-top="1em">
-    <ion-input placeholder="{{ 'plugin.mod_wordcloud.textbox' | translate }}" maxlength="40" [(ngModel)]="CONTENT_OTHERDATA.word"></ion-input>
-    <ion-button core-site-plugins-call-ws
-          name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word}"
-          [preSets]="{getFromCache: 0, saveToCache: 0}" confirmMessage
-          [useOtherData]="['userid']" (onSuccess)="addWordCallDone($event)">
-       {{ 'plugin.mod_wordcloud.submitbtn' | translate }}
-    </ion-button>
-</ion-item>
-<%/ writeaccess %>
-<br>
-<ion-item padding>
-    <div id="mod-wordcloud-words-box"></div>
-</ion-item>
+<core-course-module-description description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>"></core-course-module-description>
+<ion-card>
+    <%# writeaccess %>
+    <ion-item padding-top="1em">
+        <ion-input id="mod-wordcloud-new-word" placeholder="{{ 'plugin.mod_wordcloud.textbox' | translate }}" maxlength="40" [(ngModel)]="CONTENT_OTHERDATA.word"></ion-input>
+        <ion-button core-site-plugins-call-ws
+                    name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word}"
+                    [preSets]="{getFromCache: 0, saveToCache: 0}" confirmMessage
+                    [useOtherData]="['userid']" (onSuccess)="addWordCallDone($event)">
+            {{ 'plugin.mod_wordcloud.submitbtn' | translate }}
+        </ion-button>
+    </ion-item>
+    <%/ writeaccess %>
+    <ion-card-content>
+        <div id="mod-wordcloud-words-box"></div>
+    </ion-card-content>
+</ion-card>
+<div class="center">
+    {{ 'plugin.mod_wordcloud.refreshtext' | translate }}
+</div>

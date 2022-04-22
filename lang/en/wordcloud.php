@@ -61,3 +61,4 @@ $string['wordcloud:addinstance'] = 'Create wordcloud activity';
 $string['wordcloud:editentry'] = 'Edit words';
 $string['wordcloud:submit'] = 'Submit new words';
 $string['wordcloud:view'] = 'View the wordcloud';
+$string['refreshtext'] = 'Refresh the page to get the latest wordcloud content';
