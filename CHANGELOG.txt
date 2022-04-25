@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+3.11.2
+------------------
+* Fixed lang string for remove button
+
 3.11.1
 ------------------
 * Added moodle mobile app support
