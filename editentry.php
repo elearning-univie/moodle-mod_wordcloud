@@ -67,7 +67,7 @@ if ($deleteselected) {
         $deleteurl = new moodle_url('/mod/wordcloud/editentry.php',
             array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
 
-        $continue = new \single_button($deleteurl, get_string('removeflashcard', 'mod_flashcards'), 'post');
+        $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
         $word = '<strong>' . $DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected]) . '</strong>';
 
         echo $OUTPUT->header();
