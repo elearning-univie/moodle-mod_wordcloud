@@ -67,10 +67,25 @@ $templatecontext = [
     'timing' => $cansubmit['timing'],
     'writeaccess' => $cansubmit['writeaccess'],
     'wordcloudname' => $wordcloud->name,
-    'cloudhtml' => mod_wordcloud_get_cloudhtml($wordcloud->id),
     'exportlink' => new moodle_url("/mod/wordcloud/export.php", ['id' => $id]),
     'colors' => $colors
 ];
+
+if (groups_get_activity_groupmode($cm)) {
+    $groupid = groups_get_activity_group($cm, true);
+    if ($groupid === 0) {
+        $templatecontext['writeaccess'] = false;
+        $templatecontext['cloudhtml'] = '';
+    } else {
+        $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupid);
+    }
+    if (!groups_is_member($groupid)) {
+        $templatecontext['writeaccess'] = false;
+    }
+} else {
+    $groupid = 0;
+    $templatecontext['cloudhtml'] = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupid);
+}
 
 if ($cansubmit['writeaccess']) {
     $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
@@ -78,6 +93,7 @@ if ($cansubmit['writeaccess']) {
 
 if (has_capability('mod/wordcloud:editentry', $context)) {
     $templatecontext['editlink'] = new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]);
+    $templatecontext['writeaccess'] = true;
 }
 
 $params = array(
@@ -91,6 +107,9 @@ $event->trigger();
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->header();
+
+$groupselecturl = new moodle_url('/mod/wordcloud/view.php', ['id' => $cm->id]);
+groups_print_activity_menu($cm, $groupselecturl);
 
 if (trim(strip_tags($wordcloud->intro))) {
     $formatoptions = new stdClass();

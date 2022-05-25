@@ -33,10 +33,11 @@ use \core_privacy\local\request\transform;
  * creates the wordcloud html
  *
  * @param int $wordcloudid
+ * @param int $groupid
  * @return string
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid) {
+function mod_wordcloud_get_cloudhtml($wordcloudid, $groupid) {
     global $DB;
 
     $sql = 'SELECT min(count) as mincount, max(count) as maxcount
@@ -44,7 +45,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid) {
              WHERE wordcloudid = :wordcloudid';
     $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
 
-    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid], 'id');
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
     $cloudhtml = '';
 
     // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
