@@ -100,6 +100,15 @@ class mod_wordcloud_external extends external_api {
         require_login($course, false, $cm);
         require_capability('mod/wordcloud:submit', $context);
 
+        if (groups_get_activity_groupmode($cm)) {
+            $groupid = groups_get_activity_group($cm);
+            if ($groupid === 0) {
+                return ['cloudhtml' => '', 'warnings' => $warnings];
+            }
+        } else {
+            $groupid = 0;
+        }
+
         $wordcloud = $DB->get_record('wordcloud', array('id' => $params['aid']));
         $time = time();
         $timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
@@ -120,10 +129,11 @@ class mod_wordcloud_external extends external_api {
             return ['cloudhtml' => '', 'warnings' => $warnings];
         }
 
-        $record = $DB->get_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word']]);
+        $record = $DB->get_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'groupid' => $groupid,
+            'word' => $params['word']]);
 
         if (!$record) {
-            $wordscount = $DB->count_records('wordcloud_map', ['wordcloudid' => $params['aid']]);
+            $wordscount = $DB->count_records('wordcloud_map', ['wordcloudid' => $params['aid'], 'groupid' => $groupid]);
 
             if ($wordscount > WORDCLOUD_MAX_WORDS) {
                 $warnings[] = [
@@ -133,14 +143,15 @@ class mod_wordcloud_external extends external_api {
                 return ['cloudhtml' => '', 'warnings' => $warnings];
             }
 
-            $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'word' => $params['word'], 'count' => 1]);
+            $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'groupid' => $groupid,
+                'word' => $params['word'], 'count' => 1]);
         } else {
             $record->count++;
             $DB->update_record('wordcloud_map', $record);
         }
 
         $DB->set_field('wordcloud', 'lastwordchange', time(), ['id' => $params['aid']]);
-        return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid']), 'warnings' => $warnings];
+        return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid'], $groupid), 'warnings' => $warnings];
     }
 
     /**
@@ -164,10 +175,12 @@ class mod_wordcloud_external extends external_api {
         require_login($course, false, $cm);
         require_capability('mod/wordcloud:view', $context);
 
+        $groupid = groups_get_activity_group($cm);
+
         $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
 
         if ($record->lastwordchange > $timestamphtml) {
-            return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid']), 'timestamphtml' => $record->lastwordchange,
+            return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid'], $groupid), 'timestamphtml' => $record->lastwordchange,
                     'warnings' => $warnings];
         }
 

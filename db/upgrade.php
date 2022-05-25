@@ -98,5 +98,22 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022033101, 'wordcloud');
     }
 
+    if ($oldversion < 2022051802) {
+        $table = new xmldb_table('wordcloud_map');
+        $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $key = new xmldb_key('uk_word', 'unique', ['wordcloudid', 'word']);
+        $dbman->drop_key($table, $key);
+
+        $key = new xmldb_key('uk_word', 'unique', ['wordcloudid', 'groupid', 'word']);
+        $dbman->add_key($table, $key);
+
+        upgrade_mod_savepoint(true, 2022051802, 'wordcloud');
+    }
+
     return true;
 }
