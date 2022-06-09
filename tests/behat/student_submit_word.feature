@@ -22,9 +22,7 @@ Feature: As a student I can add words to a wordcloud
 
   @javascript
   Scenario: I submit a word to a wordcloud as a student
-    Given I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test wordcloud"
+    Given I am on the "Test wordcloud" "wordcloud activity" page logged in as "student"
     And I set the field "mod-wordcloud-new-word" to "ääääääääääääääääääääääääääääääääääääääää"
     And I press "mod-wordcloud-btn"
     Then I should see "ääääääääääääääääääääääääääääääääääääääää"

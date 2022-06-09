@@ -18,12 +18,11 @@ Feature: As a teacher I want to export the wordcloud
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Wordcloud" to section "1" and I fill the form with:
       | Wordcloud activity name | Test wordcloud |
-    And I follow "Test wordcloud"
+    And I am on the "Test wordcloud" "wordcloud activity" page
     And I set the field "mod-wordcloud-new-word" to "ääääääääääääääääääääääääääääääääääääääää"
     And I press "mod-wordcloud-btn"
 
   @javascript
   Scenario: Export wordcloud as csv
-    When I am on the "C1" "Course" page
-    And I follow "Test wordcloud"
+    When I am on the "Test wordcloud" "wordcloud activity" page
     Then following "Export CSV" should download between "80" and "110" bytes

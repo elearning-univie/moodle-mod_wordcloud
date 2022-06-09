@@ -33,19 +33,39 @@ use \core_privacy\local\request\transform;
  * creates the wordcloud html
  *
  * @param int $wordcloudid
+ * @param int $groupmode
  * @param int $groupid
  * @return string
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid, $groupid) {
+function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0) {
     global $DB;
 
-    $sql = 'SELECT min(count) as mincount, max(count) as maxcount
-              FROM {wordcloud_map}
-             WHERE wordcloudid = :wordcloudid';
-    $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
+    if ($groupmode && $groupid === 0) {
+        $sql = 'SELECT word, sum(count) AS count
+                  FROM {wordcloud_map}
+                 WHERE wordcloudid = :wordcloudid
+                   AND groupid != 0
+              GROUP BY word';
+        $records = $DB->get_records_sql($sql, ['wordcloudid' => $wordcloudid]);
 
-    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
+        $sql = 'SELECT min(count) AS mincount, max(count) AS maxcount
+              FROM (SELECT word, sum(count) AS count
+                      FROM {wordcloud_map}
+                     WHERE wordcloudid = :wordcloudid
+                       AND groupid != 0
+                  GROUP BY word) AS subq';
+        $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
+    } else {
+        $sql = 'SELECT min(count) AS mincount, max(count) AS maxcount
+                  FROM {wordcloud_map}
+                 WHERE wordcloudid = :wordcloudid
+                   AND groupid = :groupid';
+        $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
+
+        $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
+    }
+
     $cloudhtml = '';
 
     // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
@@ -69,14 +89,15 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupid) {
  * Download the wordcloud as csv file
  *
  * @param int $wordcloudid
+ * @param int $groupid
  * @throws coding_exception
  * @throws dml_exception
  */
-function mod_wordcloud_download_csv($wordcloudid) {
+function mod_wordcloud_download_csv($wordcloudid, $groupid = 0) {
     global $DB, $CFG;
     require_once($CFG->libdir . '/csvlib.class.php');
 
-    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid]);
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
 
     $csvexport = new csv_export_writer('semicolon');
     $filename = get_string('pluginname', 'mod_wordcloud');
@@ -96,10 +117,11 @@ function mod_wordcloud_download_csv($wordcloudid) {
  *
  * @param object $wordcloud
  * @param object $context
+ * @param int $groupid
  * @return array
  * @throws coding_exception
  */
-function mod_wordcloud_can_submit($wordcloud, $context) {
+function mod_wordcloud_can_submit($wordcloud, $context, $groupid = null) {
     $time = time();
     $timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
 
@@ -113,10 +135,22 @@ function mod_wordcloud_can_submit($wordcloud, $context) {
         $result['timing'] = 1;
     }
 
+    $result['writeaccess'] = false;
+
     if (has_capability('mod/wordcloud:submit', $context) && ($time >= $wordcloud->timeopen && $time <= $timeclose)) {
-        $result['writeaccess'] = true;
-    } else {
-        $result['writeaccess'] = false;
+        $cm = get_coursemodule_from_instance('wordcloud', $wordcloud->id, 0, false, MUST_EXIST);
+        $groupmode = groups_get_activity_groupmode($cm);
+        if ($groupmode) {
+            if (!isset($groupid)) {
+                $groupid = groups_get_activity_group($cm, true);
+            }
+            if ($groupid !== 0 && (has_capability('mod/wordcloud:editentry', $context) || groups_is_member($groupid))) {
+                $result['writeaccess'] = true;
+            }
+        } else {
+            $result['writeaccess'] = true;
+        }
     }
+
     return $result;
 }

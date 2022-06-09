@@ -15,8 +15,27 @@
     @template mod_wordcloud/mobile_view_page
     This template renders the mobile page.
 
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * groups
+    * group
+    * word
+
     Example context (json):
     {
+        "cmid": "25",
+        "courseid": "2",
+        "wordcloud": {
+            "id": "1",
+            "course": "2",
+            "name": "wordcloud",
+            "intro": "wordcloud"
+        }
     }
 }}
 {{=<% %>=}}
@@ -27,12 +46,22 @@
 </ion-item>
 <%/ timing %>
 <core-course-module-description description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>"></core-course-module-description>
+<%# showgroups %>
+<ion-item>
+    <ion-label>{{ 'plugin.mod_wordcloud.selectagroup' | translate }}</ion-label>
+    <ion-select name="group" [(ngModel)]="CONTENT_OTHERDATA.group" (ionChange)="updateContent({cmid: <% cmid %>, courseid: <% wordcloud.course %>, group: CONTENT_OTHERDATA.group})" interface="popover">
+        <%# groups %>
+            <ion-select-option [value]="<% id %>"><% name %></ion-select-option>
+        <%/ groups %>
+    </ion-select>
+</ion-item>
+<%/ showgroups %>
 <ion-card>
     <%# writeaccess %>
     <ion-item padding-top="1em">
         <ion-input id="mod-wordcloud-new-word" placeholder="{{ 'plugin.mod_wordcloud.textbox' | translate }}" maxlength="40" [(ngModel)]="CONTENT_OTHERDATA.word"></ion-input>
         <ion-button core-site-plugins-call-ws
-                    name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word}"
+                    name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word, groupid: CONTENT_OTHERDATA.group}"
                     [preSets]="{getFromCache: 0, saveToCache: 0}" confirmMessage
                     [useOtherData]="['userid']" (onSuccess)="addWordCallDone($event)">
             {{ 'plugin.mod_wordcloud.submitbtn' | translate }}
