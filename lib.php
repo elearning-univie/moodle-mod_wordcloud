@@ -42,6 +42,8 @@ function wordcloud_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_COLLABORATION;
         default:
             return null;
     }
@@ -114,13 +116,17 @@ function wordcloud_get_coursemodule_info($coursemodule) {
     global $DB;
 
     $dbparams = array('id' => $coursemodule->instance);
-    $fields = 'id, course, name, timeopen, timeclose';
+    $fields = 'id, course, name, intro, introformat, timeopen, timeclose';
     if (! $wordcloud = $DB->get_record('wordcloud', $dbparams, $fields)) {
         return false;
     }
 
     $result = new cached_cm_info();
     $result->name = $wordcloud->name;
+
+    if ($coursemodule->showdescription) {
+        $result->content = format_module_intro('wordcloud', $wordcloud, $coursemodule->id, false);
+    }
 
     // Populate some other values that can be used in calendar or on dashboard.
     if ($wordcloud->timeopen) {

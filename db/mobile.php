@@ -44,6 +44,7 @@ $addons = [
             ['open', 'wordcloud'],
             ['pluginname', 'wordcloud'],
             ['refreshtext', 'wordcloud'],
+            ['selectagroup', 'moodle'],
             ['submitbtn', 'wordcloud'],
             ['textbox', 'wordcloud']
         ],

@@ -60,12 +60,18 @@ class mobile {
             require_capability('mod/wordcloud:manage', $context);
         }
 
+        $groupid = empty($args->group) ? 0 : $args->group;
+        if ($groupmode = groups_get_activity_groupmode($cm)) {
+            $groups = self::get_groups($context, $cm, $groupmode, $groupid);
+        }
+
+        $moodle4 = ($CFG->version >= 2022041900) ? true : false;
         $wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
-        $cloudhtml = mod_wordcloud_get_cloudhtml($wordcloud->id);
+        $cloudhtml = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid);
         $wordcloudconfig = get_config('wordcloud');
         $colors = '';
 
-        $cansubmit = mod_wordcloud_can_submit($wordcloud, $context);
+        $cansubmit = mod_wordcloud_can_submit($wordcloud, $groupmode, $groupid);
 
         if ($wordcloud->usemonocolor) {
             $colors = '#' . $wordcloudconfig->monocolor;
@@ -82,8 +88,14 @@ class mobile {
             'writeaccess' => $cansubmit['writeaccess'],
             'timing' => $cansubmit['timing'],
             'timeopen' => $cansubmit['timeopen'],
-            'timeclose' => $cansubmit['timeclose']
+            'timeclose' => $cansubmit['timeclose'],
+            'showgroups' => !empty($groups),
+            'groups' => array_values($groups)
         ];
+
+        if ($moodle4) {
+            $data['timing'] = null;
+        }
 
         return [
             'templates' => [
@@ -93,7 +105,42 @@ class mobile {
                 ],
             ],
             'javascript' => file_get_contents($CFG->dirroot . '/mod/wordcloud/mobile/mobile_uicontroller.js'),
-            'otherdata' => ['cloudhtml' => $cloudhtml, 'word' => '', 'colors' => $colors]
+            'otherdata' => ['cloudhtml' => $cloudhtml, 'word' => '', 'colors' => $colors, 'group' => $groupid]
         ];
+    }
+
+    /**
+     * Returns an array of groups to be displayed and updates the active group in the session.
+     *
+     * @param context $context Context
+     * @param \stdClass $cm The course module
+     * @param int $groupmode The group mode
+     * @param int $groupid The group id
+     * @return array The array of groups, may be empty.
+     */
+    private static function get_groups($context, $cm, $groupmode, $groupid) {
+        global $SESSION;
+
+        $arrgroups = [];
+        if ($groups = groups_get_activity_allowed_groups($cm)) {
+            if ($groupmode == VISIBLEGROUPS || has_capability('moodle/site:accessallgroups', $context)) {
+                $allparticipants = new \stdClass();
+                $allparticipants->id = 0;
+                $allparticipants->name = get_string('allparticipants');
+                $allparticipants->selected = $groupid === 0;
+                $arrgroups[0] = $allparticipants;
+            }
+
+            if ($groups && array_key_exists($groupid, $groups)) {
+                $SESSION->activegroup[$cm->course][$groupmode][$cm->groupingid] = $groupid;
+            }
+
+            foreach ($groups as $gid => $group) {
+                $group->selected = $gid == $groupid;
+                $group->name = 'test';
+                $arrgroups[] = $group;
+            }
+        }
+        return $arrgroups;
     }
 }

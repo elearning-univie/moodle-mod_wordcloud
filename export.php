@@ -36,6 +36,7 @@ require_login($course, false, $cm);
 require_capability('mod/wordcloud:view', $context);
 
 $wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
+$groupid = groups_get_activity_groupmode($cm) ? groups_get_activity_group($cm) : 0;
 
 $PAGE->set_url(new moodle_url("/mod/wordcloud/export.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_wordcloud', navigation_node::TYPE_SETTING);
@@ -47,5 +48,5 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-mod_wordcloud_download_csv($wordcloud->id);
+mod_wordcloud_download_csv($wordcloud->id, $groupid);
 die();
