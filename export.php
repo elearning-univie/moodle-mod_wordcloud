@@ -22,8 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require_once(__DIR__ . '/lib.php');
-require_once(__DIR__ . '/locallib.php');
+require_once($CFG->libdir . '/csvlib.class.php');
 
 global $PAGE, $OUTPUT, $DB;
 
@@ -36,7 +35,8 @@ require_login($course, false, $cm);
 require_capability('mod/wordcloud:view', $context);
 
 $wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
-$groupid = groups_get_activity_groupmode($cm) ? groups_get_activity_group($cm) : 0;
+$groupmode = groups_get_activity_groupmode($cm);
+$groupid = $groupmode ? groups_get_activity_group($cm) : 0;
 
 $PAGE->set_url(new moodle_url("/mod/wordcloud/export.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_wordcloud', navigation_node::TYPE_SETTING);
@@ -48,5 +48,26 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 
-mod_wordcloud_download_csv($wordcloud->id, $groupid);
+if ($groupmode && $groupid === 0) {
+    $sql = 'SELECT word, sum(count) AS count
+              FROM {wordcloud_map}
+             WHERE wordcloudid = :wordcloudid
+               AND groupid != 0
+          GROUP BY word';
+    $records = $DB->get_records_sql($sql, ['wordcloudid' => $wordcloud->id]);
+} else {
+    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]);
+}
+
+$csvexport = new csv_export_writer('semicolon');
+$filename = get_string('pluginname', 'mod_wordcloud');
+$filename .= clean_filename('-' . gmdate("Ymd_Hi")) . '.csv';
+$csvexport->filename = $filename;
+$csvexport->add_data([get_string('word', 'mod_wordcloud'), get_string('count', 'mod_wordcloud')]);
+
+foreach ($records as $record) {
+    $word = str_replace(';', ',', $record->word);
+    $csvexport->add_data([$word, $record->count]);
+}
+$csvexport->download_file();
 die();

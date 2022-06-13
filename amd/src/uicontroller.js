@@ -49,11 +49,12 @@ export const init = colors => {
         var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[0]);
         var nextstep = 8;
 
-        l = 70;
+        l = 30;
 
         for (let i = 1; i < 7; i++) {
             stylerules += '.path-mod-wordcloud .w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
-            l = l - nextstep;
+            l = l + nextstep;
+            nextstep++;
         }
     }
 

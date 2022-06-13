@@ -86,33 +86,6 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0)
 }
 
 /**
- * Download the wordcloud as csv file
- *
- * @param int $wordcloudid
- * @param int $groupid
- * @throws coding_exception
- * @throws dml_exception
- */
-function mod_wordcloud_download_csv($wordcloudid, $groupid = 0) {
-    global $DB, $CFG;
-    require_once($CFG->libdir . '/csvlib.class.php');
-
-    $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
-
-    $csvexport = new csv_export_writer('semicolon');
-    $filename = get_string('pluginname', 'mod_wordcloud');
-    $filename .= clean_filename('-' . gmdate("Ymd_Hi")) . '.csv';
-    $csvexport->filename = $filename;
-    $csvexport->add_data([get_string('word', 'mod_wordcloud'), get_string('count', 'mod_wordcloud')]);
-
-    foreach ($records as $record) {
-        $word = str_replace(';', ',', $record->word);
-        $csvexport->add_data([$word, $record->count]);
-    }
-    $csvexport->download_file();
-}
-
-/**
  * Check if user is allowed to submit a word
  *
  * @param object $wordcloud
@@ -121,7 +94,7 @@ function mod_wordcloud_download_csv($wordcloudid, $groupid = 0) {
  * @return array
  * @throws coding_exception
  */
-function mod_wordcloud_can_submit($wordcloud, $context, $groupid = null) {
+function mod_wordcloud_can_submit($wordcloud, $context, $groupid = 0) {
     $time = time();
     $timeclose = $wordcloud->timeclose ? : WORDCLOUD_MAX_TIME;
 
@@ -141,9 +114,6 @@ function mod_wordcloud_can_submit($wordcloud, $context, $groupid = null) {
         $cm = get_coursemodule_from_instance('wordcloud', $wordcloud->id, 0, false, MUST_EXIST);
         $groupmode = groups_get_activity_groupmode($cm);
         if ($groupmode) {
-            if (!isset($groupid)) {
-                $groupid = groups_get_activity_group($cm, true);
-            }
             if ($groupid !== 0 && (has_capability('mod/wordcloud:editentry', $context) || groups_is_member($groupid))) {
                 $result['writeaccess'] = true;
             }

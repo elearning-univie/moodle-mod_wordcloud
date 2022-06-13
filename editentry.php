@@ -79,7 +79,13 @@ if ($deleteselected) {
 
 $table = new mod_wordcloud\output\editentrytable('uniqueid', $cm->id);
 
-$sqlwhere = "wordcloudid = " . $wordcloud->id;
+$groupmode = groups_get_activity_groupmode($cm);
+$groupid = $groupmode ? groups_get_activity_group($cm) : 0;
+if ($groupmode && $groupid === 0) {
+    $groupid = -1;
+}
+
+$sqlwhere = "wordcloudid = $wordcloud->id AND groupid = $groupid";
 $table->set_sql("*", "{wordcloud_map}", $sqlwhere);
 $table->define_baseurl($PAGE->url);
 
