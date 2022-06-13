@@ -51,7 +51,14 @@ $moodle4 = ($CFG->version >= 2022041900) ? true : false;
 $wordcloudconfig = get_config('wordcloud');
 
 if ($wordcloud->usemonocolor) {
-    $colors[] = '#' . $wordcloudconfig->monocolor;
+    if ($wordcloud->monocolor == 0) {
+        $colors[] = '#' . $wordcloudconfig->monocolor;
+    } else if ($wordcloud->monocolor == 7) {
+        $colors[] = '#' . $wordcloud->monocolorhex;
+    } else {
+        $fontcolor = 'fontcolor' . $wordcloud->monocolor;
+        $colors[] = '#' . $wordcloudconfig->$fontcolor;
+    }
 } else {
     // 1 to 6 to match the wordcloud text css classes.
     for ($i = 1; $i <= 6; $i++) {
@@ -60,11 +67,8 @@ if ($wordcloud->usemonocolor) {
     }
 }
 
-if ($groupmode = groups_get_activity_groupmode($cm)) {
-    $groupid = groups_get_activity_group($cm, true);
-} else {
-    $groupid = 0;
-}
+$groupmode = groups_get_activity_groupmode($cm);
+$groupid = $groupmode ? groups_get_activity_group($cm, true) : 0;
 
 $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $groupid);
 
@@ -79,9 +83,8 @@ $templatecontext = [
     'cloudhtml' => mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid)
 ];
 
-if (has_capability('mod/wordcloud:editentry', $context)) {
+if (has_capability('mod/wordcloud:editentry', $context) && !($groupmode && $groupid === 0)) {
     $templatecontext['editlink'] = new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]);
-    $templatecontext['writeaccess'] = true;
 }
 
 if ($templatecontext['writeaccess']) {
@@ -89,8 +92,8 @@ if ($templatecontext['writeaccess']) {
 }
 
 $params = array(
-        'objectid' => $cm->id,
-        'context' => $context
+    'objectid' => $cm->id,
+    'context' => $context
 );
 
 $event = \mod_wordcloud\event\course_module_viewed::create($params);

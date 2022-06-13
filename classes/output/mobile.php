@@ -71,7 +71,7 @@ class mobile {
         $wordcloudconfig = get_config('wordcloud');
         $colors = '';
 
-        $cansubmit = mod_wordcloud_can_submit($wordcloud, $groupmode, $groupid);
+        $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $groupid);
 
         if ($wordcloud->usemonocolor) {
             $colors = '#' . $wordcloudconfig->monocolor;
