@@ -24,6 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+// Backward compatibility with Moodle 3.11. Remove, when EOL.
+if (!defined('FEATURE_MOD_PURPOSE')) {
+    define('FEATURE_MOD_PURPOSE', 'mod_purpose');
+}
+if (!defined('MOD_PURPOSE_COLLABORATION')) {
+    define('MOD_PURPOSE_COLLABORATION', 'collaboration');
+}
+
 /**
  * Returns the information on whether the module supports a feature
  *

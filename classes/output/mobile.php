@@ -74,7 +74,12 @@ class mobile {
         $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $groupid);
 
         if ($wordcloud->usemonocolor) {
-            $colors = '#' . $wordcloudconfig->monocolor;
+            if ($wordcloud->monocolor == 0) {
+                $colors = '#' . $wordcloud->monocolorhex;
+            } else {
+                $fontcolor = 'fontcolor' . $wordcloud->monocolor;
+                $colors = '#' . $wordcloudconfig->$fontcolor;
+            }
         } else {
             for ($i = 1; $i <= 6; $i++) {
                 $fontcolor = 'fontcolor' . $i;
@@ -112,7 +117,7 @@ class mobile {
     /**
      * Returns an array of groups to be displayed and updates the active group in the session.
      *
-     * @param context $context Context
+     * @param \context $context Context
      * @param \stdClass $cm The course module
      * @param int $groupmode The group mode
      * @param int $groupid The group id
@@ -137,7 +142,6 @@ class mobile {
 
             foreach ($groups as $gid => $group) {
                 $group->selected = $gid == $groupid;
-                $group->name = 'test';
                 $arrgroups[] = $group;
             }
         }
