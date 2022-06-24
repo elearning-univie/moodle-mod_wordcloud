@@ -52,8 +52,6 @@ $wordcloudconfig = get_config('wordcloud');
 
 if ($wordcloud->usemonocolor) {
     if ($wordcloud->monocolor == 0) {
-        $colors[] = '#' . $wordcloudconfig->monocolor;
-    } else if ($wordcloud->monocolor == 7) {
         $colors[] = '#' . $wordcloud->monocolorhex;
     } else {
         $fontcolor = 'fontcolor' . $wordcloud->monocolor;

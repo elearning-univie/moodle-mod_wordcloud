@@ -115,5 +115,28 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022051802, 'wordcloud');
     }
 
+    if ($oldversion < 2022060300) {
+
+        // Define field monocolor to be added to wordcloud.
+        $table = new xmldb_table('wordcloud');
+        $field = new xmldb_field('monocolor', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'usemonocolor');
+
+        // Conditionally launch add field monocolor.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field monocolorhex to be added to wordcloud.
+        $field = new xmldb_field('monocolorhex', XMLDB_TYPE_CHAR, '6', null, null, null, '000000', 'monocolor');
+
+        // Conditionally launch add field monocolorhex.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Wordcloud savepoint reached.
+        upgrade_mod_savepoint(true, 2022060300, 'wordcloud');
+    }
+
     return true;
 }

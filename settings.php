@@ -28,9 +28,6 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
         get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
 
-    $settings->add(new admin_setting_configtext('wordcloud/monocolor', get_string('monocolor', 'wordcloud'),
-        get_string('monocolordesc', 'wordcloud'), '0063A6', PARAM_ALPHANUM));
-
     $colors = ['0063A6', '11897A', '94C154', 'F6A800', 'DD4814', 'A71C49'];
 
     for ($i = 1; $i <= count($colors); $i++) {

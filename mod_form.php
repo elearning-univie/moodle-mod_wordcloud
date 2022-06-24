@@ -44,6 +44,8 @@ class mod_wordcloud_mod_form extends moodleform_mod {
      * @throws coding_exception
      */
     public function definition() {
+        $wordcloudconfig = get_config('wordcloud');
+
         $mform =& $this->_form;
 
         $mform->addElement('text', 'name', get_string('wordcloudname', 'wordcloud'), array('size' => '64'));
@@ -52,8 +54,31 @@ class mod_wordcloud_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements();
 
-        $mform->addElement('checkbox', 'usemonocolor', get_string('usemonocolor', 'wordcloud'), get_string('enable'));
-        $mform->addHelpButton('usemonocolor', 'usemonocolor', 'wordcloud');
+        $mform->addElement('header', 'appearance', get_string('appearance', 'wordcloud'));
+
+        $radioscheme = array();
+        $radioscheme[] = $mform->createElement('radio', 'usemonocolor', '', get_string('usemonocolor_random', 'wordcloud'), 0);
+        $radioscheme[] = $mform->createElement('radio', 'usemonocolor', '', get_string('usemonocolor_sequential', 'wordcloud'), 1);
+        $mform->addGroup($radioscheme, 'radioscheme', get_string('usemonocolor', 'wordcloud'), array(' '), false);
+        $mform->addHelpButton('radioscheme', 'usemonocolor', 'wordcloud');
+
+        $radiocolor = array();
+        for ($i = 1; $i <= 6; $i++) {
+            $fontcolor = 'fontcolor' . $i;
+            $radiocolor[] = $mform->createElement('radio', 'monocolor', '', '<span style="color: #' . $wordcloudconfig->$fontcolor . '">⬤</span>', $i);
+        }
+        $radiocolor[] = $mform->createElement('radio', 'monocolor', '', get_string('monocolor_hex', 'wordcloud'), 0);
+        $mform->addGroup($radiocolor, 'radiocolor', get_string('monocolor', 'wordcloud'), array(' '), false);
+        $mform->setDefault('monocolor', 1);
+        $mform->hideIf('monocolor', 'usemonocolor');
+        $mform->hideIf('radiocolor', 'usemonocolor');
+        $mform->addHelpButton('radiocolor', 'monocolor', 'wordcloud');
+        $mform->addElement('text', 'monocolorhex', get_string('monocolor_hex', 'wordcloud'), array('size' => '6'));
+        $mform->setType('monocolorhex', PARAM_TEXT);
+        $mform->setDefault('monocolorhex', '000000');
+        $mform->hideIf('monocolorhex', 'monocolor', 'neq', 0);
+        $mform->hideIf('monocolorhex', 'usemonocolor');
+        $mform->addHelpButton('monocolorhex', 'monocolor_hex', 'wordcloud');
 
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
         $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
@@ -64,5 +89,21 @@ class mod_wordcloud_mod_form extends moodleform_mod {
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
+    }
+
+    /**
+     * Check if everything is correct and check also the user rights for the action;
+     *
+     * @param array $data array of ("fieldname"=>value) of submitted data
+     * @param array $files array of uploaded files "element_name"=>tmp_file_path
+     * @return array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
+     */
+    public function validation($data, $files) {
+        $errors = [];
+        if (!ctype_xdigit($data['monocolorhex']) || strlen($data['monocolorhex']) != 6) {
+            $errors['monocolorhex'] = get_string('errormonocolorhex', 'wordcloud');
+        }
+        return $errors;
     }
 }

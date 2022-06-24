@@ -55,11 +55,12 @@ function mod_wordcloud_hex_to_hsl(color) {
         var stylerules = '';
         var nextstep = 8;
 
-        l = 70;
+        l = 30;
 
         for (let i = 1; i < 7; i++) {
             stylerules += '.w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
-            l = l - nextstep;
+            l = l + nextstep;
+            nextstep++;
         }
         editCSS.innerHTML = stylerules;
         document.head.appendChild(editCSS);

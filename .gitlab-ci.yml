@@ -52,14 +52,14 @@ variables:
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat --profile chrome
 
-code_checker_pgsql:
+code_checker_pgsql_40:
   extends: .postgres
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
   variables:
     MOODLE_BRANCH: "MOODLE_400_STABLE"
 
-code_checker_mariadb:
+code_checker_mariadb_40:
   extends: .mariadb
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
