@@ -49,10 +49,14 @@ function mod_wordcloud_hex_to_hsl(color) {
 
 (function() {
     var editCSS = document.createElement('style');
+    var stylerules = '';
+
+    if (document.getElementById('mod-wordcloud-words-box').clientWidth < 450) {
+        stylerules = '#mod-wordcloud-words-box {font-size: 70%;}\n';
+    }
 
     if (that.CONTENT_OTHERDATA.colors.charAt(0) == '#') {
         var [h, s, l] = mod_wordcloud_hex_to_hsl(that.CONTENT_OTHERDATA.colors);
-        var stylerules = '';
         var nextstep = 8;
 
         l = 30;
@@ -62,12 +66,13 @@ function mod_wordcloud_hex_to_hsl(color) {
             l = l + nextstep;
             nextstep++;
         }
-        editCSS.innerHTML = stylerules;
-        document.head.appendChild(editCSS);
     } else {
-        editCSS.innerHTML = that.CONTENT_OTHERDATA.colors;
-        document.head.appendChild(editCSS);
+        stylerules += that.CONTENT_OTHERDATA.colors;
     }
+
+    editCSS.innerHTML = stylerules;
+    document.head.appendChild(editCSS);
+
     setTimeout(function() {
         document.getElementById('mod-wordcloud-words-box').innerHTML = that.CONTENT_OTHERDATA.cloudhtml;
     });

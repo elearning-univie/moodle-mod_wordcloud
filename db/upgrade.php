@@ -115,7 +115,7 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022051802, 'wordcloud');
     }
 
-    if ($oldversion < 2022060300) {
+    if ($oldversion < 2022070100) {
 
         // Define field monocolor to be added to wordcloud.
         $table = new xmldb_table('wordcloud');
@@ -135,7 +135,7 @@ function xmldb_wordcloud_upgrade($oldversion) {
         }
 
         // Wordcloud savepoint reached.
-        upgrade_mod_savepoint(true, 2022060300, 'wordcloud');
+        upgrade_mod_savepoint(true, 2022070100, 'wordcloud');
     }
 
     return true;
