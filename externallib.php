@@ -73,9 +73,15 @@ class mod_wordcloud_external extends external_api {
         return new external_function_parameters(
             array(
                 'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'wordid' => new external_value(PARAM_INT, 'id of the word to change'),
-                'newword' => new external_value(PARAM_TEXT, 'new word to change to'),
-                'newcount' => new external_value(PARAM_INT, 'new word count to change to')
+                'entry' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'wordid' => new external_value(PARAM_TEXT, 'id of the word to change'),
+                            'newword' => new external_value(PARAM_TEXT, 'new word to change to'),
+                            'newcount' => new external_value(PARAM_INT, 'new word count to change to')
+                        )
+                    )
+                )
             )
         );
     }
@@ -196,18 +202,18 @@ class mod_wordcloud_external extends external_api {
      * Add a new word or increase the count of the word
      *
      * @param int $aid
-     * @param int $wordid
-     * @param string $newword
-     * @param int $newcount
+     * @param object $entry
      * @return array
      */
-    public static function update_entry($aid, $wordid, $newword, $newcount) {
+    public static function update_entry($aid, $entry) {
         global $DB;
 
         $warnings = [];
+        $errentries = '';
+        $success = true;
 
         $params = self::validate_parameters(self::update_entry_parameters(),
-            array('aid' => $aid, 'wordid' => $wordid, 'newword' => $newword, 'newcount' => $newcount));
+            array('aid' => $aid, 'entry' => $entry));
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -223,27 +229,45 @@ class mod_wordcloud_external extends external_api {
             return ['success' => false, 'warnings' => $warnings];
         }
 
-        $params['newword'] = trim($params['newword']);
+        foreach ($params['entry'] as $updateentry) {
+            $updateentry['newword'] = trim($updateentry['newword']);
 
-        if (mb_strlen($params['newword'], 'UTF-8') > WORDCLOUD_WORD_LENGTH) {
+            if (mb_strlen($updateentry['newword'], 'UTF-8') > WORDCLOUD_WORD_LENGTH) {
+                $warnings[] = [
+                    'warningcode' => 'errorwordoverflow',
+                    'message' => get_string('errorwordoverflow', 'mod_wordcloud')
+                ];
+                $success = false;
+                continue;
+            } else if (strlen($updateentry['newword']) == 0) {
+                $success = false;
+                continue;
+            }
+
+            $record = $DB->get_record('wordcloud_map', ['id' => $updateentry['wordid'], 'groupid' => $groupid]);
+
+            if ($record) {
+                $checkrec = $DB->get_record('wordcloud_map', ['word' => $updateentry['newword'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]);
+                if ($checkrec) {
+                    if ($checkrec->id != $updateentry['wordid']) {
+                        $DB->delete_records('wordcloud_map', ['id' => $checkrec->id]);
+                        $updateentry['newcount'] = $updateentry['newcount'] + $checkrec->count;
+                    }
+                }
+                $record->word = $updateentry['newword'];
+                $record->count = $updateentry['newcount'];
+                $DB->update_record('wordcloud_map', $record);
+            }
+        }
+
+        if (!$success) {
             $warnings[] = [
                 'warningcode' => 'errorwordoverflow',
-                'message' => get_string('errorwordoverflow', 'mod_wordcloud')
+                'message' => get_string('errorupdateentries', 'mod_wordcloud') . $errentries
             ];
-            return ['success' => false, 'warnings' => $warnings];
-        } else if (strlen($params['newword']) == 0) {
-            return ['success' => false, 'warnings' => $warnings];
         }
 
-        $record = $DB->get_record('wordcloud_map', ['id' => $params['wordid'], 'groupid' => $groupid]);
-
-        if ($record) {
-            $record->word = $params['newword'];
-            $record->count = $params['newcount'];
-            $DB->update_record('wordcloud_map', $record);
-        }
-
-        return ['success' => true, 'warnings' => $warnings];
+        return ['success' => $success, 'warnings' => $warnings];
     }
 
     /**

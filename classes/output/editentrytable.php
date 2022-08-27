@@ -61,11 +61,10 @@ class editentrytable extends table_sql {
         $this->deleteicontext = get_string('remove', 'moodle');
 
         // Define the list of columns to show.
-        $columns = array('word', 'count', 'response', 'save', 'remove');
+        $columns = array('word', 'count', 'response', 'remove');
         $this->define_columns($columns);
         $this->column_class('word', 'word');
         $this->column_class('count', 'count');
-        $this->column_class('save', 'save');
         $this->column_class('remove', 'remove');
 
         // Define the titles of columns to show in header.
@@ -73,7 +72,6 @@ class editentrytable extends table_sql {
             get_string('word', 'mod_wordcloud'),
             get_string('count', 'mod_wordcloud'),
             '',
-            get_string('save'),
             get_string('remove'));
         $this->define_headers($headers);
 
@@ -82,7 +80,6 @@ class editentrytable extends table_sql {
         $this->is_downloadable(false);
 
         $this->no_sorting('response');
-        $this->no_sorting('save');
         $this->no_sorting('remove');
     }
 
@@ -94,7 +91,8 @@ class editentrytable extends table_sql {
      */
     public function col_word($values) {
         return html_writer::tag('input', null, ['id' => 'mod-wordcloud-word' . $values->id,
-            'type' => 'text', 'class' => 'form-control', 'maxlength' => '40', 'value' => $values->word]);
+            'type' => 'text', 'class' => 'form-control mod-wordcloud-edit-word', 'maxlength' => '40', 'value' => $values->word,
+            'data-word' => $values->word, 'data-id' => $values->id]);
     }
 
     /**
@@ -105,7 +103,8 @@ class editentrytable extends table_sql {
      */
     public function col_count($values) {
         return html_writer::tag('input', null, ['id' => 'mod-wordcloud-count' . $values->id,
-            'type' => 'text', 'class' => 'form-control', 'maxlength' => '10', 'value' => $values->count]);
+            'type' => 'text', 'class' => 'form-control mod-wordcloud-edit-count', 'maxlength' => '10', 'value' => $values->count,
+            'data-value' => $values->count, 'data-id' => $values->id]);
     }
 
     /**
@@ -118,17 +117,6 @@ class editentrytable extends table_sql {
         global $OUTPUT;
 
         return html_writer::div($OUTPUT->pix_icon('t/check', ''), 'success', ['id' => 'mod-wordcloud-fade-success' . $values->id]);
-    }
-
-    /**
-     * Prepares column save for display
-     *
-     * @param object $values
-     * @return string
-     */
-    public function col_save($values) {
-        return html_writer::tag('button', get_string('save', 'moodle'),
-            ['class' => 'btn btn-secondary', 'onclick' => "$.mod_wordcloud_update_entry($values->wordcloudid, $values->id);"]);
     }
 
     /**

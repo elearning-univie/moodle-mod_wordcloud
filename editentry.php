@@ -89,8 +89,15 @@ $sqlwhere = "wordcloudid = $wordcloud->id AND groupid = $groupid";
 $table->set_sql("*", "{wordcloud_map}", $sqlwhere);
 $table->define_baseurl($PAGE->url);
 
+$backurl = new moodle_url("/mod/wordcloud/view.php", $params);
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($wordcloud->name);
+echo html_writer::tag('button', get_string('save', 'moodle'),
+        ['class' => 'btn btn-secondary', 'onclick' => "$.mod_wordcloud_update_entry($wordcloud->id, '$backurl');"]);
+echo '    ';
+echo html_writer::tag('button', get_string('cancel', 'moodle'),
+    ['class' => 'btn btn-secondary', 'onclick' => "location.href='$backurl'"]);
 $PAGE->requires->js_call_amd('mod_wordcloud/editword', 'init');
 
 echo html_writer::start_div('tablewidth');
