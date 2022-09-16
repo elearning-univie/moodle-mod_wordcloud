@@ -23,9 +23,8 @@
         "exportlink": "https://csvexportlink"
     }
 }}
-
-<div class="container">
-    <div id="mod-wordcloud-content">
+<div id="mod-wordcloud-content">
+    <div class="container">
         <div class="row mb-3">
             <div class="heading col-md-auto">
                 {{#wordcloudname}}
@@ -62,6 +61,8 @@
             </div>
         </div>
     </div>
+</div>
+<div class="container">
     <div class="row wordcloud-export">
         {{#editlink}}<a class="btn btn-secondary" href="{{editlink}}">{{#str}} editentry, mod_wordcloud {{/str}}</a>{{/editlink}}
         <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
