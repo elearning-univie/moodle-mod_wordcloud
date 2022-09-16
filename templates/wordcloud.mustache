@@ -23,8 +23,9 @@
         "exportlink": "https://csvexportlink"
     }
 }}
-<div id="mod-wordcloud-content">
-    <div class="container">
+
+<div class="container">
+    <div id="mod-wordcloud-content">
         <div class="row mb-3">
             <div class="heading col-md-auto">
                 {{#wordcloudname}}
@@ -60,13 +61,13 @@
                 </div>
             </div>
         </div>
-        <div class="row wordcloud-export">
-            {{#editlink}}<a class="btn btn-secondary" href="{{editlink}}">{{#str}} editentry, mod_wordcloud {{/str}}</a>{{/editlink}}
-            <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
-            <button class="btn btn-secondary" onclick="$.mod_wordcloud_pic();">{{#str}} exportpng, mod_wordcloud {{/str}}</button>
-            <button id="mod-wordcloud-fs-btn" class="btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}">
-                <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
-            </button>
-        </div>
+    </div>
+    <div class="row wordcloud-export">
+        {{#editlink}}<a class="btn btn-secondary" href="{{editlink}}">{{#str}} editentry, mod_wordcloud {{/str}}</a>{{/editlink}}
+        <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
+        <button class="btn btn-secondary" onclick="$.mod_wordcloud_pic();">{{#str}} exportpng, mod_wordcloud {{/str}}</button>
+        <button id="mod-wordcloud-fs-btn" class="btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}">
+            <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
+        </button>
     </div>
 </div>
