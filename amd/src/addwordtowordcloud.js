@@ -30,6 +30,22 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                             } else {
                                 $('#mod-wordcloud-words-box').html(returnval.cloudhtml);
                                 $('#mod-wordcloud-new-word').val('');
+
+                                var wb = document.getElementById('mod-wordcloud-div');
+                                var divheight = wb.offsetHeight;
+                                var newwidth = 0;
+                                if (divheight < 300) {
+                                    newwidth = 60;
+                                } else if (divheight < 500) {
+                                    newwidth = 70;
+                                } else if (divheight < 700) {
+                                    newwidth = 80;
+                                } else {
+                                    newwidth = 100;
+                                }
+                                if (newwidth > parseInt(wb.style.width) && window.innerWidth > 900) {
+                                    wb.style.width = newwidth + "%";
+                                }
                             }
                         },
                         fail: notification.exception
@@ -43,6 +59,21 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/modal_factory', 'core/
                             if (returnval.cloudhtml) {
                                 $('#mod-wordcloud-words-box').html(returnval.cloudhtml);
                                 timestamphtml = returnval.timestamphtml;
+                                var wb = document.getElementById('mod-wordcloud-div');
+                                var divheight = wb.offsetHeight;
+                                var newwidth = 0;
+                                if (divheight < 400) {
+                                    newwidth = 60;
+                                } else if (divheight < 600) {
+                                    newwidth = 70;
+                                } else if (divheight < 800) {
+                                    newwidth = 80;
+                                } else {
+                                    newwidth = 100;
+                                }
+                                if (newwidth > parseInt(wb.style.width) && window.innerWidth > 900) {
+                                    wb.style.width = newwidth + "%";
+                                }
                             }
                         },
                         fail: notification.exception

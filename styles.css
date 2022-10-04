@@ -125,3 +125,7 @@
 .path-mod-wordcloud #mod-wordcloud-fs-btn {
     float: right;
 }
+
+.path-mod-wordcloud #mod-wordcloud-content {
+    visibility: hidden;
+}
