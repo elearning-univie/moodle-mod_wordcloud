@@ -79,4 +79,24 @@ export const init = colors => {
             }
         };
     }
+
+    var wb = document.getElementById('mod-wordcloud-div');
+    var divheight = wb.offsetHeight;
+    var newwidth = 0;
+    if (divheight < 300) {
+        newwidth = 60;
+    } else if (divheight < 500) {
+        newwidth = 70;
+    } else if (divheight < 700) {
+        newwidth = 80;
+    } else {
+        newwidth = 100;
+    }
+    if (window.innerWidth > 900) {
+        wb.style.width = newwidth + "%";
+    }
+    window.console.log(window.innerWidth);
+
+    var element = document.getElementById('mod-wordcloud-content');
+    element.style.visibility = "visible";
 };
