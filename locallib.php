@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 define('WORDCLOUD_WORD_LENGTH', 40);
-define('WORDCLOUD_MAX_WORDS', 128);
+define('WORDCLOUD_MAX_WORDS', 300);
 define('WORDCLOUD_MAX_TIME', 2147483647);
 
 use \core_privacy\local\request\transform;
