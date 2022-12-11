@@ -1,17 +1,20 @@
-CHANGELOG
-=========
-4.0.0
-------------------
+# Change Log
+
+## 4.1.0
+* Dynamic wordcloud sizing
+* Webservice parameter fix
+* Added Behat tests
+* Moodle 4.1 compatible version
+
+## 4.0.0
 * Added activity setting to choose monocolor from six textcolors or a custom color value.
 * Added group support
 * Moodle 4.0 compatible version
 
-3.11.2
-------------------
+## 3.11.2
 * Fixed lang string for remove button
 
-3.11.1
-------------------
+## 3.11.1
 * Added moodle mobile app support
 * Added edit entry page to customize entries
 * Added a second color scheme (monochrome color scheme)
@@ -19,10 +22,8 @@ CHANGELOG
 * Removed the background color of the wordcloud
 * Last version with Moodle 3.10 support
 
-3.11.0
-------------------
-* Moodle 3.11.0 compatible version
+## 3.11.0
+* Moodle 3.11 compatible version
 
-3.10.0
-------------------
-* Moodle 3.10.0 compatible version
+## 3.10.0
+* Moodle 3.10 compatible version

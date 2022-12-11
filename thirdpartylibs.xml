@@ -3,7 +3,7 @@
     <library>
         <location>js/html2canvas/html2canvas.js</location>
         <name>html2canvas</name>
-        <version>v1.0.0-rc.7</version>
+        <version>v1.4.1</version>
         <license>MIT</license>
         <licenseversion></licenseversion>
     </library>

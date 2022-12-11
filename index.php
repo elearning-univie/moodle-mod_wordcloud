@@ -24,12 +24,12 @@
 
 require_once('../../config.php');
 
-defined(MOODLE_INTERNAL) || die();
+global $DB, $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);   // Course id.
 
 if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('Course ID is incorrect');
+    throw new \moodle_exception('invalidcourseid');
 }
 $coursecontext = context_course::instance($course->id);
 

@@ -45,7 +45,7 @@ class mod_wordcloud_external extends external_api {
                 array(
                         'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
                         'word' => new external_value(PARAM_TEXT, 'word to be added'),
-                        'groupid' => new external_value(PARAM_INT, 'id of the wordcloud activity', VALUE_OPTIONAL),
+                        'groupid' => new external_value(PARAM_INT, 'id of the wordcloud activity', VALUE_DEFAULT, 0),
                 )
         );
     }
@@ -94,12 +94,13 @@ class mod_wordcloud_external extends external_api {
      * @param int $groupid
      * @return array|null
      */
-    public static function add_word($aid, $word, $groupid = null) {
+    public static function add_word($aid, $word, $groupid) {
         global $DB;
 
         $warnings = [];
 
-        $params = self::validate_parameters(self::add_word_parameters(), array('aid' => $aid, 'word' => $word, 'groupid' => $groupid));
+        $params = self::validate_parameters(self::add_word_parameters(),
+            array('aid' => $aid, 'word' => $word, 'groupid' => $groupid));
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -113,7 +114,7 @@ class mod_wordcloud_external extends external_api {
         $servergroupid = 0;
 
         if ($groupmode) {
-            $servergroupid = isset($params['groupid']) ? $params['groupid'] : groups_get_activity_group($cm);
+            $servergroupid = $params['groupid'] ?: groups_get_activity_group($cm);
         }
 
         $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $servergroupid);
@@ -183,7 +184,9 @@ class mod_wordcloud_external extends external_api {
 
         if ($groupmode = groups_get_activity_groupmode($cm)) {
             $groupid = groups_get_activity_group($cm, true);
-            if ($groupmode != VISIBLEGROUPS && !has_capability('moodle/site:accessallgroups', $context) && !groups_is_member($groupid)) {
+            if ($groupmode != VISIBLEGROUPS &&
+                !has_capability('moodle/site:accessallgroups', $context) &&
+                !groups_is_member($groupid)) {
                 return ['cloudhtml' => '', 'timestamphtml' => 0, 'warnings' => $warnings];
             }
         }
@@ -191,8 +194,9 @@ class mod_wordcloud_external extends external_api {
         $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
 
         if ($record->lastwordchange > $timestamphtml) {
-            return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid), 'timestamphtml' => $record->lastwordchange,
-                    'warnings' => $warnings];
+            return ['cloudhtml' => mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid),
+                'timestamphtml' => $record->lastwordchange,
+                'warnings' => $warnings];
         }
 
         return ['cloudhtml' => '', 'timestamphtml' => 0, 'warnings' => $warnings];
@@ -247,7 +251,8 @@ class mod_wordcloud_external extends external_api {
             $record = $DB->get_record('wordcloud_map', ['id' => $updateentry['wordid'], 'groupid' => $groupid]);
 
             if ($record) {
-                $checkrec = $DB->get_record('wordcloud_map', ['word' => $updateentry['newword'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]);
+                $checkrec = $DB->get_record('wordcloud_map',
+                    ['word' => $updateentry['newword'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]);
                 if ($checkrec) {
                     if ($checkrec->id != $updateentry['wordid']) {
                         $DB->delete_records('wordcloud_map', ['id' => $checkrec->id]);

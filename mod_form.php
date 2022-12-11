@@ -65,7 +65,8 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $radiocolor = array();
         for ($i = 1; $i <= 6; $i++) {
             $fontcolor = 'fontcolor' . $i;
-            $radiocolor[] = $mform->createElement('radio', 'monocolor', '', '<span style="color: #' . $wordcloudconfig->$fontcolor . '">⬤</span>', $i);
+            $radiocolor[] = $mform->createElement('radio', 'monocolor', '',
+                '<span style="color: #' . $wordcloudconfig->$fontcolor . '">⬤</span>', $i);
         }
         $radiocolor[] = $mform->createElement('radio', 'monocolor', '', get_string('monocolor_hex', 'wordcloud'), 0);
         $mform->addGroup($radiocolor, 'radiocolor', get_string('monocolor', 'wordcloud'), array(' '), false);
@@ -100,7 +101,7 @@ class mod_wordcloud_mod_form extends moodleform_mod {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        $errors = [];
+        $errors = parent::validation($data, $files);
         if (!ctype_xdigit($data['monocolorhex']) || strlen($data['monocolorhex']) != 6) {
             $errors['monocolorhex'] = get_string('errormonocolorhex', 'wordcloud');
         }
