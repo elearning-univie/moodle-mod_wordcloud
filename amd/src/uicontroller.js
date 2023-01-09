@@ -1,3 +1,25 @@
+const mod_wordcloud_set_height = () => {
+    const wb = document.getElementById('mod-wordcloud-div');
+    const divheight = wb.offsetHeight;
+    let newwidth = 0;
+
+    if (divheight < 300) {
+        newwidth = 60;
+    } else if (divheight < 500) {
+        newwidth = 70;
+    } else if (divheight < 700) {
+        newwidth = 80;
+    } else {
+        newwidth = 100;
+    }
+
+    if (window.innerWidth > 900) {
+        if (wb.style.width == '' || newwidth > parseInt(wb.style.width)) {
+            wb.style.width = newwidth + "%";
+        }
+    }
+};
+
 const mod_wordcloud_fs_toggle = () => {
     if (document.fullscreenElement === null) {
         var fs_element = document.getElementById('mod-wordcloud-content');
@@ -33,6 +55,20 @@ const mod_wordcloud_hex_to_hsl = (color) => {
 };
 
 export const init = colors => {
+    const targetnode = document.getElementById('mod-wordcloud-words-box');
+    const config = { childList: true};
+    const callback = (mutationList) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === 'childList') {
+                mod_wordcloud_set_height();
+            }
+        }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(targetnode, config);
+    mod_wordcloud_set_height();
+
     var stylerules = '';
     var editCSS = document.createElement('style');
 
@@ -79,23 +115,6 @@ export const init = colors => {
             }
         };
     }
-
-    var wb = document.getElementById('mod-wordcloud-div');
-    var divheight = wb.offsetHeight;
-    var newwidth = 0;
-    if (divheight < 300) {
-        newwidth = 60;
-    } else if (divheight < 500) {
-        newwidth = 70;
-    } else if (divheight < 700) {
-        newwidth = 80;
-    } else {
-        newwidth = 100;
-    }
-    if (window.innerWidth > 900) {
-        wb.style.width = newwidth + "%";
-    }
-    window.console.log(window.innerWidth);
 
     var element = document.getElementById('mod-wordcloud-content');
     element.style.visibility = "visible";
