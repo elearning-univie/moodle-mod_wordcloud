@@ -23,8 +23,6 @@ Feature: Visible group mode in a wordcloud
       | Group C | C1 | G3 |
     And the following "group members" exist:
       | user | group |
-      | teacher1 | G1 |
-      | teacher1 | G2 |
       | student1 | G1 |
       | student2 | G1 |
       | student2 | G2 |
