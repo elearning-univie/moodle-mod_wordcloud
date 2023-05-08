@@ -24,14 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-// Backward compatibility with Moodle 3.11. Remove, when EOL.
-if (!defined('FEATURE_MOD_PURPOSE')) {
-    define('FEATURE_MOD_PURPOSE', 'mod_purpose');
-}
-if (!defined('MOD_PURPOSE_COLLABORATION')) {
-    define('MOD_PURPOSE_COLLABORATION', 'collaboration');
-}
-
 /**
  * Returns the information on whether the module supports a feature
  *
@@ -145,4 +137,17 @@ function wordcloud_get_coursemodule_info($coursemodule) {
     }
 
     return $result;
+}
+
+/**
+ * Adds module specific settings to the settings block
+ *
+ * @param settings_navigation $settingsnav The settings navigation object
+ * @param navigation_node $wordcloudnode The node to add module settings to
+ */
+function wordcloud_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $wordcloudnode) {
+    if (has_capability('mod/wordcloud:editentry', $settingsnav->get_page()->context)) {
+        $url = new moodle_url('/mod/wordcloud/wordlist.php', ['id' => $settingsnav->get_page()->cm->id]);
+        $wordcloudnode->add(get_string('wordlist', 'mod_wordcloud'), $url, navigation_node::TYPE_SETTING, null, 'mod_wordcloud_list');
+    }
 }

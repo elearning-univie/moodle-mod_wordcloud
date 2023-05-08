@@ -35,11 +35,12 @@ use \core_privacy\local\request\transform;
  * @param int $wordcloudid
  * @param int $groupmode
  * @param int $groupid
- * @return string
+ * @param int $listview
+ * @return array
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0) {
-    global $DB;
+function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0, $listview = 0) {
+    global $DB, $PAGE;
 
     if ($groupmode && $groupid === 0) {
         $sql = 'SELECT word, sum(count) AS count
@@ -65,24 +66,30 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0)
 
         $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
     }
+    $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
+        ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
 
     $cloudhtml = '';
+    if ($listview) {
+        $renderer = $PAGE->get_renderer('core');
+        $cloudhtml = $renderer->render_from_template('mod_wordcloud/wordlist', ['words' => array_values($records)]);
+    } else {
+        // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
+        $range = ($wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
+        $steps = 6;
 
-    // The range is slightly larger than max-min count to make sure that the largest element is rounded down.
-    $range = ($wordcnt->maxcount - $wordcnt->mincount) * 1.0001;
-    $steps = 6;
-
-    foreach ($records as $row) {
-        if ($range >= 3) {
-            $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
-        } else {
-            $weight = 1;
-        }
-        $fontsize = 'w' . $weight;
-        $cloudhtml .= '<span class="word center ' . $fontsize . '"
+        foreach ($records as $row) {
+            if ($range >= 3) {
+                $weight = 1 + floor($steps * ($row->count - $wordcnt->mincount) / $range);
+            } else {
+                $weight = 1;
+            }
+            $fontsize = 'w' . $weight;
+            $cloudhtml .= '<span class="word center ' . $fontsize . '"
                 title="' . $row->count . '">' . $row->word . '</span>';
+        }
     }
-    return $cloudhtml;
+    return ['cloudhtml' => $cloudhtml, 'sumcount' => $sumcount->count];
 }
 
 /**

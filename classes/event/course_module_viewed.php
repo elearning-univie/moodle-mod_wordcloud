@@ -24,8 +24,6 @@
 
 namespace mod_wordcloud\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_wordcloud course module viewed event class.
  *

@@ -24,51 +24,48 @@
     }
 }}
 <div id="mod-wordcloud-content">
-    <div class="container">
-        <div class="row mb-3">
-            <div class="heading col-md-auto">
-                {{#wordcloudname}}
-                    <h2>{{wordcloudname}}</h2>
-                {{/wordcloudname}}
+    <div id="mod-wordcloud-div" class="container m-auto">
+        <div class="row mb-5">
+            <div class="col-auto mr-auto">
+                {{#editlink}}<a class="btn btn-primary" href="{{editlink}}">{{#str}} editentry, mod_wordcloud {{/str}}</a>{{/editlink}}
+            </div>
+            <div class="col-auto">
+                <select id="mod-wordcloud-export-menu" class="custom-select">
+                    <option value="" selected disabled>{{#str}} exportdefault, mod_wordcloud {{/str}}</option>
+                    <option value="{{exportlink}}">{{#str}} exportcsv, mod_wordcloud {{/str}}</option>
+                    <option value="png">{{#str}} exportpng, mod_wordcloud {{/str}}</option>
+                </select>
             </div>
         </div>
-        {{#intro}}
-            <div class="row">
-                {{{intro}}}
+        {{#str}} submittedwords, mod_wordcloud {{/str}}<span id="mod-wordcloud-wcount">{{wordcount}}</span>
+        <div class="wordcloud-header row">
+            {{#writeaccess}}
+            <div class="col-sm-7 col-xs-12">
+                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
             </div>
-        {{/intro}}
-        {{#timing}}
-            <div class="row mb-3">
-                {{#timeopen}}{{#str}} open, mod_wordcloud {{/str}}{{timeopen}}<br/>{{/timeopen}}
-                {{#timeclose}}{{#str}} close, mod_wordcloud {{/str}}{{timeclose}}{{/timeclose}}
-            </div>
-        {{/timing}}
-        <div class="row mb-3">
-            <div id="mod-wordcloud-div" class="container m-auto">
-                {{#writeaccess}}
-                <div class="wordcloud-header row">
-                    <div class="col-md-9 col-xs-12">
-                        <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
-                    </div>
-                    <div class="col-md-3 col-xs-12">
+            {{/writeaccess}}
+            {{#notification}}
+                {{#pix}} docs, core {{/pix}}{{notification}}
+            {{/notification}}
+            <div class="col col-xs-12">
+                <div class="row">
+                    {{#writeaccess}}
+                    <div class="col">
                         <button id="mod-wordcloud-btn" class="btn btn-primary" onclick="$.mod_wordcloud_add_word();">{{#str}} submitbtn, mod_wordcloud {{/str}}</button>
                     </div>
-                </div>
-                {{/writeaccess}}
-                <div id="mod-wordcloud-words-box" class="row">
-                    {{{cloudhtml}}}
+                    {{/writeaccess}}
+                    <div class="col-auto ml-auto">
+                        <select id="mod-wordcloud-view-menu" class="custom-select" {{#disabled}}disabled{{/disabled}}>
+                            {{#views}}
+                                <option value="{{url}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                            {{/views}}
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row wordcloud-export">
-        {{#editlink}}<a class="btn btn-secondary" href="{{editlink}}">{{#str}} editentry, mod_wordcloud {{/str}}</a>{{/editlink}}
-        <a class="btn btn-secondary" href="{{exportlink}}" target="_blank">{{#str}} exportcsv, mod_wordcloud {{/str}}</a>
-        <button class="btn btn-secondary" onclick="$.mod_wordcloud_pic();">{{#str}} exportpng, mod_wordcloud {{/str}}</button>
-        <button id="mod-wordcloud-fs-btn" class="btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}">
-            <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
-        </button>
+        <div id="mod-wordcloud-words-box" class="row">
+            {{{cloudhtml}}}
+        </div>
     </div>
 </div>

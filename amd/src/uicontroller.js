@@ -1,14 +1,16 @@
+import $ from "jquery";
+
 const mod_wordcloud_set_height = () => {
     const wb = document.getElementById('mod-wordcloud-div');
     const divheight = wb.offsetHeight;
     let newwidth = 0;
 
     if (divheight < 300) {
-        newwidth = 60;
+        newwidth = 40;
     } else if (divheight < 500) {
-        newwidth = 70;
+        newwidth = 50;
     } else if (divheight < 700) {
-        newwidth = 80;
+        newwidth = 60;
     } else {
         newwidth = 100;
     }
@@ -20,14 +22,6 @@ const mod_wordcloud_set_height = () => {
     }
 };
 
-const mod_wordcloud_fs_toggle = () => {
-    if (document.fullscreenElement === null) {
-        var fs_element = document.getElementById('mod-wordcloud-content');
-        fs_element.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
-};
 
 const mod_wordcloud_hex_to_hsl = (color) => {
     var [r, g, b] = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b)
@@ -54,6 +48,29 @@ const mod_wordcloud_hex_to_hsl = (color) => {
     return [Math.round(h), Math.round(s*100), Math.round(l*100)];
 };
 
+const mod_wordcloud_export_listener = () => {
+    var exportmenu = document.getElementById('mod-wordcloud-export-menu');
+    exportmenu.onchange = function() {
+        var selectedval = this.options[this.selectedIndex].value;
+        if (selectedval == 'png') {
+            $.mod_wordcloud_pic();
+        } else {
+            window.open(selectedval, '_blank');
+        }
+        exportmenu.selectedIndex = 0;
+    };
+
+    mod_wordcloud_set_height();
+
+    var element = document.getElementById('mod-wordcloud-div');
+    element.style.visibility = "visible";
+};
+
+export const initlistener = () => {
+    mod_wordcloud_set_height();
+    mod_wordcloud_export_listener();
+};
+
 export const init = colors => {
     const targetnode = document.getElementById('mod-wordcloud-words-box');
     const config = { childList: true};
@@ -67,7 +84,6 @@ export const init = colors => {
 
     const observer = new MutationObserver(callback);
     observer.observe(targetnode, config);
-    mod_wordcloud_set_height();
 
     var stylerules = '';
     var editCSS = document.createElement('style');
@@ -97,25 +113,10 @@ export const init = colors => {
     editCSS.innerHTML = stylerules;
     document.head.appendChild(editCSS);
 
-    var fs_btn = document.getElementById('mod-wordcloud-fs-btn');
+    var viewmenu = document.getElementById('mod-wordcloud-view-menu');
+    viewmenu.onchange = function() {
+        window.location.href = this.options[this.selectedIndex].value;
+    };
 
-    if (!document.fullscreenEnabled) {
-        fs_btn.style.display = "none";
-    } else {
-        fs_btn.addEventListener("click", function () {
-            mod_wordcloud_fs_toggle();
-        });
-
-        document.onfullscreenchange = function () {
-            var fs_icon = document.getElementById('mod-wordcloud-fs-icon');
-            if (document.fullscreenElement === null) {
-                fs_icon.className = fs_icon.className.replace(/\bfa-compress\b/g, "fa-expand");
-            } else {
-                fs_icon.className = fs_icon.className.replace(/\bfa-expand\b/g, "fa-compress");
-            }
-        };
-    }
-
-    var element = document.getElementById('mod-wordcloud-content');
-    element.style.visibility = "visible";
+    mod_wordcloud_export_listener();
 };
