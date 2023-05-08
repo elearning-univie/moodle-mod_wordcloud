@@ -76,7 +76,7 @@ foreach ($wordclouds as $wordcloud) {
                 format_string($wordcloud->name, true));
     }
 
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $table->data[] = array($wordcloud->section, $link);
     } else {
         $table->data[] = array($link);

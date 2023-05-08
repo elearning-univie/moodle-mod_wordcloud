@@ -23,8 +23,6 @@
  */
 namespace mod_wordcloud\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_wordcloud module does not store any user data.
  *

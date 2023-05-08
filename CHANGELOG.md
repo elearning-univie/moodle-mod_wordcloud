@@ -1,5 +1,10 @@
 # Change Log
 
+## 4.2.0
+* Changed button layout
+* Added listview
+* Moodle 4.2 compatible version
+
 ## 4.1.0
 * Dynamic wordcloud sizing
 * Webservice parameter fix

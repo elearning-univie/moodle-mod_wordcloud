@@ -122,10 +122,11 @@
     margin: auto;
 }
 
-.path-mod-wordcloud #mod-wordcloud-fs-btn {
-    float: right;
+.path-mod-wordcloud #mod-wordcloud-div {
+    visibility: hidden;
 }
 
-.path-mod-wordcloud #mod-wordcloud-content {
-    visibility: hidden;
+.path-mod-wordcloud #mod-wordcloud-list-export {
+    padding-top: 2em;
+    padding-bottom: 2em;
 }

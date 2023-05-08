@@ -28,6 +28,7 @@ require_once(__DIR__ . '/locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
+$listview = optional_param('listview', 0, PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
 
 $context = context_module::instance($cm->id);
@@ -46,8 +47,6 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
-$moodle4 = ($CFG->version >= 2022041900) ? true : false;
-
 $wordcloudconfig = get_config('wordcloud');
 
 if ($wordcloud->usemonocolor) {
@@ -77,8 +76,7 @@ $templatecontext = [
     'writeaccess' => $cansubmit['writeaccess'],
     'wordcloudname' => $wordcloud->name,
     'exportlink' => new moodle_url("/mod/wordcloud/export.php", ['id' => $id]),
-    'colors' => $colors,
-    'cloudhtml' => mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid)
+    'colors' => $colors
 ];
 
 if (has_capability('mod/wordcloud:editentry', $context) && !($groupmode && $groupid === 0)) {
@@ -86,8 +84,19 @@ if (has_capability('mod/wordcloud:editentry', $context) && !($groupmode && $grou
 }
 
 if ($templatecontext['writeaccess']) {
-    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time()]);
+    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time(), $listview]);
 }
+
+$views = [
+    [
+        'url' => $PAGE->url . "&listview=0",
+        'text' => get_string('cloud', 'mod_wordcloud')
+    ],
+    [
+        'url' => $PAGE->url . "&listview=1",
+        'text' => get_string('list', 'mod_wordcloud')
+    ]
+];
 
 $params = array(
     'objectid' => $cm->id,
@@ -98,25 +107,24 @@ $event = \mod_wordcloud\event\course_module_viewed::create($params);
 $event->add_record_snapshot('wordcloud', $wordcloud);
 $event->trigger();
 
+$views[$listview]['selected'] = 1;
+$cloudhtml = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid, $listview);
+$templatecontext['cloudhtml'] = $cloudhtml['cloudhtml'];
+$templatecontext['views'] = $views;
+$templatecontext['wordcount'] = $cloudhtml['sumcount'];
+if ($cloudhtml['sumcount'] == 0) {
+    $templatecontext['disabled'] = 1;
+}
+
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->header();
 
 if ($groupmode) {
     $groupselecturl = new moodle_url('/mod/wordcloud/view.php', ['id' => $cm->id]);
     groups_print_activity_menu($cm, $groupselecturl);
-}
-
-if (trim(strip_tags($wordcloud->intro))) {
-    $formatoptions = new stdClass();
-    $formatoptions->noclean = true;
-    $templatecontext['intro'] = $renderer->box(format_text($wordcloud->intro, $wordcloud->introformat, $formatoptions),
-            'generalbox', 'intro');
-}
-
-if ($moodle4) {
-    $templatecontext['wordcloudname'] = null;
-    $templatecontext['intro'] = null;
-    $templatecontext['timing'] = null;
+    if ($groupid == 0) {
+        $templatecontext['notification'] = get_string('notification', 'mod_wordcloud');
+    }
 }
 
 $PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
