@@ -30,8 +30,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023050102;
+$plugin->version = 2023060100;
 $plugin->requires = 2022041900;
-$plugin->release = 'v4.2.0';
+$plugin->release = 'v4.2.1';
 $plugin->component = 'mod_wordcloud';
 $plugin->maturity = MATURITY_STABLE;

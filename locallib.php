@@ -57,6 +57,8 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
                        AND groupid != 0
                   GROUP BY word) AS subq';
         $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
+        $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid != 0',
+            ['wordcloudid' => $wordcloudid]);
     } else {
         $sql = 'SELECT min(count) AS mincount, max(count) AS maxcount
                   FROM {wordcloud_map}
@@ -65,9 +67,13 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
         $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
 
         $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
+        $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
+            ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
     }
-    $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
-        ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
+
+    if (!$sumcount->count) {
+        $sumcount->count = 0;
+    }
 
     $cloudhtml = '';
     if ($listview) {

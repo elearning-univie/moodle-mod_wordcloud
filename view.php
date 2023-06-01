@@ -47,6 +47,7 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
+$PAGE->add_body_class('limitedwidth');
 $wordcloudconfig = get_config('wordcloud');
 
 if ($wordcloud->usemonocolor) {

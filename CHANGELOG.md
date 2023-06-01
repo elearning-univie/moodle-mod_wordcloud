@@ -1,5 +1,9 @@
 # Change Log
 
+## 4.2.1
+* Design changes
+* Bug fixes
+
 ## 4.2.0
 * Changed button layout
 * Added listview
