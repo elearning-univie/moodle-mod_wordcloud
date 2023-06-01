@@ -6,11 +6,11 @@ const mod_wordcloud_set_height = () => {
     let newwidth = 0;
 
     if (divheight < 300) {
-        newwidth = 40;
-    } else if (divheight < 500) {
         newwidth = 50;
+    } else if (divheight < 500) {
+        newwidth = 65;
     } else if (divheight < 700) {
-        newwidth = 60;
+        newwidth = 80;
     } else {
         newwidth = 100;
     }
@@ -21,7 +21,6 @@ const mod_wordcloud_set_height = () => {
         }
     }
 };
-
 
 const mod_wordcloud_hex_to_hsl = (color) => {
     var [r, g, b] = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b)
@@ -59,15 +58,9 @@ const mod_wordcloud_export_listener = () => {
         }
         exportmenu.selectedIndex = 0;
     };
-
-    mod_wordcloud_set_height();
-
-    var element = document.getElementById('mod-wordcloud-div');
-    element.style.visibility = "visible";
 };
 
 export const initlistener = () => {
-    mod_wordcloud_set_height();
     mod_wordcloud_export_listener();
 };
 
@@ -119,4 +112,8 @@ export const init = colors => {
     };
 
     mod_wordcloud_export_listener();
+    mod_wordcloud_set_height();
+
+    var element = document.getElementById('mod-wordcloud-div');
+    element.style.visibility = "visible";
 };

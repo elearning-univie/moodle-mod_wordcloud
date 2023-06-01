@@ -1,5 +1,6 @@
 .path-mod-wordcloud #mod-wordcloud-div {
     overflow: hidden;
+    min-width: 450px;
 }
 
 .path-mod-wordcloud #mod-wordcloud-new-word {
@@ -22,10 +23,13 @@
 }
 
 .path-mod-wordcloud .wordcloud-header {
-    background-color: #e5e5e5;
-    border: 1px solid #e5e5e5;
     border-radius: 5px 5px 0 0;
     padding: 1em;
+}
+
+.path-mod-wordcloud .wordcloud-header-color {
+    background-color: #e5e5e5;
+    border: 1px solid #e5e5e5;
 }
 
 .path-mod-wordcloud .word {
@@ -129,4 +133,13 @@
 .path-mod-wordcloud #mod-wordcloud-list-export {
     padding-top: 2em;
     padding-bottom: 2em;
+}
+
+.path-mod-wordcloud .wc-right-align {
+    float: right;
+}
+
+.path-mod-wordcloud .wc-padding-y {
+    margin-top: 1em;
+    margin-bottom: 1em;
 }

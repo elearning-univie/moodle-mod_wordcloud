@@ -54,6 +54,12 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
+$PAGE->add_body_class('limitedwidth');
+$activityheader = $PAGE->activityheader;
+$activityheader->set_attrs([
+    'description' => '',
+    'hidecompletion' => true
+]);
 
 if ($deleteselected) {
     if (!$DB->record_exists('wordcloud_map', ['id' => $deleteselected])) {
@@ -93,7 +99,7 @@ $backurl = new moodle_url("/mod/wordcloud/view.php", $params);
 
 echo $OUTPUT->header();
 echo html_writer::tag('button', get_string('save', 'moodle'),
-        ['class' => 'btn btn-secondary', 'onclick' => "$.mod_wordcloud_update_entry($wordcloud->id, '$backurl');"]);
+        ['class' => 'btn btn-primary', 'onclick' => "$.mod_wordcloud_update_entry($wordcloud->id, '$backurl');"]);
 echo '    ';
 echo html_writer::tag('button', get_string('cancel', 'moodle'),
     ['class' => 'btn btn-secondary', 'onclick' => "location.href='$backurl'"]);

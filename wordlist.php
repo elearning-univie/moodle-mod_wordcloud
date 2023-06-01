@@ -52,6 +52,13 @@ $PAGE->navbar->add(
 $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
+$PAGE->add_body_class('limitedwidth');
+$activityheader = $PAGE->activityheader;
+$activityheader->set_attrs([
+    'description' => '',
+    'hidecompletion' => true
+]);
+
 $wordcloudconfig = get_config('wordcloud');
 
 $groupmode = groups_get_activity_groupmode($cm);
@@ -75,21 +82,19 @@ $wordcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map
     ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]);
 
 echo $renderer->header();
-echo html_writer::start_div('container m-auto', ['id' => 'mod-wordcloud-div']);
 echo html_writer::tag('button', get_string('editentry', 'mod_wordcloud'),
     ['class' => 'btn btn-primary', 'onclick' => "location.href='" . new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]) . "'"]);
-
 $exporturl = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 $exportmenu['0'] = get_string('exportdefault', 'mod_wordcloud');
 $exportmenu[$exporturl->out()] = get_string('exportcsv', 'mod_wordcloud');
 $exportmenu['png'] = get_string('exportpng', 'mod_wordcloud');
 echo html_writer::start_tag('div', ['id' => 'mod-wordcloud-list-export']);
 echo html_writer::label(get_string('export', 'mod_wordcloud'), 'mod-wordcloud-export-menu');
-echo html_writer::select($exportmenu, 'testname', '0', 0, ['id' => 'mod-wordcloud-export-menu', 'class' => 'custom-select']);
+echo html_writer::select($exportmenu, 'testname', '0', 0, ['id' => 'mod-wordcloud-export-menu']);
 echo html_writer::end_div();
 
 if ($groupmode) {
-    $groupselecturl = new moodle_url('/mod/wordcloud/view.php', ['id' => $cm->id]);
+    $groupselecturl = new moodle_url('/mod/wordcloud/wordlist.php', ['id' => $cm->id]);
     groups_print_activity_menu($cm, $groupselecturl);
 }
 
@@ -100,5 +105,4 @@ $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->nam
 echo html_writer::start_div('', ['id' => 'mod-wordcloud-words-box']);
 echo $renderer->render_from_template('mod_wordcloud/wordlist', ['words' => array_values($listrecords)]);
 echo html_writer::end_div();
-echo html_writer::end_tag('div');
 echo $renderer->footer();
