@@ -47,7 +47,9 @@ class backup_wordcloud_activity_structure_step extends backup_activity_structure
         $wordcloud->set_source_table('wordcloud', array('id' => backup::VAR_ACTIVITYID));
 
         if ($userinfo) {
-            $wordcloudmap = new backup_nested_element('wordcloudmap', array('id'), array('wordcloudid', 'word', 'count'));
+            $wordcloudmap = new backup_nested_element('wordcloudmap', array('id'), array('wordcloudid', 'groupid', 'word', 'count'));
+
+            $wordcloudmap->annotate_ids('group', 'groupid');
 
             $wordcloud->add_child($wordcloudmap);
             $wordcloudmap->set_source_table('wordcloud_map', array('wordcloudid' => backup::VAR_PARENTID));
