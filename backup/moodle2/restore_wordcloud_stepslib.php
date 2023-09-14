@@ -86,6 +86,7 @@ class restore_wordcloud_activity_structure_step extends restore_activity_structu
         $oldid = $data->id;
 
         $data->wordcloudid = $this->get_new_parentid('wordcloud');
+        $data->groupid = $this->get_mappingid('group', $data->groupid);
 
         $newitemid = $DB->insert_record('wordcloud_map', $data);
         $this->set_mapping('wordcloud_map', $oldid, $newitemid, true);
