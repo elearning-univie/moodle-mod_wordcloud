@@ -37,7 +37,8 @@
         <div class="wordcloud-header row justify-content-end {{#notification}}alert-info{{/notification}}{{^notification}}wordcloud-header-color{{/notification}}">
             {{#writeaccess}}
             <div class="col col-xs-12 mb-2 mb-sm-0 px-2">
-                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word" maxlength="40" autofocus="">
+                <input type="text" placeholder="{{#str}} textbox, mod_wordcloud {{/str}}" id="mod-wordcloud-new-word"
+                       maxlength="40" autofocus="" aria-label="{{#str}} textbox, mod_wordcloud {{/str}}">
             </div>
             <div class="w-100 d-none d-sm-block d-md-none mb-2 mb-md-0"></div>
             <div class="col-sm-auto col-xs-12 mb-2 mb-sm-0 px-2">

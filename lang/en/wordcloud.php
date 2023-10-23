@@ -21,14 +21,14 @@
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['activityopen'] = 'Open the wordcloud';
-$string['activityclose'] = 'Close the wordcloud';
-$string['activityopenclose'] = 'Open and close dates';
-$string['activityopenclose_help'] = 'Students can only enter words between the open and the close time.';
+$string['activityopen'] = 'Allow submissions from';
+$string['activityopen_help'] = 'If enabled, students will not be able to submit words before this date. If disabled, a submission is possible right away.';
+$string['activityclose'] = 'Due date';
+$string['activityclose_help'] = 'If enabled, students will not be able to submit words after this date. If disabled, a submission is possible at any time.';
 $string['appearance'] = 'Appearance';
 $string['cloud'] = 'Wordcloud';
 $string['close'] = 'Closes: ';
+$string['closebeforeopen'] = 'Could not update the wordcloud. You have specified a close date before the open date.';
 $string['color_custom'] = 'Custom';
 $string['count'] = 'Count';
 $string['monocolor'] = 'Base color';
@@ -65,7 +65,7 @@ $string['submitbtn'] = 'Submit';
 $string['saved'] = 'Saved';
 $string['submittedwords'] = 'Words submitted: ';
 $string['textbox'] = 'Add a word here...';
-$string['timing'] = 'Timing';
+$string['timing'] = 'Availability';
 $string['usemonocolor'] = 'Color scheme';
 $string['usemonocolor_random'] = 'random coloring';
 $string['usemonocolor_sequential'] = 'sequentially shaded palette';

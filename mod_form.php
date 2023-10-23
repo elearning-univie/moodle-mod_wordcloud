@@ -84,9 +84,10 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
         $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
             self::$datefieldoptions);
-        $mform->addHelpButton('timeopen', 'activityopenclose', 'wordcloud');
+        $mform->addHelpButton('timeopen', 'activityopen', 'wordcloud');
         $mform->addElement('date_time_selector', 'timeclose', get_string('activityclose', 'wordcloud'),
             self::$datefieldoptions);
+        $mform->addHelpButton('timeclose', 'activityclose', 'wordcloud');
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
@@ -104,6 +105,9 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $errors = parent::validation($data, $files);
         if (!ctype_xdigit($data['monocolorhex']) || strlen($data['monocolorhex']) != 6) {
             $errors['monocolorhex'] = get_string('errormonocolorhex', 'wordcloud');
+        }
+        if ($data['timeopen'] != 0 && $data['timeclose'] != 0 && $data['timeclose'] < $data['timeopen']) {
+            $errors['timeclose'] = get_string('closebeforeopen', 'wordcloud');
         }
         return $errors;
     }
