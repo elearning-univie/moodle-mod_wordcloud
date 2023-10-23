@@ -1,5 +1,9 @@
 # Change Log
 
+## 4.3.0
+* Fixed some minor Bugs
+* Moodle 4.3 compatible version
+
 ## 4.2.1
 * Design changes
 * Bug fixes
