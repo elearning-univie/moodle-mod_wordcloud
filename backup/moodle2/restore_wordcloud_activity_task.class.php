@@ -58,9 +58,9 @@ class restore_wordcloud_activity_task extends restore_activity_task {
      * processed by the link decoder
      */
     public static function define_decode_contents() {
-        $contents = array();
+        $contents = [];
 
-        $contents[] = new restore_decode_content('wordcloud', array('intro'), 'wordcloud');
+        $contents[] = new restore_decode_content('wordcloud', ['intro'], 'wordcloud');
 
         return $contents;
     }
@@ -70,7 +70,7 @@ class restore_wordcloud_activity_task extends restore_activity_task {
      * to the activity to be executed by the link decoder
      */
     public static function define_decode_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_decode_rule('WORDCLOUDVIEWBYID', '/mod/wordcloud/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('WORDCLOUDINDEX', '/mod/wordcloud/index.php?id=$1', 'course');
@@ -86,7 +86,7 @@ class restore_wordcloud_activity_task extends restore_activity_task {
      * of {@see restore_log_rule} objects
      */
     public static function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('wordcloud', 'add', 'view.php?id={course_module}', '{wordcloud}');
         $rules[] = new restore_log_rule('wordcloud', 'update', 'view.php?id={course_module}', '{wordcloud}');
@@ -106,7 +106,7 @@ class restore_wordcloud_activity_task extends restore_activity_task {
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
     public static function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('wordcloud', 'view all', 'index.php?id={course}', null);
 

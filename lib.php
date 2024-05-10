@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Returns the information on whether the module supports a feature
  *
@@ -44,6 +42,10 @@ function wordcloud_supports($feature) {
             return true;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_COLLABORATION;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
         default:
             return null;
     }
@@ -98,6 +100,10 @@ function wordcloud_update_instance($wordcloud) {
         $wordcloud->usemonocolor = 0;
     }
 
+    if (!property_exists($wordcloud, 'visibility') || !$wordcloud->visibility) {
+        $wordcloud->visibility = 0;
+    }
+
     return $DB->update_record('wordcloud', $wordcloud);
 }
 
@@ -115,8 +121,8 @@ function wordcloud_update_instance($wordcloud) {
 function wordcloud_get_coursemodule_info($coursemodule) {
     global $DB;
 
-    $dbparams = array('id' => $coursemodule->instance);
-    $fields = 'id, course, name, intro, introformat, timeopen, timeclose';
+    $dbparams = ['id' => $coursemodule->instance];
+    $fields = 'id, course, name, intro, introformat, timeopen, timeclose, completionsubmits';
     if (! $wordcloud = $DB->get_record('wordcloud', $dbparams, $fields)) {
         return false;
     }
@@ -136,6 +142,10 @@ function wordcloud_get_coursemodule_info($coursemodule) {
         $result->customdata['timeclose'] = $wordcloud->timeclose;
     }
 
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $result->customdata['customcompletionrules']['completionsubmits'] = $wordcloud->completionsubmits;
+    }
+
     return $result;
 }
 
@@ -150,4 +160,32 @@ function wordcloud_extend_settings_navigation(settings_navigation $settingsnav, 
         $url = new moodle_url('/mod/wordcloud/wordlist.php', ['id' => $settingsnav->get_page()->cm->id]);
         $wordcloudnode->add(get_string('wordlist', 'mod_wordcloud'), $url, navigation_node::TYPE_SETTING, null, 'mod_wordcloud_list');
     }
+}
+
+/**
+ * Callback which returns human-readable strings describing the active completion custom rules for the module instance.
+ *
+ * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
+ * @return array $descriptions the array of descriptions for the custom rules.
+ */
+function mod_wordcloud_get_completion_active_rule_descriptions($cm) {
+    // Values will be present in cm_info, and we assume these are up to date.
+    if (empty($cm->customdata['customcompletionrules'])
+        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+        return [];
+    }
+
+    $descriptions = [];
+    foreach ($cm->customdata['customcompletionrules'] as $key => $val) {
+        switch ($key) {
+            case 'completionsubmits':
+                if (!empty($val)) {
+                    $descriptions[] = get_string('completionpostsdesc', 'forum', $val);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return $descriptions;
 }

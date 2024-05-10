@@ -16,7 +16,7 @@ Feature: As a student I can add words to a wordcloud
       | student | C1     | student        |
     And I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Wordcloud" to section "1" and I fill the form with:
+    And I add a wordcloud activity to course "Course 1" section "1" and I fill the form with:
       | Wordcloud activity name | Test wordcloud |
     And I log out
 
