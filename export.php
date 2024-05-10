@@ -34,7 +34,7 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 require_capability('mod/wordcloud:view', $context);
 
-$wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
+$wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
 $groupmode = groups_get_activity_groupmode($cm);
 $groupid = $groupmode ? groups_get_activity_group($cm) : 0;
 

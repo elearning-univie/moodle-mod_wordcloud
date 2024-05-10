@@ -1,5 +1,10 @@
 # Change Log
 
+## 4.3.1
+* New activity completion settings
+* New visibility settings
+* Backup bugfixes
+
 ## 4.3.0
 * Fixed some minor Bugs
 * Moodle 4.3 compatible version

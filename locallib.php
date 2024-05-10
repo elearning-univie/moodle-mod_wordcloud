@@ -22,12 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
 define('WORDCLOUD_WORD_LENGTH', 40);
 define('WORDCLOUD_MAX_WORDS', 300);
 define('WORDCLOUD_MAX_TIME', 2147483647);
 
-use \core_privacy\local\request\transform;
+use core_privacy\local\request\transform;
 
 /**
  * creates the wordcloud html
@@ -36,11 +35,12 @@ use \core_privacy\local\request\transform;
  * @param int $groupmode
  * @param int $groupid
  * @param int $listview
+ * @param bool $canedit
  * @return array
  * @throws dml_exception
  */
-function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0, $listview = 0) {
-    global $DB, $PAGE;
+function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0, $listview = 0, $canedit = false) {
+    global $DB, $PAGE, $USER;
 
     if ($groupmode && $groupid === 0) {
         $sql = 'SELECT word, sum(count) AS count
@@ -95,6 +95,37 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
                 title="' . $row->count . '">' . $row->word . '</span>';
         }
     }
+
+    if (!$canedit) {
+        $visibility = $DB->get_record('wordcloud', ['id' => $wordcloudid])->visibility;
+
+        switch($visibility) {
+            case 1:
+                $sql = 'SELECT 1
+                        FROM {wordcloud_map} m
+                        JOIN {wordcloud_word_user_rel} r
+                        ON m.id = r.mapid
+                        WHERE wordcloudid = :wordcloudid
+                          AND groupid = :groupid
+                          AND userid = :userid';
+                if (!$DB->record_exists_sql($sql, ['wordcloudid' => $wordcloudid, 'groupid' => $groupid, 'userid' => $USER->id])) {
+                    $cloudhtml = get_string('userinfosubmit', 'wordcloud');
+                    $sumcount->count = 0;
+                }
+                break;
+            case 2:
+                $record = $DB->get_record('wordcloud', ['id' => $wordcloudid]);
+                $time = time();
+                if ($record->timeclose > $time) {
+                    $cloudhtml = get_string('userinfotime', 'wordcloud');
+                    $sumcount->count = 0;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     return ['cloudhtml' => $cloudhtml, 'sumcount' => $sumcount->count];
 }
 
@@ -114,7 +145,7 @@ function mod_wordcloud_can_submit($wordcloud, $context, $groupid = 0) {
     $result = [
         'timeopen' => $wordcloud->timeopen ? transform::datetime($wordcloud->timeopen) : null,
         'timeclose' => $wordcloud->timeclose ? transform::datetime($wordcloud->timeclose) : null,
-        'timing' => null
+        'timing' => null,
     ];
 
     if ($wordcloud->timeopen || $wordcloud->timeclose) {

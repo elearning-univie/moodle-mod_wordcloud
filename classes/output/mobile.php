@@ -95,7 +95,7 @@ class mobile {
             'timeopen' => $cansubmit['timeopen'],
             'timeclose' => $cansubmit['timeclose'],
             'showgroups' => !empty($groups),
-            'groups' => array_values($groups)
+            'groups' => array_values($groups),
         ];
 
         if ($moodle4) {
@@ -110,7 +110,7 @@ class mobile {
                 ],
             ],
             'javascript' => file_get_contents($CFG->dirroot . '/mod/wordcloud/mobile/mobile_uicontroller.js'),
-            'otherdata' => ['cloudhtml' => $cloudhtml, 'word' => '', 'colors' => $colors, 'group' => $groupid]
+            'otherdata' => ['cloudhtml' => $cloudhtml, 'word' => '', 'colors' => $colors, 'group' => $groupid],
         ];
     }
 
