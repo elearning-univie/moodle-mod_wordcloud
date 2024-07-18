@@ -45,11 +45,12 @@
     <%# timeclose %>{{ 'plugin.mod_wordcloud.close' | translate }}<% timeclose %><%/ timeclose %>
 </ion-item>
 <%/ timing %>
-<core-course-module-description description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>"></core-course-module-description>
+<core-course-module-info [module]="module" description="<% wordcloud.intro %>" component="mod_wordcloud" componentId="<% cmid %>" [courseId]="courseId">
+</core-course-module-info>
 <%# showgroups %>
 <ion-item>
-    <ion-label>{{ 'plugin.mod_wordcloud.selectagroup' | translate }}</ion-label>
-    <ion-select name="group" [(ngModel)]="CONTENT_OTHERDATA.group" (ionChange)="updateContent({cmid: <% cmid %>, courseid: <% wordcloud.course %>, group: CONTENT_OTHERDATA.group})" interface="popover">
+    <ion-select name="group" [(ngModel)]="CONTENT_OTHERDATA.group" label="{{ 'plugin.mod_wordcloud.selectagroup' | translate }}"
+        (ionChange)="updateContent({cmid: <% cmid %>, courseid: <% wordcloud.course %>, group: CONTENT_OTHERDATA.group})" interface="popover">
         <%# groups %>
             <ion-select-option [value]="<% id %>"><% name %></ion-select-option>
         <%/ groups %>
