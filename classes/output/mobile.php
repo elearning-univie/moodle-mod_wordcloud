@@ -50,6 +50,7 @@ class mobile {
         global $OUTPUT, $USER, $DB, $CFG;
 
         $args = (object) $args;
+        $versionname = $args->appversioncode >= 44000 ? 'latest' : 'ionic5';
         $cm = get_coursemodule_from_id('wordcloud', $args->cmid);
         $context = \context_module::instance($cm->id);
 
@@ -106,7 +107,7 @@ class mobile {
             'templates' => [
                 [
                     'id' => 'main',
-                    'html' => $OUTPUT->render_from_template('mod_wordcloud/mobile_view_page', $data),
+                    'html' => $OUTPUT->render_from_template("mod_wordcloud/mobile_view_page_$versionname", $data),
                 ],
             ],
             'javascript' => file_get_contents($CFG->dirroot . '/mod/wordcloud/mobile/mobile_uicontroller.js'),
