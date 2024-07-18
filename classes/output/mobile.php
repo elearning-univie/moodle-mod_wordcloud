@@ -111,7 +111,7 @@ class mobile {
                 ],
             ],
             'javascript' => file_get_contents($CFG->dirroot . '/mod/wordcloud/mobile/mobile_uicontroller.js'),
-            'otherdata' => ['cloudhtml' => $cloudhtml, 'word' => '', 'colors' => $colors, 'group' => $groupid]
+            'otherdata' => ['cloudhtml' => $cloudhtml['cloudhtml'], 'word' => '', 'colors' => $colors, 'group' => $groupid]
         ];
     }
 
