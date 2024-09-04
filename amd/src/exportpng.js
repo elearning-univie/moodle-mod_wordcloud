@@ -1,10 +1,9 @@
 import html2canvas from "mod_wordcloud/html2canvas";
-import $ from "jquery";
 
 export const init = wcname => {
     wcname = wcname.replace(' ', '_');
 
-    $.mod_wordcloud_pic = function () {
+    document.mod_wordcloud_pic = function () {
         var wc_content = document.getElementById("mod-wordcloud-words-box");
         html2canvas(wc_content, {
             scrollX: 0,

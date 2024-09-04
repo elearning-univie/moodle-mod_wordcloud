@@ -11,7 +11,7 @@ export const init = (refreshtime, aid, timestamphtml, listview) => {
             $('#mod-wordcloud-btn').click();
         }
     });
-    $.mod_wordcloud_add_word = function () {
+    document.mod_wordcloud_add_word = function () {
         var word = $('#mod-wordcloud-new-word').val();
 
         if (!word.trim()) {

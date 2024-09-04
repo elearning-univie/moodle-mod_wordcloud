@@ -1,4 +1,3 @@
-import $ from "jquery";
 import ajax from "core/ajax";
 import notification from "core/notification";
 import ModalFactory from "core/modal_factory";
@@ -6,7 +5,7 @@ import ModalEvents from "core/modal_events";
 import {get_string as getString} from 'core/str';
 
 export const init = () => {
-    $.mod_wordcloud_update_entry = function (aid, backurl) {
+    document.mod_wordcloud_update_entry = function (aid, backurl) {
         let wordlist = document.querySelectorAll(".mod-wordcloud-edit-word");
         const changes = [];
         const doubleentries = [];
