@@ -62,7 +62,7 @@
     <ion-item padding-top="1em">
         <ion-input id="mod-wordcloud-new-word" placeholder="{{ 'plugin.mod_wordcloud.textbox' | translate }}" maxlength="40" [(ngModel)]="CONTENT_OTHERDATA.word"></ion-input>
         <ion-button core-site-plugins-call-ws
-                    name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word, groupid: CONTENT_OTHERDATA.group}"
+                    name="mod_wordcloud_add_word" [params]="{aid: <% wordcloud.id %>, word: CONTENT_OTHERDATA.word, groupid: CONTENT_OTHERDATA.group, listview: 0}"
                     [preSets]="{getFromCache: 0, saveToCache: 0}" confirmMessage
                     [useOtherData]="['userid']" (onSuccess)="addWordCallDone($event)">
             {{ 'plugin.mod_wordcloud.submitbtn' | translate }}
