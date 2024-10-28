@@ -1,57 +1,89 @@
-import $ from "jquery";
-import ajax from "core/ajax";
-import notification from "core/notification";
-import ModalFactory from "core/modal_factory";
+import ajax from 'core/ajax';
+import notification from 'core/notification';
+import ModalFactory from 'core/modal_factory';
 import {get_string as getString} from 'core/str';
 
-export const init = (refreshtime, aid, timestamphtml, listview) => {
-    $('#mod-wordcloud-new-word').keypress(function (e) {
-        // filter enter key to auto commit the word
-        if (e.keyCode === 13) {
-            $('#mod-wordcloud-btn').click();
-        }
-    });
-    $.mod_wordcloud_add_word = function () {
-        var word = $('#mod-wordcloud-new-word').val();
+const addwordtowordcloud = (() => {
+    // Private variables
+    let aid, listview, timestamphtml, refreshtime;
 
-        if (!word.trim()) {
-            return;
-        }
+    // Function to add a new word
+    const addWord = () => {
+        const newWord = document.getElementById('mod-wordcloud-new-word');
+        const wordBox = document.getElementById('mod-wordcloud-words-box');
+        const wordCount = document.getElementById('mod-wordcloud-wcount');
+        const viewMenu = document.getElementById('mod-wordcloud-view-menu');
 
+        const word = newWord.value.trim();
+        if (!word) {return;}
+
+        // AJAX call to add the word to the word cloud
         ajax.call([{
             methodname: 'mod_wordcloud_add_word',
-            args: {aid: aid, word: word, listview: listview},
-            done: function (returnval) {
+            args: { aid, word, listview },
+            done: (returnval) => {
                 if (!returnval.cloudhtml) {
+                    // Show warning modal if there's an error
                     ModalFactory.create({
                         type: ModalFactory.types.CANCEL,
                         title: getString('warning', 'mod_wordcloud'),
-                        body: returnval.warnings[0].message,
-                    }).then(function (modal) {
-                        modal.show();
-                    });
+                        body: returnval.warnings[0].message
+                    }).then(modal => modal.show());
                 } else {
-                    $('#mod-wordcloud-words-box').html(returnval.cloudhtml);
-                    $('#mod-wordcloud-wcount').text(returnval.sumcount);
-                    $('#mod-wordcloud-new-word').val('');
-                    $('#mod-wordcloud-view-menu').prop('disabled', false);
+                    // Update word cloud
+                    wordBox.innerHTML = returnval.cloudhtml;
+                    wordCount.textContent = returnval.sumcount;
+                    newWord.value = '';
+                    viewMenu.disabled = false;
                 }
             },
             fail: notification.exception
         }]);
     };
-    setInterval(function(){
-        ajax.call([{
-            methodname: 'mod_wordcloud_get_words',
-            args: {aid: aid, timestamphtml: timestamphtml, listview: listview},
-            done: function (returnval) {
-                if (returnval.cloudhtml) {
-                    $('#mod-wordcloud-words-box').html(returnval.cloudhtml);
-                    $('#mod-wordcloud-wcount').text(returnval.sumcount);
-                    timestamphtml = returnval.timestamphtml;
+
+    // Function to auto-refresh the word cloud periodically
+    const autoRefreshWords = () => {
+        const wordBox = document.getElementById('mod-wordcloud-words-box');
+        const wordCount = document.getElementById('mod-wordcloud-wcount');
+
+        setInterval(() => {
+            ajax.call([{
+                methodname: 'mod_wordcloud_get_words',
+                args: { aid, timestamphtml, listview },
+                done: (returnval) => {
+                    if (returnval.cloudhtml) {
+                        wordBox.innerHTML = returnval.cloudhtml;
+                        wordCount.textContent = returnval.sumcount;
+                        timestamphtml = returnval.timestamphtml;
+                    }
+                },
+                fail: notification.exception
+            }]);
+        }, refreshtime * 1000);
+    };
+
+    return {
+        init: (refreshTime, aidParam, timestampHtmlParam, listviewParam) => {
+            refreshtime = refreshTime;
+            aid = aidParam;
+            timestamphtml = timestampHtmlParam;
+            listview = listviewParam;
+
+            const wordInput = document.getElementById('mod-wordcloud-new-word');
+            const addButton = document.getElementById('mod-wordcloud-btn');
+
+            wordInput.addEventListener('keypress', (e) => {
+                if (e.keyCode === 13) {
+                    addButton.click();
                 }
-            },
-            fail: notification.exception
-        }]);
-    },refreshtime*1000);
-};
+            });
+
+            addButton.addEventListener('click', addWord);
+
+            // Start auto-refresh of word cloud
+            autoRefreshWords();
+        }
+    };
+})();
+
+export default addwordtowordcloud;

@@ -1,5 +1,3 @@
-import $ from "jquery";
-
 const mod_wordcloud_set_height = () => {
     const wb = document.getElementById('mod-wordcloud-div');
     const divheight = wb.offsetHeight;
@@ -52,7 +50,7 @@ const mod_wordcloud_export_listener = () => {
     exportmenu.onchange = function() {
         var selectedval = this.options[this.selectedIndex].value;
         if (selectedval == 'png') {
-            $.mod_wordcloud_pic();
+            window.modWordcloudPic();
         } else {
             window.open(selectedval, '_blank');
         }

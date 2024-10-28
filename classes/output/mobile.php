@@ -62,9 +62,7 @@ class mobile {
         }
 
         $groupid = empty($args->group) ? 0 : $args->group;
-        if ($groupmode = groups_get_activity_groupmode($cm)) {
-            $groups = self::get_groups($context, $cm, $groupmode, $groupid);
-        }
+        $groupmode = groups_get_activity_groupmode($cm);
 
         $moodle4 = ($CFG->version >= 2022041900) ? true : false;
         $wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
@@ -95,9 +93,15 @@ class mobile {
             'timing' => $cansubmit['timing'],
             'timeopen' => $cansubmit['timeopen'],
             'timeclose' => $cansubmit['timeclose'],
-            'showgroups' => !empty($groups),
-            'groups' => array_values($groups),
         ];
+
+        if ($groupmode) {
+            $groups = self::get_groups($context, $cm, $groupmode, $groupid);
+            $data['showgroups'] = !empty($groups);
+            $data['groups'] = array_values($groups);
+        } else {
+            $data['showgroups'] = false;
+        }
 
         if ($moodle4) {
             $data['timing'] = null;

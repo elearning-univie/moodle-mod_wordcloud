@@ -1,20 +1,23 @@
 import html2canvas from "mod_wordcloud/html2canvas";
-import $ from "jquery";
 
 export const init = wcname => {
     wcname = wcname.replace(' ', '_');
 
-    $.mod_wordcloud_pic = function () {
-        var wc_content = document.getElementById("mod-wordcloud-words-box");
-        html2canvas(wc_content, {
+    const modWordcloudPic = () => {
+        const wcContent = document.getElementById("mod-wordcloud-words-box");
+
+        html2canvas(wcContent, {
             scrollX: 0,
             scrollY: -window.scrollY
         }).then(canvas => {
-            var img = canvas.toDataURL("image/png");
-            var a = document.createElement('a');
-            a.href = img;
-            a.download = wcname + ".png";
-            a.click();
+            const img = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.href = img;
+            link.download = `${wcname}.png`;
+            link.click();
         });
     };
+
+    // Expose the function for external use (if necessary)
+    window.modWordcloudPic = modWordcloudPic;
 };
