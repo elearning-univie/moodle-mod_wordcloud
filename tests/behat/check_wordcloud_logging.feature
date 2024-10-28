@@ -11,7 +11,7 @@ Feature: As an admin I can check the wordcloud logs
   Scenario: I check the wordcloud logs
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Wordcloud" to section "1" and I fill the form with:
+    And I add a wordcloud activity to course "Course 1" section "1" and I fill the form with:
       | Wordcloud activity name | Test wordcloud |
     And I am on the "Test wordcloud" "wordcloud activity" page
     And I navigate to "Reports > Logs" in site administration

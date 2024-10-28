@@ -24,18 +24,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$services = array(
-    'wordcloudservice' => array(
-        'functions' => array('mod_wordcloud_add_word', 'mod_wordcloud_get_words', 'mod_wordcloud_update_entry'),
+$services = [
+    'wordcloudservice' => [
+        'functions' => ['mod_wordcloud_add_word', 'mod_wordcloud_get_words', 'mod_wordcloud_update_entry'],
         'shortname' => 'wordcloud',
         'requiredcapability' => 'mod/wordcloud:submit',
         'restrictedusers' => 0,
         'enabled' => 1,
-    )
-);
+    ],
+];
 
-$functions = array(
-    'mod_wordcloud_add_word' => array(
+$functions = [
+    'mod_wordcloud_add_word' => [
         'classname' => 'mod_wordcloud_external',
         'methodname' => 'add_word',
         'classpath' => 'mod/wordcloud/externallib.php',
@@ -43,24 +43,24 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'loginrequired' => true,
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
-    ),
-    'mod_wordcloud_get_words' => array(
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'mod_wordcloud_get_words' => [
         'classname' => 'mod_wordcloud_external',
         'methodname' => 'get_words',
         'classpath' => 'mod/wordcloud/externallib.php',
         'description' => 'Get the latest word cloud html',
         'type' => 'read',
         'ajax' => true,
-        'loginrequired' => true
-    ),
-    'mod_wordcloud_update_entry' => array(
+        'loginrequired' => true,
+    ],
+    'mod_wordcloud_update_entry' => [
         'classname' => 'mod_wordcloud_external',
         'methodname' => 'update_entry',
         'classpath' => 'mod/wordcloud/externallib.php',
         'description' => 'Get the latest word cloud html',
         'type' => 'write',
         'ajax' => true,
-        'loginrequired' => true
-    )
-);
+        'loginrequired' => true,
+    ],
+];

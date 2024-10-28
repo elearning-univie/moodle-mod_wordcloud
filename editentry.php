@@ -37,13 +37,13 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 require_capability('mod/wordcloud:editentry', $context);
 
-$params = array();
+$params = [];
 $params['id'] = $id;
 if ($perpage) {
     $params['perpage'] = $perpage;
 }
 
-$wordcloud = $DB->get_record('wordcloud', array('id' => $cm->instance));
+$wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
 
 $PAGE->set_url(new moodle_url("/mod/wordcloud/editentry.php", $params));
 $node = $PAGE->settingsnav->find('mod_wordcloud', navigation_node::TYPE_SETTING);
@@ -58,7 +58,7 @@ $PAGE->add_body_class('limitedwidth');
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
-    'hidecompletion' => true
+    'hidecompletion' => true,
 ]);
 
 if ($deleteselected) {
@@ -68,10 +68,11 @@ if ($deleteselected) {
 
     if ($confirm == md5($deleteselected)) {
         $DB->delete_records('wordcloud_map', ['id' => $deleteselected]);
+        $DB->delete_records('wordcloud_word_user_rel', ['mapid' => $deleteselected]);
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/wordcloud/editentry.php',
-            array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+            ['id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)]);
 
         $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
         $word = '<strong>' . $DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected]) . '</strong>';

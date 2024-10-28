@@ -96,7 +96,7 @@ class mobile {
             'timeopen' => $cansubmit['timeopen'],
             'timeclose' => $cansubmit['timeclose'],
             'showgroups' => !empty($groups),
-            'groups' => array_values($groups)
+            'groups' => array_values($groups),
         ];
 
         if ($moodle4) {

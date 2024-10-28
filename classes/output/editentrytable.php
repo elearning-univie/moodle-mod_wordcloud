@@ -61,18 +61,19 @@ class editentrytable extends table_sql {
         $this->deleteicontext = get_string('remove', 'moodle');
 
         // Define the list of columns to show.
-        $columns = array('word', 'count', 'response', 'remove');
+        $columns = ['word', 'count', 'response', 'remove'];
         $this->define_columns($columns);
         $this->column_class('word', 'word');
         $this->column_class('count', 'count');
         $this->column_class('remove', 'remove');
 
         // Define the titles of columns to show in header.
-        $headers = array(
+        $headers = [
             get_string('word', 'mod_wordcloud'),
             get_string('count', 'mod_wordcloud'),
             '',
-            get_string('remove'));
+            get_string('remove'),
+            ];
         $this->define_headers($headers);
 
         $this->collapsible(false);
@@ -129,7 +130,7 @@ class editentrytable extends table_sql {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/wordcloud/editentry.php',
-            array('id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()));
+            ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]);
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }

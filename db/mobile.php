@@ -35,7 +35,7 @@ $addons = [
                 ],
                 'styles' => [
                     'url' => $CFG->wwwroot . '/mod/wordcloud/mobile/mobile_styles.css',
-                    'version' => '1.0'
+                    'version' => '1.0',
                 ],
             ],
         ],
@@ -46,7 +46,7 @@ $addons = [
             ['refreshtext', 'wordcloud'],
             ['selectagroup', 'moodle'],
             ['submitbtn', 'wordcloud'],
-            ['textbox', 'wordcloud']
+            ['textbox', 'wordcloud'],
         ],
     ],
 ];
