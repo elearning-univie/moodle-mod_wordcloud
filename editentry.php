@@ -99,8 +99,12 @@ $table->define_baseurl($PAGE->url);
 $backurl = new moodle_url("/mod/wordcloud/view.php", $params);
 
 echo $OUTPUT->header();
-echo html_writer::tag('button', get_string('save', 'moodle'),
-        ['class' => 'btn btn-primary', 'onclick' => "$.mod_wordcloud_update_entry($wordcloud->id, '$backurl');"]);
+echo html_writer::tag('button', get_string('save', 'moodle'), [
+    'id' => 'mod-wordcloud-update-btn',
+    'class' => 'btn btn-primary',
+    'data-aid' => "$wordcloud->id",
+    'data-backurl' => "$backurl",
+]);
 echo '    ';
 echo html_writer::tag('button', get_string('cancel', 'moodle'),
     ['class' => 'btn btn-secondary', 'onclick' => "location.href='$backurl'"]);
