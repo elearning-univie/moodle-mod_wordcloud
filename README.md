@@ -1,6 +1,8 @@
 Wordcloud Module
 ==========================
 
+This file is part of the mod_wordcloud plugin for Moodle - <http://moodle.org/>
+
 *Author:* Adrian Czermak, Angela Baier, Thomas Wedekind
 
 *Copyright:* 2020 [University of Vienna](https://www.univie.ac.at/)
@@ -10,19 +12,35 @@ Wordcloud Module
 
 Description
 -----------
-The wordcloud activity provides a place to collect terms together with your course participants and display them graphically in order of occurrance. This could be used in a brainstorming process or to create a base for a discussion.
+
+The wordcloud activity provides a place to collect terms together with your course participants
+and display them in real time by using different font colors and sizes according to their frequency.
+Alternatively, submitted terms can also be displayed as a list.
+
+Participants can work in groups via the group mode. The data can be displayed either for
+individual groups or as aggregated data.
+
+In general the data is stored in such a way that it is not possible for teachers to trace words.
+Furthermore the output can be exported in different formats for further use.
 
 
-Examples
---------
-* Use the Wordcloud as an introduction to a new topic.
-* Query the prior knowledge of your students.
+Usage
+-----
+
+A teacher wants his students to participate interactively in his lessons using the wordcloud.
+
+Possible scenarios are:
+* Collect words on various topics.
+* Create a base for a further discussion.
+* Query the current knowledge.
+* Collect unclear issues or topics, to work on it.
 * Get a mood picture on a topic.
+* Do a brainstorming process.
+* Get anonymous feedback.
 
+The students collect terms on a specific topic in small groups. Afterwards the teacher displays an overall wordcloud to adress similarities and differences of the given answers.
 
-Requirements
-------------
-The plugin is available for Moodle 3.10+.
+After the session, the teacher exports the submitted words to use them for the preparation of the following lessons.
 
 
 Installation
@@ -38,7 +56,9 @@ Installation
 
 Admin Settings
 --------------
-An administrator can adjust the instance wide refresh time for the wordcloud, which sets the interval on how often the client ask the server if there is a change to a specific wordcloud. 
+
+An administrator can adjust the instance wide refresh time for the wordcloud, which sets the interval
+on how often the client ask the server if there is a change to a specific wordcloud. 
 The font colors of the wordcloud are also adjustable in the settings.
 
 _Site administration -> Plugins -> Activity modules -> Wordcloud_
@@ -50,15 +70,17 @@ _Site administration -> Plugins -> Activity modules -> Wordcloud_
   Textcolor for font size 1 to 6. Colors are set as hexcode.
 
 
-Documentation
--------------
-You can find further information to the plugin on the [Github wiki](https://github.com/elearning-univie/moodle-mod_wordcloud/wiki/)
-
-
 Third-party Libraries
 ---------------------
+
 This plugin uses the following third-party libraries:
 * JavaScript HTML renderer from [html2canvas](https://github.com/niklasvh/html2canvas)
+
+
+Privacy API
+-----------
+
+The plugin fully implements the Moodle Privacy API.
 
 
 Bug Reports / Support
