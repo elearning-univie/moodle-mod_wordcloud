@@ -1,6 +1,7 @@
 .path-mod-wordcloud #mod-wordcloud-div {
     overflow: hidden;
     min-width: 450px;
+    --bs-gutter-x: 0 !important;
 }
 
 .path-mod-wordcloud #mod-wordcloud-new-word {
@@ -15,7 +16,6 @@
     border: 1px solid #e5e5e5;
     border-radius: 0 0 5px 5px;
     padding: 1em;
-    overflow: auto;
 }
 
 .path-mod-wordcloud #mod-wordcloud-btn {
