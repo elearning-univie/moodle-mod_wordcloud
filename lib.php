@@ -62,7 +62,11 @@ function wordcloud_add_instance($wordcloud) {
 
     $wordcloud->timecreated = time();
 
-    return $DB->insert_record('wordcloud', $wordcloud);
+    $wordcloud->id = $DB->insert_record('wordcloud', $wordcloud);
+    $completiontimeexpected = !empty($wordcloud->completionexpected) ? $wordcloud->completionexpected : null;
+    \core_completion\api::update_completion_date_event($wordcloud->coursemodule, 'wordcloud', $wordcloud->id, $completiontimeexpected);
+
+    return $wordcloud->id;
 }
 
 /**
@@ -76,6 +80,11 @@ function wordcloud_delete_instance($id) {
 
     if (!$DB->record_exists('wordcloud', ['id' => $id])) {
         return false;
+    }
+
+    $cm = get_coursemodule_from_instance('wordcloud', $id);
+    if ($cm) {
+        \core_completion\api::update_completion_date_event($cm->id, 'wordcloud', $id, null);
     }
 
     $DB->delete_records('wordcloud_map', ['wordcloudid' => $id]);
@@ -104,7 +113,12 @@ function wordcloud_update_instance($wordcloud) {
         $wordcloud->visibility = 0;
     }
 
-    return $DB->update_record('wordcloud', $wordcloud);
+    $DB->update_record('wordcloud', $wordcloud);
+
+    $completionexpected = !empty($wordcloud->completionexpected) ? $wordcloud->completionexpected : null;
+    \core_completion\api::update_completion_date_event($wordcloud->coursemodule, 'wordcloud', $wordcloud->id, $completionexpected);
+
+    return true;
 }
 
 /**
@@ -189,3 +203,40 @@ function mod_wordcloud_get_completion_active_rule_descriptions($cm) {
     }
     return $descriptions;
 }
+
+/**
+ * Callback to fetch the social/actionable link for the timeline block.
+ *
+ * @param calendar_event $event
+ * @return action_data|null
+ */
+function mod_wordcloud_core_calendar_provide_event_action(calendar_event $event,
+                                                          \core_calendar\action_factory $factory,
+                                                          int $userid = 0) {
+    global $DB, $USER;
+
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['wordcloud'][$event->instance];
+
+    if (!$cm->uservisible) {
+        return null;
+    }
+
+    $completion = new completion_info($cm->get_course());
+    $completiondata = $completion->get_data($cm);
+
+    if ($completiondata->completionstate == COMPLETION_COMPLETE) {
+        return null;
+    }
+
+    return $factory->create_instance(
+        get_string('view'),
+        new \moodle_url('/mod/wordcloud/view.php', ['id' => $cm->id]),
+        1,
+        true
+    );
+}
+

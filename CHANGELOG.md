@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v5.0-r2 (2026-07-10)
+* [FIX] Bug with not displayed Wordcloud activities in block timeline
+
 ## v5.0-r1 (2025-04-14)
 * [FEATURE] Add further behat tests
 * [UPDATE] Update of readme file
