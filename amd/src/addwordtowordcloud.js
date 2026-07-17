@@ -3,15 +3,17 @@ import notification from 'core/notification';
 import ModalFactory from 'core/modal_factory';
 import {get_string as getString} from 'core/str';
 
+import {render_wordcloud as renderWordcloud} from "mod_wordcloud/renderer";
+
 const addwordtowordcloud = (() => {
     // Private variables
-    let aid, listview, timestamphtml, refreshtime;
+    let aid, timestamphtml, refreshtime;
 
     // Function to add a new word
     const addWord = () => {
         const newWord = document.getElementById('mod-wordcloud-new-word');
-        const wordBox = document.getElementById('mod-wordcloud-words-box');
-        const wordCount = document.getElementById('mod-wordcloud-wcount');
+        //const wordBox = document.getElementById('mod-wordcloud-words-box');
+        const sumCount = document.getElementById('mod-wordcloud-wcount');
         const viewMenu = document.getElementById('mod-wordcloud-view-menu');
 
         const word = newWord.value.trim();
@@ -20,9 +22,9 @@ const addwordtowordcloud = (() => {
         // AJAX call to add the word to the word cloud
         ajax.call([{
             methodname: 'mod_wordcloud_add_word',
-            args: { aid, word, listview },
+            args: { aid, word },
             done: (returnval) => {
-                if (!returnval.cloudhtml) {
+                if (!returnval.entries) {
                     // Show warning modal if there's an error
                     ModalFactory.create({
                         type: ModalFactory.types.CANCEL,
@@ -31,8 +33,10 @@ const addwordtowordcloud = (() => {
                     }).then(modal => modal.show());
                 } else {
                     // Update word cloud
-                    wordBox.innerHTML = returnval.cloudhtml;
-                    wordCount.textContent = returnval.sumcount;
+                    // wordBox.innerHTML = returnval.cloudhtml;
+                    timestamphtml = returnval.timestamphtml;
+                    renderWordcloud(returnval.entries, returnval.wordcountrange);
+                    sumCount.textContent = returnval.sumcount;
                     newWord.value = '';
                     viewMenu.disabled = false;
                 }
@@ -43,17 +47,17 @@ const addwordtowordcloud = (() => {
 
     // Function to auto-refresh the word cloud periodically
     const autoRefreshWords = () => {
-        const wordBox = document.getElementById('mod-wordcloud-words-box');
+        // const wordBox = document.getElementById('mod-wordcloud-words-box');
         const wordCount = document.getElementById('mod-wordcloud-wcount');
 
         setInterval(() => {
             ajax.call([{
-                methodname: 'mod_wordcloud_get_words',
-                args: { aid, timestamphtml, listview },
+                methodname: 'mod_wordcloud_get_entries',
+                args: { aid, timestamphtml },
                 done: (returnval) => {
-                    if (returnval.cloudhtml) {
-                        wordBox.innerHTML = returnval.cloudhtml;
+                    if (returnval.entries) {
                         wordCount.textContent = returnval.sumcount;
+                        renderWordcloud(returnval.entries, returnval.wordcountrange);
                         timestamphtml = returnval.timestamphtml;
                     }
                 },
@@ -63,11 +67,10 @@ const addwordtowordcloud = (() => {
     };
 
     return {
-        init: (refreshTime, aidParam, timestampHtmlParam, listviewParam) => {
+        init: (refreshTime, aidParam, timestampHtmlParam) => {
             refreshtime = refreshTime;
             aid = aidParam;
             timestamphtml = timestampHtmlParam;
-            listview = listviewParam;
 
             const wordInput = document.getElementById('mod-wordcloud-new-word');
             const addButton = document.getElementById('mod-wordcloud-btn');

@@ -21,13 +21,33 @@
     {
     }
 }}
+
+<div class="table-reset-link mb-2 text-end">
+    <!-- Styled as a native link instead of a button button -->
+    <a href="#" id="wordcloud-reset-btn" class="btn btn-link p-0 text-decoration-none">
+        {{# str }} resettable, core {{/ str }}
+    </a>
+</div>
+
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped" id="wordcloud-table">
         <thead>
-            <tr>
-                <th>{{# str }} word, mod_wordcloud {{/ str }} </th>
-                <th>{{# str }} count, mod_wordcloud {{/ str }} </th>
-            </tr>
+        <tr>
+            <th class="sortable-header" data-sort="word" style="cursor: pointer;">
+                <a href="#" class="text-decoration-none d-block">
+                    {{# str }} word, mod_wordcloud {{/ str }}
+                    {{#sort_word_asc}} {{#pix}} t/sort_asc, core {{/pix}} {{/sort_word_asc}}
+                    {{#sort_word_desc}} {{#pix}} t/sort_desc, core {{/pix}} {{/sort_word_desc}}
+                </a>
+            </th>
+            <th class="sortable-header w-25" data-sort="count" style="cursor: pointer;">
+                <a href="#" class="text-decoration-none d-block">
+                    {{# str }} count, mod_wordcloud {{/ str }}
+                    {{#sort_count_asc}} {{#pix}} t/sort_asc, core {{/pix}} {{/sort_count_asc}}
+                    {{#sort_count_desc}} {{#pix}} t/sort_desc, core {{/pix}} {{/sort_count_desc}}
+                </a>
+            </th>
+        </tr>
         </thead>
         <tbody>
         {{#words}}

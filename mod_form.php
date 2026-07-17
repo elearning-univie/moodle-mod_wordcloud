@@ -47,6 +47,7 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $wordcloudconfig = get_config('wordcloud');
 
         $mform =& $this->_form;
+        $config = get_config('wordcloud');
 
         $mform->addElement('text', 'name', get_string('wordcloudname', 'wordcloud'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
@@ -74,12 +75,31 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $mform->hideIf('monocolor', 'usemonocolor');
         $mform->hideIf('radiocolor', 'usemonocolor');
         $mform->addHelpButton('radiocolor', 'monocolor', 'wordcloud');
+
+        // Removed the manual 'hidden' class assignment
         $mform->addElement('text', 'monocolorhex', get_string('monocolor_hex', 'wordcloud'), ['size' => '6']);
         $mform->setType('monocolorhex', PARAM_TEXT);
         $mform->setDefault('monocolorhex', '000000');
         $mform->hideIf('monocolorhex', 'monocolor', 'neq', 0);
         $mform->hideIf('monocolorhex', 'usemonocolor');
         $mform->addHelpButton('monocolorhex', 'monocolor_hex', 'wordcloud');
+
+        $mform->addElement('select', 'font', get_string('font', 'wordcloud'), mod_wordcloud_get_render_fonts());
+        $mform->setType('font', PARAM_TEXT);
+        // $mform->hideIf('font', 'renderstyle', 'neq', 1);
+        $mform->addHelpButton('font', 'font', 'wordcloud');
+
+        if (isset($config->defaultfont)) {
+            $mform->setDefault('font', $config->defaultfont);
+        }
+
+        $mform->addElement('select', 'textalignment', get_string('textalignment', 'wordcloud'), mod_wordcloud_get_render_textalignments());
+        $mform->setType('textalignment', PARAM_TEXT);
+        $mform->addHelpButton('textalignment', 'textalignment', 'wordcloud');
+
+        if (isset($config->defaulttextalignment)) {
+            $mform->setDefault('textalignment', $config->defaulttextalignment);
+        }
 
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
         $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
@@ -124,6 +144,12 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         return $errors;
     }
 
+    /**
+     * Check values and set default values
+     *
+     * @param object $defaultvalues
+     * @return void
+     */
     public function data_preprocessing(&$defaultvalues) {
         parent::data_preprocessing($defaultvalues);
 
@@ -139,6 +165,13 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         }
         if (empty($defaultvalues[$completionsubmitsel])) {
             $defaultvalues[$completionsubmitsel] = 1;
+        }
+
+        if (!empty($defaultvalues['rendersettings'])) {
+            $settings = json_decode($defaultvalues['rendersettings'], true);
+            foreach ($settings as $key => $value) {
+                $defaultvalues[$key] = $value;
+            }
         }
     }
 
@@ -186,6 +219,7 @@ class mod_wordcloud_mod_form extends moodleform_mod {
      */
     public function data_postprocessing($data) {
         parent::data_postprocessing($data);
+
         // Turn off completion settings if the checkboxes aren't ticked.
         if (!empty($data->completionunlocked)) {
             $suffix = $this->get_suffix();
@@ -194,6 +228,18 @@ class mod_wordcloud_mod_form extends moodleform_mod {
             if (empty($data->{'completionsubmitsenabled' . $suffix}) || !$autocompletion) {
                 $data->{'completionsubmits' . $suffix} = 0;
             }
+        }
+
+        if (isset($data->font) && isset($data->textalignment)) {
+            $data->renderstyle = mod_wordcloud_get_render_style($data->textalignment);
+
+            $settings = [
+                'renderstyle'   => $data->renderstyle,
+                'font'          => $data->font,
+                'textalignment' => $data->textalignment
+            ];
+
+            $data->rendersettings = json_encode($settings);
         }
     }
 }

@@ -26,7 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $services = [
     'wordcloudservice' => [
-        'functions' => ['mod_wordcloud_add_word', 'mod_wordcloud_get_words', 'mod_wordcloud_update_entry'],
+        'functions' => [
+            'mod_wordcloud_add_word',
+            'mod_wordcloud_get_words',
+            'mod_wordcloud_get_entries',
+            'mod_wordcloud_update_entry',
+        ],
         'shortname' => 'wordcloud',
         'requiredcapability' => 'mod/wordcloud:submit',
         'restrictedusers' => 0,
@@ -50,6 +55,15 @@ $functions = [
         'methodname' => 'get_words',
         'classpath' => 'mod/wordcloud/externallib.php',
         'description' => 'Get the latest word cloud html',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+    ],
+    'mod_wordcloud_get_entries' => [
+        'classname' => 'mod_wordcloud_external',
+        'methodname' => 'get_entries',
+        'classpath' => 'mod/wordcloud/externallib.php',
+        'description' => 'Get the latest word cloud entries',
         'type' => 'read',
         'ajax' => true,
         'loginrequired' => true,

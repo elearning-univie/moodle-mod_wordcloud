@@ -36,4 +36,41 @@ if ($ADMIN->fulltree) {
         $description = get_string('fontcolordesc', 'wordcloud', $i);
         $settings->add(new admin_setting_configtext($settingname, $visiblename, $description, $colors[$i - 1], PARAM_ALPHANUM));
     }
+
+    $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
+        get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
+
+    $settings->add(new admin_setting_heading('fontoptions', get_string('fontandoptions', 'wordcloud'), ''));
+
+    $fonts = mod_wordcloud_get_render_fonts();
+
+    $settings->add(new admin_setting_configselect('wordcloud/defaultfont',
+        new lang_string('defaultfont', 'wordcloud'),
+        new lang_string('defaultfontdesc', 'wordcloud'), 'Arial, sans-serif', $fonts));
+
+    $textalignment = mod_wordcloud_get_render_textalignments();
+
+    $settings->add(new admin_setting_configselect('wordcloud/defaulttextalignment',
+        new lang_string('defaulttextalignment', 'wordcloud'),
+        new lang_string('defaulttextalignmentdesc', 'wordcloud'), 'h', $textalignment));
+
+    $settings->add(new admin_setting_heading('furtheroptions', get_string('furtheroptions', 'wordcloud'), ''));
+
+    $defaultrendersettings = json_encode([
+        'gridSize' => 8,
+        'color' => 'random-dark',
+        'rotateRatio' => 0.5,
+        'backgroundColor' => '#ffffff',
+        "shrinkToFit" => true,
+        "drawOutOfBound" => false,
+        "minSize" => 1,
+    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+
+    $settings->add(new admin_setting_configtextarea(
+        'wordcloud/rendersettings',
+        get_string('rendersettings', 'wordcloud'),
+        get_string('rendersettingsdesc', 'wordcloud'),
+        $defaultrendersettings,
+        PARAM_RAW)
+    );
 }

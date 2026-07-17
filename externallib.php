@@ -43,9 +43,8 @@ class mod_wordcloud_external extends external_api {
     public static function add_word_parameters() {
         return new external_function_parameters([
                 'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'word' => new external_value(PARAM_TEXT, 'word to be added'),
+                'word' => new external_value(PARAM_RAW, 'word to be added'),
                 'groupid' => new external_value(PARAM_INT, 'id of the wordcloud activity', VALUE_DEFAULT, 0),
-                'listview' => new external_value(PARAM_INT, 'display cloud as list'),
             ]
         );
     }
@@ -59,7 +58,19 @@ class mod_wordcloud_external extends external_api {
         return new external_function_parameters([
                 'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
                 'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
-                'listview' => new external_value(PARAM_INT, 'display cloud as list'),
+            ]
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_entries_parameters() {
+        return new external_function_parameters([
+                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+                'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
             ]
         );
     }
@@ -90,16 +101,15 @@ class mod_wordcloud_external extends external_api {
      * @param int $aid
      * @param string $word
      * @param int $groupid
-     * @param int $listview
      * @return array|null
      */
-    public static function add_word($aid, $word, $groupid, $listview) {
+    public static function add_word($aid, $word, $groupid) {
         global $DB, $USER;
 
         $warnings = [];
 
         $params = self::validate_parameters(self::add_word_parameters(),
-            ['aid' => $aid, 'word' => $word, 'groupid' => $groupid, 'listview' => $listview]);
+            ['aid' => $aid, 'word' => $word, 'groupid' => $groupid]);
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -121,7 +131,7 @@ class mod_wordcloud_external extends external_api {
         $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $servergroupid);
 
         if (!$cansubmit['writeaccess']) {
-            return ['cloudhtml' => '', 'sumcount' => 0, 'warnings' => $warnings];
+            return ['entries' => '', 'sumcount' => 0, 'warnings' => $warnings];
         }
 
         $params['word'] = trim($params['word']);
@@ -131,9 +141,9 @@ class mod_wordcloud_external extends external_api {
                     'warningcode' => 'errorwordoverflow',
                     'message' => get_string('errorwordoverflow', 'mod_wordcloud'),
             ];
-            return ['cloudhtml' => '', 'sumcount' => 0, 'warnings' => $warnings];
+            return ['entries' => '', 'sumcount' => 0, 'warnings' => $warnings];
         } else if (strlen($params['word']) == 0) {
-            return ['cloudhtml' => '', 'sumcount' => 0, 'warnings' => $warnings];
+            return ['entries' => '', 'sumcount' => 0, 'warnings' => $warnings];
         }
 
         $record = $DB->get_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'groupid' => $servergroupid,
@@ -147,7 +157,7 @@ class mod_wordcloud_external extends external_api {
                         'warningcode' => 'errortoomanywords',
                         'message' => get_string('errortoomanywords', 'mod_wordcloud'),
                 ];
-                return ['cloudhtml' => '', 'sumcount' => 0, 'warnings' => $warnings];
+                return ['entries' => '', 'sumcount' => 0, 'warnings' => $warnings];
             }
 
             $mapid = $DB->insert_record('wordcloud_map', ['wordcloudid' => $params['aid'], 'groupid' => $servergroupid,
@@ -179,27 +189,32 @@ class mod_wordcloud_external extends external_api {
             }
         }
 
-        $DB->set_field('wordcloud', 'lastwordchange', time(), ['id' => $params['aid']]);
-        $cloudhtml = mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $servergroupid, $params['listview'], $canedit);
-        return ['cloudhtml' => $cloudhtml['cloudhtml'],
-            'sumcount' => $cloudhtml['sumcount'],
-            'warnings' => $warnings];
+        $wordchangetime = time();
+
+        $DB->set_field('wordcloud', 'lastwordchange', $wordchangetime, ['id' => $params['aid']]);
+        $cloud = mod_wordcloud_get_entries($params['aid'], $groupmode, $servergroupid, $canedit);
+        return [
+            'entries' => $cloud['entries'],
+            'sumcount' => $cloud['sumcount'],
+            'wordcountrange' => $cloud['wordcountrange'],
+            'timestamphtml' => $wordchangetime,
+            'warnings' => $warnings,
+        ];
     }
 
     /**
-     * Get the latest wordcloud html
+     * Deprecated! Get the latest wordcloud html
      *
      * @param int $aid
      * @param int $timestamphtml
-     * @param int $listview
      * @return array|null
      */
-    public static function get_words($aid, $timestamphtml, $listview) {
+    public static function get_words($aid, $timestamphtml) {
         global $DB;
 
         $warnings = [];
 
-        $params = self::validate_parameters(self::get_words_parameters(), ['aid' => $aid, 'timestamphtml' => $timestamphtml, 'listview' => $listview]);
+        $params = self::validate_parameters(self::get_words_parameters(), ['aid' => $aid, 'timestamphtml' => $timestamphtml]);
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -223,14 +238,65 @@ class mod_wordcloud_external extends external_api {
         $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
 
         if ($record->lastwordchange > $timestamphtml) {
-            $cloudhtml = mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid, $params['listview'], $canedit);
-            return ['cloudhtml' => $cloudhtml['cloudhtml'],
+            $cloudhtml = mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid, $canedit);
+            return [
+                'cloudhtml' => $cloudhtml['cloudhtml'],
                 'sumcount' => $cloudhtml['sumcount'],
                 'timestamphtml' => $record->lastwordchange,
-                'warnings' => $warnings];
+                'warnings' => $warnings,
+            ];
         }
 
         return ['cloudhtml' => '', 'sumcount' => 0, 'timestamphtml' => 0, 'warnings' => $warnings];
+    }
+
+    /**
+     * Get the latest wordcloud entries
+     *
+     * @param int $aid
+     * @param int $timestamphtml
+     * @return array|null
+     */
+    public static function get_entries($aid, $timestamphtml) {
+        global $DB;
+
+        $warnings = [];
+
+        $params = self::validate_parameters(self::get_entries_parameters(), ['aid' => $aid, 'timestamphtml' => $timestamphtml]);
+        $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        $groupid = 0;
+
+        self::validate_context($context);
+        require_login($course, false, $cm);
+        require_capability('mod/wordcloud:view', $context);
+
+        $canedit = has_capability('mod/wordcloud:editentry', $context);
+
+        if ($groupmode = groups_get_activity_groupmode($cm)) {
+            $groupid = groups_get_activity_group($cm, true);
+            if ($groupmode != VISIBLEGROUPS &&
+                !has_capability('moodle/site:accessallgroups', $context) &&
+                !groups_is_member($groupid)) {
+                return ['entries' => '', 'wordcountrange' => 0, 'sumcount' => 0, 'timestamphtml' => 0, 'warnings' => $warnings];
+            }
+        }
+
+        $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
+
+        if ($record->lastwordchange > $timestamphtml) {
+            $cloud = mod_wordcloud_get_entries($params['aid'], $groupmode, $groupid, $canedit);
+            return [
+                'entries' => $cloud['entries'],
+                'wordcountrange' => $cloud['wordcountrange'],
+                'sumcount' => $cloud['sumcount'],
+                'timestamphtml' => $record->lastwordchange,
+                'warnings' => $warnings,
+            ];
+        }
+
+        return ['entries' => '', 'wordcountrange' => 0, 'sumcount' => 0, 'timestamphtml' => 0, 'warnings' => $warnings];
     }
 
     /**
@@ -314,8 +380,10 @@ class mod_wordcloud_external extends external_api {
      */
     public static function add_word_returns() {
         return new external_single_structure([
-                'cloudhtml' => new external_value(PARAM_RAW, 'wordcloud html code'),
+                'entries' => new external_value(PARAM_RAW, 'wordcloud entries'),
                 'sumcount' => new external_value(PARAM_INT, 'total number of words submitted'),
+                'wordcountrange' => new external_value(PARAM_RAW, 'min/max occurance of the words'),
+                'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
                 'warnings' => new external_warnings(),
         ]);
     }
@@ -331,6 +399,21 @@ class mod_wordcloud_external extends external_api {
                 'sumcount' => new external_value(PARAM_INT, 'total number of words submitted'),
                 'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
                 'warnings' => new external_warnings(),
+        ]);
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function get_entries_returns() {
+        return new external_single_structure([
+            'entries' => new external_value(PARAM_RAW, 'wordcloud html code'),
+            'wordcountrange' => new external_value(PARAM_RAW, 'min/max occurance of the words'),
+            'sumcount' => new external_value(PARAM_INT, 'total number of words submitted'),
+            'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
+            'warnings' => new external_warnings(),
         ]);
     }
 

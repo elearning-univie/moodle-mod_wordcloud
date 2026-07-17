@@ -21,6 +21,7 @@
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require('../../config.php');
 require_once(__DIR__ . '/lib.php');
 require_once(__DIR__ . '/locallib.php');
@@ -48,23 +49,9 @@ $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
 $PAGE->set_heading($course->shortname);
 $PAGE->add_body_class('limitedwidth');
-$wordcloudconfig = get_config('wordcloud');
 
-if ($wordcloud->usemonocolor) {
-    if ($wordcloud->monocolor == 0) {
-        $colors[] = '#' . $wordcloud->monocolorhex;
-    } else {
-        $fontcolor = 'fontcolor' . $wordcloud->monocolor;
-        $colors[] = '#' . $wordcloudconfig->$fontcolor;
-    }
-} else {
-    // 1 to 6 to match the wordcloud text css classes.
-    for ($i = 1; $i <= 6; $i++) {
-        $fontcolor = 'fontcolor' . $i;
-        $colors[] = $wordcloudconfig->$fontcolor;
-    }
-}
-
+$pluginconfig = get_config('wordcloud');
+$wordcloudrendersettings = json_decode($wordcloud->rendersettings, true);
 $groupmode = groups_get_activity_groupmode($cm);
 $groupid = $groupmode ? groups_get_activity_group($cm, true) : 0;
 
@@ -77,7 +64,6 @@ $templatecontext = [
     'writeaccess' => $cansubmit['writeaccess'],
     'wordcloudname' => $wordcloud->name,
     'exportlink' => new moodle_url("/mod/wordcloud/export.php", ['id' => $id]),
-    'colors' => $colors,
 ];
 
 $canedit = false;
@@ -88,7 +74,7 @@ if (has_capability('mod/wordcloud:editentry', $context) && !($groupmode && $grou
 }
 
 if ($templatecontext['writeaccess']) {
-    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$wordcloudconfig->refresh, $wordcloud->id, time(), $listview]);
+    $PAGE->requires->js_call_amd('mod_wordcloud/addwordtowordcloud', 'init', [$pluginconfig->refresh, $wordcloud->id, time(), $listview]);
 }
 
 $views = [
@@ -112,13 +98,33 @@ $event->add_record_snapshot('wordcloud', $wordcloud);
 $event->trigger();
 
 $views[$listview]['selected'] = 1;
-$cloudhtml = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid, $listview, $canedit);
-$templatecontext['cloudhtml'] = $cloudhtml['cloudhtml'];
 $templatecontext['views'] = $views;
-$templatecontext['wordcount'] = $cloudhtml['sumcount'];
-if ($cloudhtml['sumcount'] == 0) {
-    $templatecontext['disabled'] = 1;
+
+if ($listview) {
+    $renderstyle = 2;
+    //$words = $wordcloud->id;
+} else {
+    $renderstyle = $wordcloudrendersettings['renderstyle'];
+    $templatecontext['notlistview'] = true;
 }
+
+
+if ($wordcloudrendersettings['usemonocolor']) {
+    if ($wordcloudrendersettings['monocolor'] == 0) {
+        $colors[] = '#' . $wordcloudrendersettings['monocolorhex'];
+    } else {
+        $fontcolor = 'fontcolor' . $wordcloudrendersettings['monocolor'];
+        $colors[] = '#' . $pluginconfig->$fontcolor;
+    }
+} else {
+    // 1 to 6 to match the wordcloud text css classes.
+    for ($i = 1; $i <= 6; $i++) {
+        $fontcolor = 'fontcolor' . $i;
+        $colors[] = $pluginconfig->$fontcolor;
+    }
+}
+
+$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
 
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
@@ -134,8 +140,15 @@ if ($groupmode) {
     }
 }
 
-$PAGE->requires->js_call_amd('mod_wordcloud/uicontroller', 'init', [$colors]);
+$rendersettings = json_decode($pluginconfig->rendersettings, true);
+$rendersettings['fontFamily'] = $wordcloudrendersettings['font'] ?? $pluginconfig->defaultfont;
+$rendersettings['alignmentmode'] = $wordcloudrendersettings['textalignment'] ?? $pluginconfig->defaulttextalignment;
+// $rendersettings['colors'] = $colors;
+
+$rendersettings = json_encode($rendersettings, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+
 $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
+$PAGE->requires->js_call_amd('mod_wordcloud/renderer', 'init', [$wordcloud->id, $renderstyle, $rendersettings]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $renderer->footer();

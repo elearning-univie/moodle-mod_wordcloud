@@ -1,4 +1,4 @@
-const mod_wordcloud_set_height = () => {
+const set_height = () => {
     const wb = document.getElementById('mod-wordcloud-div');
     const divheight = wb.offsetHeight;
     let newwidth = 0;
@@ -20,7 +20,7 @@ const mod_wordcloud_set_height = () => {
     }
 };
 
-const mod_wordcloud_hex_to_hsl = (color) => {
+const hex_to_hsl = (color) => {
     var [r, g, b] = color.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => '#' + r + r + g + g + b + b)
         .substring(1).match(/.{2}/g).map(x => parseInt(x, 16));
 
@@ -45,7 +45,7 @@ const mod_wordcloud_hex_to_hsl = (color) => {
     return [Math.round(h), Math.round(s*100), Math.round(l*100)];
 };
 
-const mod_wordcloud_export_listener = () => {
+const export_listener = () => {
     var exportmenu = document.getElementById('mod-wordcloud-export-menu');
     exportmenu.onchange = function() {
         var selectedval = this.options[this.selectedIndex].value;
@@ -58,8 +58,68 @@ const mod_wordcloud_export_listener = () => {
     };
 };
 
+const get_colors_todisplay = () => {
+    var finished_color = [];
+    var colors = wordcloud_colors.colors;
+
+    if (colors.length == 6) {
+        for (let i = colors.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [colors[i], colors[j]] = [colors[j], colors[i]];
+        }
+
+        for (let i = 0; i < colors.length; i++) {
+            finished_color.push('#' + colors[i]);
+        }
+    } else if (colors.length == 1) {
+        var [h, s, l] = hex_to_hsl(colors[0]);
+        var nextstep = 8;
+
+        l = 30;
+
+        for (let i = 1; i < 7; i++) {
+            // Save the pure hsl text value into the array
+            finished_color.push('hsl(' + h + ',' + s + '%,' + l + '%)');
+            l = l + nextstep;
+            nextstep++;
+        }
+    }
+
+    return finished_color;
+};
+
+export const get_new_css = () => {
+    return get_colors_todisplay();
+};
+
+export const set_classic_css = () => {
+    var editCSS = document.createElement('style');
+    var stylerules = '';
+
+    // Get the array of pure color strings (#hex or hsl)
+    const processedColors = get_colors_todisplay();
+
+    // Loop through the processed colors to build the CSS rules
+    processedColors.forEach((colorValue, index) => {
+        const weightClass = index + 1;
+        stylerules += `.path-mod-wordcloud .w${weightClass} {color: ${colorValue};} \n`;
+    });
+
+    editCSS.innerHTML = stylerules;
+    document.head.appendChild(editCSS);
+};
+
+export const wordcloud_colors = {
+    colors: [],
+};
+
 export const initlistener = () => {
-    mod_wordcloud_export_listener();
+    var viewmenu = document.getElementById('mod-wordcloud-view-menu');
+    viewmenu.onchange = function() {
+        window.location.href = this.options[this.selectedIndex].value;
+    };
+    export_listener();
+    set_height();
 };
 
 export const init = colors => {
@@ -68,7 +128,7 @@ export const init = colors => {
     const callback = (mutationList) => {
         for (const mutation of mutationList) {
             if (mutation.type === 'childList') {
-                mod_wordcloud_set_height();
+                set_height();
             }
         }
     };
@@ -76,42 +136,7 @@ export const init = colors => {
     const observer = new MutationObserver(callback);
     observer.observe(targetnode, config);
 
-    var stylerules = '';
-    var editCSS = document.createElement('style');
+    wordcloud_colors.colors = colors;
 
-    if (colors.length == 6) {
-        for (let i = colors.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [colors[i], colors[j]] = [colors[j], colors[i]];
-        }
-
-        for (let i = 1; i <= colors.length; i++) {
-            stylerules += '.path-mod-wordcloud .w' + i + ' {color: #' + colors[i - 1] + ';} \n';
-        }
-    } else if (colors.length == 1) {
-        var [h, s, l] = mod_wordcloud_hex_to_hsl(colors[0]);
-        var nextstep = 8;
-
-        l = 30;
-
-        for (let i = 1; i < 7; i++) {
-            stylerules += '.path-mod-wordcloud .w' + i + ' {color: hsl(' + h + ', ' + s + '%, ' + l + '%);} \n';
-            l = l + nextstep;
-            nextstep++;
-        }
-    }
-
-    editCSS.innerHTML = stylerules;
-    document.head.appendChild(editCSS);
-
-    var viewmenu = document.getElementById('mod-wordcloud-view-menu');
-    viewmenu.onchange = function() {
-        window.location.href = this.options[this.selectedIndex].value;
-    };
-
-    mod_wordcloud_export_listener();
-    mod_wordcloud_set_height();
-
-    var element = document.getElementById('mod-wordcloud-div');
-    element.style.visibility = "visible";
+    // set_classic_css();
 };

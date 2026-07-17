@@ -21,6 +21,7 @@
  * @copyright  2023 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require('../../config.php');
 require_once(__DIR__ . '/lib.php');
 require_once(__DIR__ . '/locallib.php');
@@ -43,11 +44,6 @@ $node = $PAGE->settingsnav->find('mod_wordcloud_list', navigation_node::TYPE_SET
 if ($node) {
     $node->make_active();
 }
-
-$PAGE->navbar->add(
-    get_string('yes'),
-    new moodle_url('/a/link/if/you/want/one.php')
-);
 
 $pagetitle = get_string('pagetitle', 'wordcloud');
 $PAGE->set_title($wordcloud->name);
@@ -103,6 +99,20 @@ $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
 
 echo html_writer::start_div('', ['id' => 'mod-wordcloud-words-box']);
-echo $renderer->render_from_template('mod_wordcloud/wordlist', ['words' => array_values($listrecords)]);
+$table = new mod_wordcloud\output\wordlisttable('uniqueid', $cm->id);
+
+$table->column_class['count'] = ' w-25';
+
+$groupmode = groups_get_activity_groupmode($cm);
+$groupid = $groupmode ? groups_get_activity_group($cm) : 0;
+if ($groupmode && $groupid === 0) {
+    $groupid = -1;
+}
+
+$sqlwhere = "wordcloudid = $wordcloud->id AND groupid = $groupid";
+$table->set_sql("*", "{wordcloud_map}", $sqlwhere);
+$table->define_baseurl($PAGE->url);
+$table->out(1000, false);
+
 echo html_writer::end_div();
 echo $renderer->footer();
