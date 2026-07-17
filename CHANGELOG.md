@@ -1,5 +1,9 @@
 # Change Log
-## 4.5.0
+
+## v4.5-r2
+* Bug fix to display Wordcloud activity in block timeline
+
+## 4.5.0/ v4.5-r1
 * Bug fixes and improvements
 * Moodle 4.5 compatible version
 * Thanks to the contributors: dpalou, james-cnz
