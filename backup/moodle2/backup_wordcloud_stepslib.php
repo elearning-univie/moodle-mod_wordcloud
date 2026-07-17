@@ -43,7 +43,8 @@ class backup_wordcloud_activity_structure_step extends backup_activity_structure
 
         $wordcloud = new backup_nested_element('wordcloud', ['id'],
                 ['course', 'name', 'intro', 'introformat', 'timeopen', 'timeclose', 'usemonocolor',
-                    'monocolor', 'monocolorhex', 'timecreated', 'timemodified', 'lastwordchange', 'visibility', 'completionsubmits']);
+                    'monocolor', 'monocolorhex', 'timecreated', 'timemodified', 'lastwordchange', 'visibility', 'completionsubmits',
+                    'renderstyle', 'rendersettings']);
 
         $wordcloud->set_source_table('wordcloud', ['id' => backup::VAR_ACTIVITYID]);
 

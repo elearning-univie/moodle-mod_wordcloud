@@ -12,7 +12,7 @@ Feature: As an admin I can freeze the wordcloud logs
     And the following "course enrolments" exist:
       | user     | course | role    |
       | student1 | C1     | student |
-    
+
   @javascript
   Scenario: the logs are freezed
     Given I log in as "admin"
@@ -40,4 +40,4 @@ Feature: As an admin I can freeze the wordcloud logs
     When I set the field "id" to "Course 1"
     And I press "Get these logs"
     # fails  here
-    Then I should not see "Student 1" 
+    Then I should not see "Student 1"

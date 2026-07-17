@@ -18,28 +18,28 @@ Feature: Teachers exports the entered words
       | activity   | name                   | intro                         | course |
       | wordcloud  | Test wordcloud         | Test wordcloud description    | C1     |
 
-    @javascript
-    Scenario: Teacher exports the words they and a student added
-      When I log in as "teacher1"
-      And I am on "Course 1" course homepage
-      And I follow "Test wordcloud"
-      And I set the field "mod-wordcloud-new-word" to "test word0"
-      And I press "mod-wordcloud-btn"
-      And I set the field "mod-wordcloud-new-word" to "test word1"
-      And I press "mod-wordcloud-btn"
-      And I set the field "mod-wordcloud-new-word" to "test word2"
-      And I press "mod-wordcloud-btn"
-      And I log out
-      And I log in as "student1"
-      And I am on "Course 1" course homepage
-      And I follow "Test wordcloud"
-      And I set the field "mod-wordcloud-new-word" to "test word3"
-      And I press "mod-wordcloud-btn"
-      And I set the field "mod-wordcloud-new-word" to "test word4"
-      And I press "mod-wordcloud-btn"
-      And I set the field "mod-wordcloud-new-word" to "test word5"
-      And I press "mod-wordcloud-btn"
-      Then I should see "Words submitted: 6"
-      And I click the export button
-      And I select "Export CSV" from the export dropdown
-      Then the download page should be "http://127.0.0.1/moodle/mod/wordcloud/export.php?id=218000"
+  @javascript
+  Scenario: Teacher exports the words they and a student added
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test wordcloud"
+    And I set the field "mod-wordcloud-new-word" to "test word0"
+    And I press "mod-wordcloud-btn"
+    And I set the field "mod-wordcloud-new-word" to "test word1"
+    And I press "mod-wordcloud-btn"
+    And I set the field "mod-wordcloud-new-word" to "test word2"
+    And I press "mod-wordcloud-btn"
+    And I log out
+    And I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test wordcloud"
+    And I set the field "mod-wordcloud-new-word" to "test word3"
+    And I press "mod-wordcloud-btn"
+    And I set the field "mod-wordcloud-new-word" to "test word4"
+    And I press "mod-wordcloud-btn"
+    And I set the field "mod-wordcloud-new-word" to "test word5"
+    And I press "mod-wordcloud-btn"
+    Then I should see "Words submitted: 6"
+    And I click the export button
+    And I select "Export CSV" from the export dropdown
+    Then the download page should be "http://127.0.0.1/moodle/mod/wordcloud/export.php?id=218000"

@@ -167,5 +167,54 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023100801, 'wordcloud');
     }
 
+    if ($oldversion < 2025041400.01) {
+        $table = new xmldb_table('wordcloud');
+        $field = new xmldb_field('renderstyle', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2025041400.01, 'wordcloud');
+    }
+
+    if ($oldversion < 2025041400.08) {
+        $table = new xmldb_table('wordcloud');
+        $field = new xmldb_field('rendersettings', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $defaults = [
+            'usemonocolor' => 0,
+            'monocolor'    => 1,
+            'monocolorhex' => '000000',
+            'renderstyle'  => 0,
+            'font'         => '',
+        ];
+
+        $records = $DB->get_records('wordcloud');
+
+        if ($records) {
+            foreach ($records as $record) {
+                $settings = [];
+
+                foreach ($defaults as $column => $defaultvalue) {
+                    if (property_exists($record, $column)) {
+                        $settings[$column] = $record->$column;
+                    } else {
+                        $settings[$column] = $defaultvalue;
+                    }
+                }
+
+                $record->rendersettings = json_encode($settings);
+                $DB->update_record('wordcloud', $record);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2025041400.08, 'wordcloud');
+    }
+
     return true;
 }

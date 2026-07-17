@@ -33,7 +33,7 @@
 </div>
 <div id="mod-wordcloud-content">
     <div id="mod-wordcloud-div" class="container m-auto">
-        {{#str}} submittedwords, mod_wordcloud {{/str}}<span id="mod-wordcloud-wcount">{{wordcount}}</span>
+        {{#str}} submittedwords, mod_wordcloud {{/str}}: <span id="mod-wordcloud-wcount">{{wordcount}}</span>
         <div class="wordcloud-header row justify-content-end {{#notification}}alert-info{{/notification}}{{^notification}}wordcloud-header-color{{/notification}}">
             {{#writeaccess}}
             <div class="col col-xs-12 mb-2 mb-sm-0 px-2">
@@ -49,15 +49,22 @@
                 {{#pix}} docs, core {{/pix}}{{notification}}
             {{/notification}}
             <div class="col-auto px-2">
-                <select id="mod-wordcloud-view-menu" class="custom-select" {{#disabled}}disabled{{/disabled}}>
+                <select id="mod-wordcloud-view-menu" class="custom-select" aria-label="{{#str}} display, mod_wordcloud {{/str}}" {{#disabled}}disabled{{/disabled}}>
                     {{#views}}
                         <option value="{{url}}" {{#selected}}selected{{/selected}}>{{text}}</option>
                     {{/views}}
                 </select>
             </div>
+            <!--<div class="col-auto px-2">
+                <button id="mod-wordcloud-fs-btn" class="btn btn-primary" title="{{#str}} fullscreen, mod_wordcloud {{/str}}">
+                    <i id="mod-wordcloud-fs-icon" class="fa fa-expand fa-lg" aria-hidden="true"></i>
+                </button>
+            </div>-->
         </div>
-        <div id="mod-wordcloud-words-box" class="modal-body d-flex flex-wrap gap-2">
+        {{#notlistview}}<span class="sr-only">{{#str}} referlist, mod_wordcloud {{/str}}</span>{{/notlistview}}
+        <div id="mod-wordcloud-words-box" class="modal-body flex-wrap gap-2" {{#notlistview}}aria-hidden="true"{{/notlistview}}></div>
+        <!--<div id="mod-wordcloud-words-box" class="modal-body d-flex flex-wrap gap-2">
             {{{cloudhtml}}}
-        </div>
+        </div>-->
     </div>
 </div>

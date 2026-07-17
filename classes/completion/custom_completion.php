@@ -24,6 +24,7 @@ use core_completion\activity_custom_completion;
  * Activity custom completion subclass for the wordcloud activity.
  *
  * @package mod_wordcloud
+ * @copyright 2024 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_completion extends activity_custom_completion {

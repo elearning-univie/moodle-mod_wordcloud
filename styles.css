@@ -84,12 +84,13 @@
     opacity: 0;
 }
 
+/*
 .path-mod-wordcloud .fade {
-    animation-name: mod-wordcloud-fade-effect;
+    animation-name: mod-wordcloud-fade-success;
     animation-duration: 4s;
 }
 
-@keyframes mod-wordcloud-fade-effect {
+@keyframes mod-wordcloud-fade-success {
     0% {
         opacity: 1;
     }
@@ -100,6 +101,7 @@
         opacity: 0;
     }
 }
+*/
 
 .path-mod-wordcloud th.remove,
 .path-mod-wordcloud td.remove,
@@ -142,4 +144,15 @@
 .path-mod-wordcloud .wc-padding-y {
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.path-mod-wordcloud .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
