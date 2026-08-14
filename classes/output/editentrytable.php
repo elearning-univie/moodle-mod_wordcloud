@@ -129,8 +129,10 @@ class editentrytable extends table_sql {
     public function col_remove($values) {
         global $OUTPUT;
 
-        $durl = new moodle_url('/mod/wordcloud/editentry.php',
-            ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]);
+        $durl = new moodle_url(
+            '/mod/wordcloud/editentry.php',
+            ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]
+        );
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }

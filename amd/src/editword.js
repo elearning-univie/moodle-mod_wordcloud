@@ -5,7 +5,7 @@ import ModalSaveCancel from 'core/modal_save_cancel';
 import ModalEvents from "core/modal_events";
 import {get_string as getString} from 'core/str';
 
-export const modWordcloudUpdateEntry = async (aid, backurl) => {
+export const modWordcloudUpdateEntry = async(aid, backurl) => {
     let wordlist = document.querySelectorAll(".mod-wordcloud-edit-word");
     const changes = [];
     const doubleentries = [];
@@ -61,7 +61,7 @@ export const modWordcloudUpdateEntry = async (aid, backurl) => {
     }
 };
 
-const confirmationMessage = async (data) => {
+const confirmationMessage = async(data) => {
     const confirmationWarning = await getString('warningdoubleentries', 'mod_wordcloud');
     return confirmationWarning + data;
 };
@@ -70,7 +70,7 @@ const sendWsCall = (aid, changes, backurl) => {
     ajax.call([{
         methodname: 'mod_wordcloud_update_entry',
         args: {aid: aid, entry: changes},
-        done: async function (returnval) {
+        done: async function(returnval) {
             if (!returnval.success) {
                 const modal = await ModalCancel.create({
                     title: getString('warning', 'mod_wordcloud'),

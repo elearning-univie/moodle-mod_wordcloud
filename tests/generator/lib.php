@@ -32,15 +32,14 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_wordcloud_generator extends testing_module_generator {
-
     /**
      * Generator method creating a mod_wordcloud instance.
      *
      * @param array|stdClass $record (optional) Named array containing instance settings
-     * @param array $options (optional) general options for course module. Can be merged into $record
+     * @param ?array $options (optional) general options for course module. Can be merged into $record
      * @return stdClass record from module-defined table
      */
-    public function create_instance($record = null, array $options = null) {
+    public function create_instance($record = null, ?array $options = null) {
         $record = (object)(array)$record;
 
         if (!isset($record->type)) {

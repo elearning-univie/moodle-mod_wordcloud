@@ -1,5 +1,5 @@
 @mod @mod_wordcloud
-Feature: Teachers and students are using the plugin, submitting multiple words and seeing an overview of them  
+Feature: Teachers and students are using the plugin, submitting multiple words and seeing an overview of them
 
   Background:
     Given the following "users" exist:
@@ -17,7 +17,7 @@ Feature: Teachers and students are using the plugin, submitting multiple words a
       | student2 | C1 | student |
     And the following "activities" exist:
       | activity   | name                   | intro                         | course |
-      | wordcloud  | Test wordcloud         | Test wordcloud description    | C1     | 
+      | wordcloud  | Test wordcloud         | Test wordcloud description    | C1     |
     And I log out
 
   @javascript
@@ -100,11 +100,11 @@ Feature: Teachers and students are using the plugin, submitting multiple words a
     And I press "mod-wordcloud-btn"
     And I set the field "mod-wordcloud-new-word" to "test word"
     And I press "mod-wordcloud-btn"
-    Then I should see "Words submitted: 3"
+    Then I should see "Submitted words: 3"
     When I set the field "mod-wordcloud-new-word" to "test word2"
     And I press "mod-wordcloud-btn"
     And I set the field "mod-wordcloud-new-word" to "test word2"
     And I press "mod-wordcloud-btn"
     And I set the field "mod-wordcloud-new-word" to "test word3"
     And I press "mod-wordcloud-btn"
-    Then I should see "Words submitted: 6"
+    Then I should see "Submitted words: 6"

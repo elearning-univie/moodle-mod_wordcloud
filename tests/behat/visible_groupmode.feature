@@ -67,8 +67,8 @@ Feature: Visible group mode in a wordcloud
     Then I should see "word1GroupA"
     And I should see "word1GroupB"
     When I select "Group A" from the "Visible groups" singleselect
-    Then I should see "Submit"
+    Then "mod-wordcloud-btn" "button" should exist
     And I should see "word1GroupA"
     When I select "Group B" from the "Visible groups" singleselect
-    Then I should not see "Submit"
+    Then "mod-wordcloud-btn" "button" should not exist
     And I should see "word1GroupB"

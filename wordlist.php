@@ -30,7 +30,7 @@ global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
 $listview = optional_param('listview', 0, PARAM_INT);
-list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'wordcloud');
 
 $context = context_module::instance($cm->id);
 
@@ -71,15 +71,22 @@ $event->trigger();
 
 $renderer = $PAGE->get_renderer('core');
 
-$listrecords = $DB->get_records_sql('SELECT word, count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
-    ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]);
+$listrecords = $DB->get_records_sql(
+    'SELECT word, count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
+    ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]
+);
 
-$wordcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
-    ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]);
+$wordcount = $DB->get_record_sql(
+    'SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
+    ['wordcloudid' => $wordcloud->id, 'groupid' => $groupid]
+);
 
 echo $renderer->header();
-echo html_writer::tag('button', get_string('editentry', 'mod_wordcloud'),
-    ['class' => 'btn btn-primary', 'onclick' => "location.href='" . new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]) . "'"]);
+echo html_writer::tag(
+    'button',
+    get_string('editentry', 'mod_wordcloud'),
+    ['class' => 'btn btn-primary', 'onclick' => "location.href='" . new moodle_url("/mod/wordcloud/editentry.php", ['id' => $id]) . "'"]
+);
 $exporturl = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 $exportmenu['0'] = get_string('exportdefault', 'mod_wordcloud');
 $exportmenu[$exporturl->out()] = get_string('exportcsv', 'mod_wordcloud');

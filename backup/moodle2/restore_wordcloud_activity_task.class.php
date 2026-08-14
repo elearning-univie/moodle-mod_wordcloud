@@ -38,7 +38,6 @@ require_once($CFG->dirroot . '/mod/wordcloud/backup/moodle2/restore_wordcloud_st
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_wordcloud_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */
@@ -76,7 +75,6 @@ class restore_wordcloud_activity_task extends restore_activity_task {
         $rules[] = new restore_decode_rule('WORDCLOUDINDEX', '/mod/wordcloud/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**

@@ -28,6 +28,15 @@ define('WORDCLOUD_MAX_TIME', 2147483647);
 
 use core_privacy\local\request\transform;
 
+/**
+ * Get the latest wordcloud entries as a JSON encoded array.
+ *
+ * @param int $wordcloudid the id of the wordcloud instance.
+ * @param int $groupmode the group mode of the activity.
+ * @param int $groupid the group id to filter by.
+ * @param bool $canedit whether the current user can edit entries.
+ * @return array with keys entries, wordcountrange and sumcount.
+ */
 function mod_wordcloud_get_entries($wordcloudid, $groupmode = 0, $groupid = 0, $canedit = false) {
     global $DB, $PAGE, $USER;
 
@@ -57,7 +66,7 @@ function mod_wordcloud_get_entries($wordcloudid, $groupmode = 0, $groupid = 0, $
                   FROM {wordcloud_map}
                  WHERE ' . $filter;
         $wordcountrange = $DB->get_record_sql($sql, $params);
-        //$records = $DB->get_records('wordcloud_map', $params, 'id');
+        // $records = $DB->get_records('wordcloud_map', $params, 'id');
         $records = $DB->get_records_select('wordcloud_map', $filter, $params, 'id');
     }
 
@@ -75,15 +84,10 @@ function mod_wordcloud_get_entries($wordcloudid, $groupmode = 0, $groupid = 0, $
 
     $entries = json_encode($values);
 
-    /*if ($listview) {
-        $renderer = $PAGE->get_renderer('core');
-        $cloudhtml = $renderer->render_from_template('mod_wordcloud/wordlist', ['words' => array_values($records)]);
-    }*/
-
     if (!$canedit) {
         $visibility = $DB->get_record('wordcloud', ['id' => $wordcloudid])->visibility;
 
-        switch($visibility) {
+        switch ($visibility) {
             case 1:
                 $sql = 'SELECT 1
                         FROM {wordcloud_map} m
@@ -110,7 +114,7 @@ function mod_wordcloud_get_entries($wordcloudid, $groupmode = 0, $groupid = 0, $
         }
     }
 
-    return ['entries' =>  $entries, 'wordcountrange' => json_encode($wordcountrange), 'sumcount' => $sumcount->count];
+    return ['entries' => $entries, 'wordcountrange' => json_encode($wordcountrange), 'sumcount' => $sumcount->count];
 }
 
 /**
@@ -142,8 +146,10 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
                        AND groupid != 0
                   GROUP BY word) AS subq';
         $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid]);
-        $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid != 0',
-            ['wordcloudid' => $wordcloudid]);
+        $sumcount = $DB->get_record_sql(
+            'SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid != 0',
+            ['wordcloudid' => $wordcloudid]
+        );
     } else {
         $sql = 'SELECT min(count) AS mincount, max(count) AS maxcount
                   FROM {wordcloud_map}
@@ -152,8 +158,10 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
         $wordcnt = $DB->get_record_sql($sql, ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
 
         $records = $DB->get_records('wordcloud_map', ['wordcloudid' => $wordcloudid, 'groupid' => $groupid], 'id');
-        $sumcount = $DB->get_record_sql('SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
-            ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]);
+        $sumcount = $DB->get_record_sql(
+            'SELECT sum(count) AS count FROM {wordcloud_map} WHERE wordcloudid = :wordcloudid AND groupid = :groupid',
+            ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]
+        );
     }
 
     if (!$sumcount->count) {
@@ -162,8 +170,6 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
 
     $cloudhtml = '';
     if ($listview) {
-        //$renderer = $PAGE->get_renderer('core');
-        //$cloudhtml = $renderer->render_from_template('mod_wordcloud/wordlist', ['words' => array_values($records)]);
         $cm = get_coursemodule_from_instance('wordcloud', $wordcloudid, 0, false, MUST_EXIST);
 
         $table = new mod_wordcloud\output\wordlisttable('uniqueid', $cm->id);
@@ -194,7 +200,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
     if (!$canedit) {
         $visibility = $DB->get_record('wordcloud', ['id' => $wordcloudid])->visibility;
 
-        switch($visibility) {
+        switch ($visibility) {
             case 1:
                 $sql = 'SELECT 1
                         FROM {wordcloud_map} m

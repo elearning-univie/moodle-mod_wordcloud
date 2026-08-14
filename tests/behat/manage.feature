@@ -15,7 +15,7 @@ Feature: Teacher adds and deletes the wordcloud activity
       | student | C1     | student        |
     And the following "activities" exist:
       | activity   | name               | intro                       | course |
-      | wordcloud  | Test wordcloud     | Test wordcloud description  | C1     | 
+      | wordcloud  | Test wordcloud     | Test wordcloud description  | C1     |
     And I log in as "admin"
     And I navigate to "Plugins > Admin tools > Recycle bin" in site administration
     And I click on "id_s_tool_recyclebin_autohide" "checkbox"
@@ -26,20 +26,13 @@ Feature: Teacher adds and deletes the wordcloud activity
   Scenario: Teacher deletes the wordcloud activity
     When I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "action-menu-toggle-4" "button"
-    And I follow "action-menu-toggle-2"
-    And I follow "Delete"
-    And I wait to be redirected
-    When I click the delete button
-    And I log out
+    And I delete "Test wordcloud" activity
+    And I run all adhoc tasks
+    And I navigate to "Recycle bin" in current page administration
+    Then I should see "Test wordcloud"
     When I log in as "student"
     And I am on "Course 1" course homepage
     Then I should not see "Test wordcloud"
-    And I log out
-    When I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Recycle bin" in current page administration
-    Then I should see "Test wordcloud"
 
   @javascript
   Scenario: Teacher restores activity
@@ -55,17 +48,16 @@ Feature: Teacher adds and deletes the wordcloud activity
     Then I log out
     When I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "action-menu-toggle-4" "button"
-    And I follow "action-menu-toggle-2"
-    And I follow "Delete"
-    And I wait to be redirected
-    When I click the delete button
+    And I delete "Test wordcloud" activity
+    And I run all adhoc tasks
     Then I should not see "Test wordcloud"
     When I navigate to "Recycle bin" in current page administration
     Then I should see "Test wordcloud"
-    Then I log out
-    When I log in as "student"
+    When I click on "Restore" "link" in the "region-main" "region"
+    And I run all adhoc tasks
+    And I log out
+    And I log in as "student"
     And I am on "Course 1" course homepage
-    And I should see "Test wordcloud"
+    Then I should see "Test wordcloud"
     And I follow "Test wordcloud"
-    Then I should see "test word0"
+    And I should see "test word0"

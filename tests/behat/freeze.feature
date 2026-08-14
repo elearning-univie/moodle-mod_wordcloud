@@ -1,6 +1,6 @@
 @mod @mod_wordcloud
 
-Feature: As an admin I can freeze the wordcloud logs
+Feature: As an admin I can review wordcloud activity in the logs, even if live log updates are paused
 
   Background:
     Given the following "courses" exist:
@@ -14,7 +14,7 @@ Feature: As an admin I can freeze the wordcloud logs
       | student1 | C1     | student |
 
   @javascript
-  Scenario: the logs are freezed
+  Scenario: Pausing live log updates does not stop wordcloud activity from being logged
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I add a wordcloud activity to course "Course 1" section "1" and I fill the form with:
@@ -39,5 +39,9 @@ Feature: As an admin I can freeze the wordcloud logs
     And I navigate to "Reports > Logs" in site administration
     When I set the field "id" to "Course 1"
     And I press "Get these logs"
-    # fails  here
-    Then I should not see "Student 1"
+    # "Pause live updates" only freezes the auto-refreshing table on the Live logs
+    # page itself; it has no effect on whether events get recorded, so student1's
+    # actions must still show up in the persistent Logs report below.
+    Then I should see "Student 1"
+    And I should see "Course viewed"
+    And I should see "Course module viewed"

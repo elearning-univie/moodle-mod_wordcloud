@@ -25,8 +25,13 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
-        get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
+    $settings->add(new admin_setting_configtext(
+        'wordcloud/refresh',
+        get_string('refreshtime', 'wordcloud'),
+        get_string('refreshtimedesc', 'wordcloud'),
+        5,
+        PARAM_INT
+    ));
 
     $colors = ['0063A6', '11897A', '94C154', 'F6A800', 'DD4814', 'A71C49'];
 
@@ -37,22 +42,35 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext($settingname, $visiblename, $description, $colors[$i - 1], PARAM_ALPHANUM));
     }
 
-    $settings->add(new admin_setting_configtext('wordcloud/refresh', get_string('refreshtime', 'wordcloud'),
-        get_string('refreshtimedesc', 'wordcloud'), 5, PARAM_INT));
+    $settings->add(new admin_setting_configtext(
+        'wordcloud/refresh',
+        get_string('refreshtime', 'wordcloud'),
+        get_string('refreshtimedesc', 'wordcloud'),
+        5,
+        PARAM_INT
+    ));
 
     $settings->add(new admin_setting_heading('fontoptions', get_string('fontandoptions', 'wordcloud'), ''));
 
     $fonts = mod_wordcloud_get_render_fonts();
 
-    $settings->add(new admin_setting_configselect('wordcloud/defaultfont',
+    $settings->add(new admin_setting_configselect(
+        'wordcloud/defaultfont',
         new lang_string('defaultfont', 'wordcloud'),
-        new lang_string('defaultfontdesc', 'wordcloud'), 'Arial, sans-serif', $fonts));
+        new lang_string('defaultfontdesc', 'wordcloud'),
+        'Arial, sans-serif',
+        $fonts
+    ));
 
     $textalignment = mod_wordcloud_get_render_textalignments();
 
-    $settings->add(new admin_setting_configselect('wordcloud/defaulttextalignment',
+    $settings->add(new admin_setting_configselect(
+        'wordcloud/defaulttextalignment',
         new lang_string('defaulttextalignment', 'wordcloud'),
-        new lang_string('defaulttextalignmentdesc', 'wordcloud'), 'h', $textalignment));
+        new lang_string('defaulttextalignmentdesc', 'wordcloud'),
+        'h',
+        $textalignment
+    ));
 
     $settings->add(new admin_setting_heading('furtheroptions', get_string('furtheroptions', 'wordcloud'), ''));
 
@@ -71,6 +89,6 @@ if ($ADMIN->fulltree) {
         get_string('rendersettings', 'wordcloud'),
         get_string('rendersettingsdesc', 'wordcloud'),
         $defaultrendersettings,
-        PARAM_RAW)
-    );
+        PARAM_RAW
+    ));
 }

@@ -22,20 +22,28 @@ use core\output\local\properties\text_align;
 use core\output\renderer_helper;
 use core\url;
 use core_courseformat\local\overview\overviewitem;
-
 use cm_info;
 
+/**
+ * Overview class for the wordcloud activity.
+ *
+ * @package    mod_wordcloud
+ * @copyright  2020 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class overview extends \core_courseformat\activityoverviewbase {
-
+    /** @var \stdClass|false $wordcloud the wordcloud instance record. */
     private $wordcloud;
+
     /**
      * Constructor.
      *
      * @param cm_info $cm the course module instance.
-     * @param renderer_helper $rendererhelper the renderer helper.
+     * @param \moodle_database $db the database access.
+     * @param \core\clock $clock the clock interface.
      */
     public function __construct(
-        /** @var cm_info $cm the activity course module. */
+        // The activity course module.
         cm_info $cm,
         /** @var \moodle_database $db the database acces. */
         protected readonly \moodle_database $db,
@@ -73,6 +81,11 @@ class overview extends \core_courseformat\activityoverviewbase {
         ];
     }
 
+    /**
+     * Build the overview item showing the number of submitted words.
+     *
+     * @return overviewitem|null the overview item.
+     */
     private function get_extra_wordcount(): ?overviewitem {
         $filter = 'wordcloudid = :wordcloudid AND count > 0';
         $params = ['wordcloudid' => $this->wordcloud->id];
@@ -91,6 +104,11 @@ class overview extends \core_courseformat\activityoverviewbase {
         );
     }
 
+    /**
+     * Build the overview item with the action link.
+     *
+     * @return overviewitem|null the overview item.
+     */
     private function get_extra_action(): ?overviewitem {
         if (!has_capability('mod/wordcloud:editentry', $this->cm->context)) {
             return null;

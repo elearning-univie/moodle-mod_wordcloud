@@ -28,7 +28,7 @@ require_once($CFG->libdir . '/csvlib.class.php');
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
-list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'wordcloud');
 
 $context = context_module::instance($cm->id);
 

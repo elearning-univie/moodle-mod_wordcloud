@@ -61,7 +61,7 @@ Feature: Separate group mode in a wordcloud
     Given I log in as "student1"
     And I am on the "Test wordcloud" "wordcloud activity" page
     Then I should see "word1GroupA"
-    And I should see "Submit"
+    And "mod-wordcloud-btn" "button" should exist
     And I should not see "word1GroupB"
     And "Separate groups" "select" should not exist
     And I log out
@@ -70,7 +70,7 @@ Feature: Separate group mode in a wordcloud
     Then the "Separate groups" select box should not contain "All participants"
     When I select "Group A" from the "Separate groups" singleselect
     Then I should see "word1GroupA"
-    And I should see "Submit"
+    And "mod-wordcloud-btn" "button" should exist
     When I select "Group B" from the "Separate groups" singleselect
     Then I should see "word1GroupB"
-    And I should see "Submit"
+    And "mod-wordcloud-btn" "button" should exist

@@ -1,4 +1,5 @@
 import html2canvas from "mod_wordcloud/html2canvas";
+import notification from "core/notification";
 
 export const init = wcname => {
     wcname = wcname.replace(' ', '_');
@@ -15,7 +16,8 @@ export const init = wcname => {
             link.href = img;
             link.download = `${wcname}.png`;
             link.click();
-        });
+            return canvas;
+        }).catch(notification.exception);
     };
 
     // Expose the function for external use (if necessary)
