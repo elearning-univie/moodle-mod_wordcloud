@@ -31,20 +31,23 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_wordcloud_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Defines the backup structure of the module
      *
      * @return backup_nested_element
      */
     protected function define_structure() {
-
         $userinfo = $this->get_setting_value('userinfo');
 
-        $wordcloud = new backup_nested_element('wordcloud', ['id'],
-                ['course', 'name', 'intro', 'introformat', 'timeopen', 'timeclose', 'usemonocolor',
-                    'monocolor', 'monocolorhex', 'timecreated', 'timemodified', 'lastwordchange', 'visibility', 'completionsubmits',
-                    'renderstyle', 'rendersettings']);
+        $wordcloud = new backup_nested_element(
+            'wordcloud',
+            ['id'],
+            [
+                'course', 'name', 'intro', 'introformat', 'timeopen', 'timeclose', 'usemonocolor',
+                'monocolor', 'monocolorhex', 'timecreated', 'timemodified', 'lastwordchange', 'visibility',
+                'completionsubmits', 'renderstyle', 'rendersettings',
+            ]
+        );
 
         $wordcloud->set_source_table('wordcloud', ['id' => backup::VAR_ACTIVITYID]);
 

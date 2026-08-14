@@ -1,9 +1,9 @@
 import ajax from 'core/ajax';
 import notification from 'core/notification';
-import ModalFactory from 'core/modal_factory';
+import ModalCancel from 'core/modal_cancel';
 import {get_string as getString} from 'core/str';
 
-import {render_wordcloud as renderWordcloud} from "mod_wordcloud/renderer";
+import {renderWordcloud} from "mod_wordcloud/renderer";
 
 const addwordtowordcloud = (() => {
     // Private variables
@@ -12,28 +12,27 @@ const addwordtowordcloud = (() => {
     // Function to add a new word
     const addWord = () => {
         const newWord = document.getElementById('mod-wordcloud-new-word');
-        //const wordBox = document.getElementById('mod-wordcloud-words-box');
         const sumCount = document.getElementById('mod-wordcloud-wcount');
         const viewMenu = document.getElementById('mod-wordcloud-view-menu');
 
         const word = newWord.value.trim();
-        if (!word) {return;}
+        if (!word) {
+            return;
+        }
 
-        // AJAX call to add the word to the word cloud
+        // AJAX call to add the word to the word cloud.
         ajax.call([{
             methodname: 'mod_wordcloud_add_word',
-            args: { aid, word },
+            args: {aid, word},
             done: (returnval) => {
                 if (!returnval.entries) {
-                    // Show warning modal if there's an error
-                    ModalFactory.create({
-                        type: ModalFactory.types.CANCEL,
+                    // Show warning modal if there's an error.
+                    ModalCancel.create({
                         title: getString('warning', 'mod_wordcloud'),
                         body: returnval.warnings[0].message
-                    }).then(modal => modal.show());
+                    }).then(modal => modal.show()).catch(notification.exception);
                 } else {
-                    // Update word cloud
-                    // wordBox.innerHTML = returnval.cloudhtml;
+                    // Update word cloud.
                     timestamphtml = returnval.timestamphtml;
                     renderWordcloud(returnval.entries, returnval.wordcountrange);
                     sumCount.textContent = returnval.sumcount;
@@ -47,13 +46,12 @@ const addwordtowordcloud = (() => {
 
     // Function to auto-refresh the word cloud periodically
     const autoRefreshWords = () => {
-        // const wordBox = document.getElementById('mod-wordcloud-words-box');
         const wordCount = document.getElementById('mod-wordcloud-wcount');
 
         setInterval(() => {
             ajax.call([{
                 methodname: 'mod_wordcloud_get_entries',
-                args: { aid, timestamphtml },
+                args: {aid, timestamphtml},
                 done: (returnval) => {
                     if (returnval.entries) {
                         wordCount.textContent = returnval.sumcount;

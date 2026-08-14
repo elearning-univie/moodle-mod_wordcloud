@@ -34,7 +34,6 @@ require_once(__DIR__ . '/locallib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_wordcloud_external extends external_api {
-
     /**
      * Returns description of method parameters
      *
@@ -42,11 +41,10 @@ class mod_wordcloud_external extends external_api {
      */
     public static function add_word_parameters() {
         return new external_function_parameters([
-                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'word' => new external_value(PARAM_RAW, 'word to be added'),
-                'groupid' => new external_value(PARAM_INT, 'id of the wordcloud activity', VALUE_DEFAULT, 0),
-            ]
-        );
+            'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+            'word' => new external_value(PARAM_RAW, 'word to be added'),
+            'groupid' => new external_value(PARAM_INT, 'id of the wordcloud activity', VALUE_DEFAULT, 0),
+        ]);
     }
 
     /**
@@ -56,10 +54,9 @@ class mod_wordcloud_external extends external_api {
      */
     public static function get_words_parameters() {
         return new external_function_parameters([
-                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
-            ]
-        );
+            'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+            'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
+        ]);
     }
 
     /**
@@ -69,10 +66,9 @@ class mod_wordcloud_external extends external_api {
      */
     public static function get_entries_parameters() {
         return new external_function_parameters([
-                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
-            ]
-        );
+            'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+            'timestamphtml' => new external_value(PARAM_INT, 'timestamp of the last wordcloud change'),
+        ]);
     }
 
     /**
@@ -82,17 +78,15 @@ class mod_wordcloud_external extends external_api {
      */
     public static function update_entry_parameters() {
         return new external_function_parameters([
-                'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
-                'entry' => new external_multiple_structure(
-                    new external_single_structure([
-                            'wordid' => new external_value(PARAM_TEXT, 'id of the word to change'),
-                            'newword' => new external_value(PARAM_TEXT, 'new word to change to'),
-                            'newcount' => new external_value(PARAM_INT, 'new word count to change to'),
-                        ]
-                    )
-                ),
-            ]
-        );
+            'aid' => new external_value(PARAM_INT, 'id of the wordcloud activity'),
+            'entry' => new external_multiple_structure(
+                new external_single_structure([
+                    'wordid' => new external_value(PARAM_TEXT, 'id of the word to change'),
+                    'newword' => new external_value(PARAM_TEXT, 'new word to change to'),
+                    'newcount' => new external_value(PARAM_INT, 'new word count to change to'),
+                ])
+            ),
+        ]);
     }
 
     /**
@@ -108,8 +102,10 @@ class mod_wordcloud_external extends external_api {
 
         $warnings = [];
 
-        $params = self::validate_parameters(self::add_word_parameters(),
-            ['aid' => $aid, 'word' => $word, 'groupid' => $groupid]);
+        $params = self::validate_parameters(
+            self::add_word_parameters(),
+            ['aid' => $aid, 'word' => $word, 'groupid' => $groupid]
+        );
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -171,7 +167,7 @@ class mod_wordcloud_external extends external_api {
         if (!$DB->record_exists('wordcloud_word_user_rel', ['mapid' => $mapid, 'userid' => $USER->id])) {
             $DB->insert_record('wordcloud_word_user_rel', ['mapid' => $mapid, 'userid' => $USER->id]);
 
-            // Update completion state
+            // Update completion state.
             $completion = new completion_info($course);
             if ($completion->is_enabled($cm) && $wordcloud->completionsubmits) {
                 $sql = 'SELECT count(*)
@@ -228,9 +224,11 @@ class mod_wordcloud_external extends external_api {
 
         if ($groupmode = groups_get_activity_groupmode($cm)) {
             $groupid = groups_get_activity_group($cm, true);
-            if ($groupmode != VISIBLEGROUPS &&
+            if (
+                $groupmode != VISIBLEGROUPS &&
                 !has_capability('moodle/site:accessallgroups', $context) &&
-                !groups_is_member($groupid)) {
+                !groups_is_member($groupid)
+            ) {
                 return ['cloudhtml' => '', 'sumcount' => 0, 'timestamphtml' => 0, 'warnings' => $warnings];
             }
         }
@@ -276,9 +274,11 @@ class mod_wordcloud_external extends external_api {
 
         if ($groupmode = groups_get_activity_groupmode($cm)) {
             $groupid = groups_get_activity_group($cm, true);
-            if ($groupmode != VISIBLEGROUPS &&
+            if (
+                $groupmode != VISIBLEGROUPS &&
                 !has_capability('moodle/site:accessallgroups', $context) &&
-                !groups_is_member($groupid)) {
+                !groups_is_member($groupid)
+            ) {
                 return ['entries' => '', 'wordcountrange' => 0, 'sumcount' => 0, 'timestamphtml' => 0, 'warnings' => $warnings];
             }
         }
@@ -313,8 +313,10 @@ class mod_wordcloud_external extends external_api {
         $errentries = '';
         $success = true;
 
-        $params = self::validate_parameters(self::update_entry_parameters(),
-            ['aid' => $aid, 'entry' => $entry]);
+        $params = self::validate_parameters(
+            self::update_entry_parameters(),
+            ['aid' => $aid, 'entry' => $entry]
+        );
         $cm = get_coursemodule_from_instance('wordcloud', $params['aid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
@@ -348,8 +350,10 @@ class mod_wordcloud_external extends external_api {
             $record = $DB->get_record('wordcloud_map', ['id' => $updateentry['wordid'], 'groupid' => $groupid]);
 
             if ($record) {
-                $checkrec = $DB->get_record('wordcloud_map',
-                    ['word' => $updateentry['newword'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]);
+                $checkrec = $DB->get_record(
+                    'wordcloud_map',
+                    ['word' => $updateentry['newword'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]
+                );
                 if ($checkrec) {
                     if ($checkrec->id != $updateentry['wordid']) {
                         $DB->delete_records('wordcloud_map', ['id' => $checkrec->id]);

@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * xmldb_streamlti_upgrade is the function that upgrades
  * the streamlti module database when is needed
@@ -116,7 +114,6 @@ function xmldb_wordcloud_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022070100) {
-
         // Define field monocolor to be added to wordcloud.
         $table = new xmldb_table('wordcloud');
         $field = new xmldb_field('monocolor', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'usemonocolor');

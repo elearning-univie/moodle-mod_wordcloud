@@ -116,6 +116,8 @@ class behat_mod_wordcloud extends behat_base {
     /**
      * Selects export from dropdown menu.
      * @When I select :option from the export dropdown
+     *
+     * @param string $option The option to select from the dropdown.
      */
     public function i_select_from_export_dropdown($option) {
         $select = $this->getSession()->getPage()->find('css', '#mod-wordcloud-export-menu');
@@ -139,7 +141,7 @@ class behat_mod_wordcloud extends behat_base {
         $windownames = $driver->getWindowNames();
 
         if (count($windownames) <= 1) {
-            throw new \moodle_exception(get_string('error_notab', 'mod_oercollection'));
+            throw new \moodle_exception(get_string('error_notab', 'mod_wordcloud'));
         }
 
         $driver->switchToWindow(end($windownames));
@@ -147,10 +149,41 @@ class behat_mod_wordcloud extends behat_base {
         $currenturl = $session->getCurrentUrl();
 
         if (strpos($currenturl, $url) === false) {
-            throw new \moodle_exception(get_string('url_mismatch', 'mod_oercollection', (object)[
+            throw new \moodle_exception(get_string('url_mismatch', 'mod_wordcloud', (object)[
                 'actual' => $currenturl,
                 'expected' => $url,
             ]));
+        }
+    }
+
+    /**
+     * Downloads the file at the currently open tab's URL (using the logged-in user's
+     * session) and asserts the given text is present in its content.
+     *
+     * Checking the actual downloaded content is more reliable than only comparing the
+     * tab's URL: the URL check is sensitive to things that legitimately differ between
+     * environments (wwwroot, course module id), while this confirms the export genuinely
+     * contains the expected data. Call this after "the download page should be ...", once
+     * the new tab has been switched to.
+     *
+     * @Then the downloaded file should contain :text
+     *
+     * @param string $text Text expected to be present in the downloaded content.
+     * @throws moodle_exception if the download fails or the text is not found.
+     */
+    public function the_downloaded_file_should_contain($text) {
+        $session = $this->getSession();
+        $url = $session->getCurrentUrl();
+        $cookie = $session->getCookie('MoodleSession');
+
+        if (empty($cookie)) {
+            throw new \moodle_exception('path_error', 'mod_wordcloud');
+        }
+
+        $content = download_file_content($url, ['Cookie' => 'MoodleSession=' . $cookie]);
+
+        if (strpos($content, $text) === false) {
+            throw new \moodle_exception(get_string('export_content_mismatch', 'mod_wordcloud', $text));
         }
     }
 }

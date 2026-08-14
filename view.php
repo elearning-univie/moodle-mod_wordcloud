@@ -30,7 +30,7 @@ global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
 $listview = optional_param('listview', 0, PARAM_INT);
-list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'wordcloud');
 
 $context = context_module::instance($cm->id);
 
@@ -102,7 +102,7 @@ $templatecontext['views'] = $views;
 
 if ($listview) {
     $renderstyle = 2;
-    //$words = $wordcloud->id;
+    // $words = $wordcloud->id;
 } else {
     $renderstyle = $wordcloudrendersettings['renderstyle'];
     $templatecontext['notlistview'] = true;

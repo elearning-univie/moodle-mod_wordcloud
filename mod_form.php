@@ -66,8 +66,13 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         $radiocolor = [];
         for ($i = 1; $i <= 6; $i++) {
             $fontcolor = 'fontcolor' . $i;
-            $radiocolor[] = $mform->createElement('radio', 'monocolor', '',
-                '<span style="color: #' . $wordcloudconfig->$fontcolor . '">⬤</span>', $i);
+            $radiocolor[] = $mform->createElement(
+                'radio',
+                'monocolor',
+                '',
+                '<span style="color: #' . $wordcloudconfig->$fontcolor . '">⬤</span>',
+                $i
+            );
         }
         $radiocolor[] = $mform->createElement('radio', 'monocolor', '', get_string('monocolor_hex', 'wordcloud'), 0);
         $mform->addGroup($radiocolor, 'radiocolor', get_string('monocolor', 'wordcloud'), [' '], false);
@@ -102,11 +107,19 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         }
 
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
-        $mform->addElement('date_time_selector', 'timeopen', get_string('activityopen', 'wordcloud'),
-            self::$datefieldoptions);
+        $mform->addElement(
+            'date_time_selector',
+            'timeopen',
+            get_string('activityopen', 'wordcloud'),
+            self::$datefieldoptions
+        );
         $mform->addHelpButton('timeopen', 'activityopen', 'wordcloud');
-        $mform->addElement('date_time_selector', 'timeclose', get_string('activityclose', 'wordcloud'),
-            self::$datefieldoptions);
+        $mform->addElement(
+            'date_time_selector',
+            'timeclose',
+            get_string('activityclose', 'wordcloud'),
+            self::$datefieldoptions
+        );
         $mform->addHelpButton('timeclose', 'activityclose', 'wordcloud');
 
         $cloudvisoptions = [
@@ -114,8 +127,12 @@ class mod_wordcloud_mod_form extends moodleform_mod {
             1 => get_string('visibilitysubmit', 'wordcloud'),
             2 => get_string('visibilitytime', 'wordcloud'),
         ];
-        $mform->addElement('select', 'visibility', get_string('cloudvisibility', 'wordcloud'),
-            $cloudvisoptions);
+        $mform->addElement(
+            'select',
+            'visibility',
+            get_string('cloudvisibility', 'wordcloud'),
+            $cloudvisoptions
+        );
         $mform->addHelpButton('visibility', 'cloudvisibility', 'wordcloud');
 
         $this->standard_coursemodule_elements();
@@ -236,7 +253,7 @@ class mod_wordcloud_mod_form extends moodleform_mod {
             $settings = [
                 'renderstyle'   => $data->renderstyle,
                 'font'          => $data->font,
-                'textalignment' => $data->textalignment
+                'textalignment' => $data->textalignment,
             ];
 
             $data->rendersettings = json_encode($settings);

@@ -1,14 +1,74 @@
-import WordCloud from "mod_wordcloud/wordcloud";
-import {initlistener, set_classic_css, get_new_css} from "mod_wordcloud/uicontroller";
+import wordCloud from "mod_wordcloud/wordcloud";
+import {initlistener, setClassicCss, getNewCss} from "mod_wordcloud/uicontroller";
 import notification from 'core/notification';
 import Templates from 'core/templates';
 import {get_string as getString} from 'core/str';
 import ajax from 'core/ajax';
 
-const render_new_view = (entries) => {
+/**
+ * Lazily create (or return the existing) tooltip element used to display the
+ * word count when hovering over a word in the canvas-based word cloud.
+ *
+ * @return {HTMLElement} the tooltip element.
+ */
+const getWordTooltip = () => {
+    let tooltip = document.getElementById('mod-wordcloud-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'mod-wordcloud-tooltip';
+        tooltip.className = 'mod-wordcloud-tooltip';
+        tooltip.setAttribute('role', 'tooltip');
+        tooltip.style.display = 'none';
+        document.body.appendChild(tooltip);
+    }
+    return tooltip;
+};
+
+/**
+ * Hide the word count tooltip.
+ */
+const hideWordTooltip = () => {
+    getWordTooltip().style.display = 'none';
+};
+
+/**
+ * Word -> original submitted count.
+ *
+ * @type {Map<string, number>}
+ */
+let currentWordCounts = new Map();
+
+/**
+ * wordcloud2 "hover" callback: shows a tooltip with how often the hovered
+ * word was submitted, positioned next to the mouse cursor.
+ *
+ * @param {Array|undefined} item [word, weight] pair of the hovered word, or undefined when no word is hovered.
+ * @param {Object|undefined} dimension bounding box of the hovered word (unused).
+ * @param {MouseEvent} event the triggering mouse event.
+ */
+const onWordHover = (item, dimension, event) => {
+    if (!item) {
+        hideWordTooltip();
+        return;
+    }
+
+    const [word] = item;
+    const count = currentWordCounts.get(word);
+    const tooltip = getWordTooltip();
+    tooltip.textContent = `${count}`;
+    tooltip.style.left = `${event.pageX + 12}px`;
+    tooltip.style.top = `${event.pageY + 12}px`;
+    tooltip.style.display = 'block';
+};
+
+const renderNewView = (entries) => {
     const container = document.getElementById('mod-wordcloud-words-box');
-    const rendersettings = JSON.parse(wordcloud_style.settings);
-    const colors = get_new_css();
+    const rendersettings = JSON.parse(wordcloudStyle.settings);
+    const colors = getNewCss();
+
+    // Snapshot the true counts before wordcloud2 gets a chance to mutate any
+    // item's weight while trying to fit it on the canvas (see currentWordCounts).
+    currentWordCounts = new Map(entries.map(([word, count]) => [word, count]));
 
     const baseHeight = 250;
     const wordThreshold = 20;
@@ -31,27 +91,32 @@ const render_new_view = (entries) => {
         container.appendChild(canvas);
     }
 
+    if (!canvas.dataset.tooltipBound) {
+        canvas.addEventListener('mouseleave', hideWordTooltip);
+        canvas.dataset.tooltipBound = '1';
+    }
+
     const cs = getComputedStyle(container);
     const width = container.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     const height = container.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
 
     const dpr = window.devicePixelRatio || 1;
-    canvas.width  = Math.max(1, Math.round(width * dpr));
+    canvas.width = Math.max(1, Math.round(width * dpr));
     canvas.height = Math.max(1, Math.round(height * dpr));
-    canvas.style.width  = `${width}px`;
+    canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
     const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // Corrected scale handling
-    ctx.clearRect(0, 0, width, height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const rotation = get_rotation_settings(rendersettings.alignmentmode);
+    const rotation = getRotationSettings(rendersettings.alignmentmode);
 
     const weights = entries.map(e => e[1]);
     const maxWeight = Math.max(...weights) || 1;
     const minWeight = Math.min(...weights) || 0;
     const weightRange = maxWeight - minWeight || 1;
-    const targetMaxFontSize = width * 0.25;
+    const targetMaxFontSize = Math.min(width, height) * 0.25;
     const internalMaxFontSize = targetMaxFontSize * dpr;
 
     const safeMinFontSize = 12 * dpr;
@@ -79,19 +144,20 @@ const render_new_view = (entries) => {
 
             return colors[colorIndex];
         },
+        hover: onWordHover,
         ...rotation,
     };
 
-    const cleanRenderSettings = { ...rendersettings };
+    const cleanRenderSettings = {...rendersettings};
     delete cleanRenderSettings.weightFactor;
 
-    WordCloud(canvas, {
+    wordCloud(canvas, {
         ...cleanRenderSettings,
         ...baseConfig
     });
 };
 
-const render_classic_view = (entries, wordcountrange) => {
+const renderClassicView = (entries, wordcountrange) => {
     const steps = 6;
     const mincount = Number(wordcountrange.mincount);
     const maxcount = Number(wordcountrange.maxcount);
@@ -113,7 +179,7 @@ const render_classic_view = (entries, wordcountrange) => {
         cloudhtml += `<span class="word center ${fontsize}" title="${count}">${word}</span>`;
     });
 
-    set_classic_css();
+    setClassicCss();
 
     const wordBox = document.getElementById('mod-wordcloud-words-box');
     wordBox.classList.add('d-flex');
@@ -124,15 +190,15 @@ const render_classic_view = (entries, wordcountrange) => {
 let currentSort = 'count'; // Default sort column
 let sortAscending = false;
 
-const render_list_view = (entries) => {
+const renderListView = (entries) => {
     const wordBox = document.getElementById('mod-wordcloud-words-box');
 
     const sortedEntries = [...entries].sort((a, b) => {
         if (currentSort === 'word') {
-            const comparison = a[0].localeCompare(b[0], undefined, { sensitivity: 'base' });
+            const comparison = a[0].localeCompare(b[0], undefined, {sensitivity: 'base'});
             return sortAscending ? comparison : -comparison;
         } else {
-            // Numeric sort: subtracting forced numbers handles asc/desc cleanly
+            // Numeric sort: subtracting forced numbers handles asc/desc cleanly.
             return sortAscending ? a[1] - b[1] : b[1] - a[1];
         }
     });
@@ -142,10 +208,10 @@ const render_list_view = (entries) => {
             word: word,
             count: count
         })),
-        sort_word_asc: currentSort === 'word' && sortAscending,
-        sort_word_desc: currentSort === 'word' && !sortAscending,
-        sort_count_asc: currentSort === 'count' && sortAscending,
-        sort_count_desc: currentSort === 'count' && !sortAscending
+        sortWordAsc: currentSort === 'word' && sortAscending,
+        sortWordDesc: currentSort === 'word' && !sortAscending,
+        sortCountAsc: currentSort === 'count' && sortAscending,
+        sortCountDesc: currentSort === 'count' && !sortAscending
     };
 
     Templates.render('mod_wordcloud/wordlist', context)
@@ -155,7 +221,7 @@ const render_list_view = (entries) => {
 
             attachSortListeners(entries);
 
-            // Listen for the link-style reset click
+            // Listen for the link-style reset click.
             const resetBtn = document.getElementById('wordcloud-reset-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
@@ -163,10 +229,11 @@ const render_list_view = (entries) => {
                     currentSort = 'count';
                     sortAscending = false;
 
-                    render_list_view(entries);
+                    renderListView(entries);
                 });
             }
 
+            return html;
         }).catch(notification.exception);
 };
 
@@ -184,18 +251,18 @@ const attachSortListeners = (entries) => {
                 sortAscending = true;
             }
 
-            render_list_view(entries);
+            renderListView(entries);
         });
     });
 };
 
-const get_rotation_settings = (mode) => {
+const getRotationSettings = (mode) => {
     const HALF_PI = Math.PI / 2;
 
     switch (mode) {
         case 'h':
-            // Only 0 degrees
-            return { minRotation: 0, maxRotation: 0, rotationSteps: 1, rotateRatio: 0 };
+            // Only 0 degrees.
+            return {minRotation: 0, maxRotation: 0, rotationSteps: 1, rotateRatio: 0};
 
         case 'v':
             // Options: -90, 90
@@ -227,17 +294,17 @@ const get_rotation_settings = (mode) => {
             };
 
         default:
-            return { minRotation: 0, maxRotation: 0, rotationSteps: 1, rotateRatio: 0 };
+            return {minRotation: 0, maxRotation: 0, rotationSteps: 1, rotateRatio: 0};
     }
 };
 
-export const wordcloud_style = {
+export const wordcloudStyle = {
     version: 0,
     settings: ''
 };
 
-export const render_wordcloud = async (jsonentries, wordcountrange) => {
-    const view = Number(wordcloud_style.version) || 0;
+export const renderWordcloud = async(jsonentries, wordcountrange) => {
+    const view = Number(wordcloudStyle.version) || 0;
     const entries = JSON.parse(jsonentries) || [];
     const container = document.getElementById('mod-wordcloud-words-box');
 
@@ -253,32 +320,32 @@ export const render_wordcloud = async (jsonentries, wordcountrange) => {
 
     switch (view) {
         case 1:
-            render_new_view(entries);
+            renderNewView(entries);
             break;
         case 2:
-            render_list_view(entries);
+            renderListView(entries);
             break;
         default: {
             const wcr = JSON.parse(wordcountrange);
-            render_classic_view(entries, wcr);
+            renderClassicView(entries, wcr);
             break;
         }
     }
 };
 
 export const init = (aid, viewstyle, rendersettings) => {
-    wordcloud_style.version = viewstyle;
-    wordcloud_style.settings = rendersettings;
+    wordcloudStyle.version = viewstyle;
+    wordcloudStyle.settings = rendersettings;
 
     const wordCount = document.getElementById('mod-wordcloud-wcount');
 
     ajax.call([{
         methodname: 'mod_wordcloud_get_entries',
-        args: { aid, timestamphtml: -1 },
+        args: {aid, timestamphtml: -1},
         done: (returnval) => {
             if (returnval.entries) {
                 wordCount.textContent = returnval.sumcount;
-                render_wordcloud(returnval.entries, returnval.wordcountrange);
+                renderWordcloud(returnval.entries, returnval.wordcountrange);
             }
         },
         fail: notification.exception

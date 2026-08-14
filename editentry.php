@@ -31,7 +31,7 @@ $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', 20, PARAM_INT);
 
-list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'wordcloud');
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
@@ -71,8 +71,10 @@ if ($deleteselected) {
         $DB->delete_records('wordcloud_word_user_rel', ['mapid' => $deleteselected]);
         redirect($PAGE->url);
     } else {
-        $deleteurl = new moodle_url('/mod/wordcloud/editentry.php',
-            ['id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)]);
+        $deleteurl = new moodle_url(
+            '/mod/wordcloud/editentry.php',
+            ['id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)]
+        );
 
         $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
         $word = '<strong>' . $DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected]) . '</strong>';
@@ -106,8 +108,11 @@ echo html_writer::tag('button', get_string('save', 'moodle'), [
     'data-backurl' => "$backurl",
 ]);
 echo '    ';
-echo html_writer::tag('button', get_string('cancel', 'moodle'),
-    ['class' => 'btn btn-secondary', 'onclick' => "location.href='$backurl'"]);
+echo html_writer::tag(
+    'button',
+    get_string('cancel', 'moodle'),
+    ['class' => 'btn btn-secondary', 'onclick' => "location.href='$backurl'"]
+);
 $PAGE->requires->js_call_amd('mod_wordcloud/editword', 'init');
 
 echo html_writer::start_div('tablewidth');

@@ -39,7 +39,10 @@ Feature: Teachers exports the entered words
     And I press "mod-wordcloud-btn"
     And I set the field "mod-wordcloud-new-word" to "test word5"
     And I press "mod-wordcloud-btn"
-    Then I should see "Words submitted: 6"
+    Then I should see "Submitted words: 6"
     And I click the export button
     And I select "Export CSV" from the export dropdown
-    Then the download page should be "http://127.0.0.1/moodle/mod/wordcloud/export.php?id=218000"
+    Then the download page should be "/mod/wordcloud/export.php?id="
+    And the downloaded file should contain "test word0"
+    And the downloaded file should contain "test word3"
+    And the downloaded file should contain "test word5"

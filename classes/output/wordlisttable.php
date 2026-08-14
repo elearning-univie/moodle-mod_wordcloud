@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* Table class for editing all entries in a wordcloud activity.
-*
-* @package    mod_wordcloud
-* @copyright  2021 University of Vienna
-* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+ * Table class for editing all entries in a wordcloud activity.
+ *
+ * @package    mod_wordcloud
+ * @copyright  2021 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 namespace mod_wordcloud\output;
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,8 +45,8 @@ class wordlisttable extends table_sql {
 
         $this->define_columns(['word', 'count']);
         $this->define_headers([
-            get_string('word',  'mod_wordcloud'),
-            get_string('count', 'mod_wordcloud')
+            get_string('word', 'mod_wordcloud'),
+            get_string('count', 'mod_wordcloud'),
         ]);
 
         $this->collapsible(false);

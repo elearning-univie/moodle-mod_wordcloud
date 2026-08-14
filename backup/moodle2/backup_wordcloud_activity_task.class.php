@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/mod/wordcloud/backup/moodle2/backup_wordcloud_ste
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_wordcloud_activity_task extends backup_activity_task {
-
     /**
      * No specific settings for this activity
      */
@@ -62,11 +61,11 @@ class backup_wordcloud_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot, '/');
 
         // Link to the list of newmodules.
-        $search = '/('.$base.'\/mod\/wordcloud\/index.php\?id\=)([0-9]+)/';
+        $search = '/(' . $base . '\/mod\/wordcloud\/index.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@WORDCLOUDINDEX*$2@$', $content);
 
         // Link to wordcloud view by moduleid.
-        $search = '/('.$base.'\/mod\/wordcloud\/view.php\?id\=)([0-9]+)/';
+        $search = '/(' . $base . '\/mod\/wordcloud\/view.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@WORDCLOUDVIEWBYID*$2@$', $content);
 
         return $content;

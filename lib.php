@@ -29,7 +29,7 @@
  * @return mixed true if the feature is supported, null if unknown
  */
 function wordcloud_supports($feature) {
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_GROUPS:
             return true;
         case FEATURE_GROUPINGS:
@@ -192,8 +192,10 @@ function wordcloud_extend_settings_navigation(settings_navigation $settingsnav, 
  */
 function mod_wordcloud_get_completion_active_rule_descriptions($cm) {
     // Values will be present in cm_info, and we assume these are up to date.
-    if (empty($cm->customdata['customcompletionrules'])
-        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+    if (
+        empty($cm->customdata['customcompletionrules'])
+        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC
+    ) {
         return [];
     }
 
@@ -214,6 +216,7 @@ function mod_wordcloud_get_completion_active_rule_descriptions($cm) {
 
 /**
  * Helper to package JSON settings.
+ * @param object $data
  */
 function mod_wordcloud_package_settings(&$data) {
     $settings = [
@@ -227,6 +230,11 @@ function mod_wordcloud_package_settings(&$data) {
     $data->rendersettings = json_encode($settings);
 }
 
+/**
+ * Returns the list of web safe fonts available for rendering the wordcloud.
+ *
+ * @return array list of font CSS values indexed keyed by their display label.
+ */
 function mod_wordcloud_get_render_fonts() {
     return [
         'Arial, sans-serif' => 'Arial (sans-serif)',
@@ -239,13 +247,11 @@ function mod_wordcloud_get_render_fonts() {
     ];
 }
 
-/*function mod_wordcloud_get_render_styles() {
-    return [
-        0 => get_string('classicview', 'wordcloud'),
-        1 => get_string('newview', 'wordcloud'),
-    ];
-}*/
-
+/**
+ * Returns the list of available text alignments for rendering the wordcloud.
+ *
+ * @return array list of text alignment labels keyed by their internal code.
+ */
 function mod_wordcloud_get_render_textalignments() {
     return [
         'hvd' => get_string('textalignmenthvd', 'wordcloud'),
@@ -255,6 +261,12 @@ function mod_wordcloud_get_render_textalignments() {
     ];
 }
 
+/**
+ * Returns the render style to use for the given text alignment.
+ *
+ * @param string $textalignment the text alignment code.
+ * @return int the render style.
+ */
 function mod_wordcloud_get_render_style($textalignment) {
     if ($textalignment == 'h') {
         return 0;
@@ -267,11 +279,15 @@ function mod_wordcloud_get_render_style($textalignment) {
  * Callback to fetch the social/actionable link for the timeline block.
  *
  * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @param int $userid
  * @return action_data|null
  */
-function mod_wordcloud_core_calendar_provide_event_action(calendar_event $event,
-                                                          \core_calendar\action_factory $factory,
-                                                          int $userid = 0) {
+function mod_wordcloud_core_calendar_provide_event_action(
+    calendar_event $event,
+    \core_calendar\action_factory $factory,
+    int $userid = 0
+) {
     global $DB, $USER;
 
     if (!$userid) {
