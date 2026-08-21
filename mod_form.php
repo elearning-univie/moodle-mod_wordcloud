@@ -106,6 +106,22 @@ class mod_wordcloud_mod_form extends moodleform_mod {
             $mform->setDefault('textalignment', $config->defaulttextalignment);
         }
 
+        $mform->addElement('button', 'wordcloudpreviewbtn', get_string('previewbtn', 'wordcloud'));
+
+        global $PAGE;
+
+        $fontcolors = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $fontcolor = 'fontcolor' . $i;
+            $fontcolors[] = $wordcloudconfig->$fontcolor;
+        }
+        $PAGE->requires->js_call_amd('mod_wordcloud/config');
+        $PAGE->requires->js_call_amd(
+            'mod_wordcloud/formpreview',
+            'init',
+            [$fontcolors, $wordcloudconfig->rendersettings]
+        );
+
         $mform->addElement('header', 'timing', get_string('timing', 'wordcloud'));
         $mform->addElement(
             'date_time_selector',

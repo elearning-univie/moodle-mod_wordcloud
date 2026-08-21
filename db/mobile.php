@@ -31,17 +31,18 @@ $addons = [
                 'method' => 'mobile_wordcloud_view',
                 'displaydata' => [
                     'title' => 'pluginname',
-                    'icon' => $CFG->wwwroot . '/mod/wordcloud/pix/icon.svg',
+                    'icon' => $CFG->wwwroot . '/mod/wordcloud/pix/monologo.svg',
                 ],
                 'styles' => [
                     'url' => $CFG->wwwroot . '/mod/wordcloud/mobile/mobile_styles.css',
-                    'version' => '1.0',
+                    'version' => '2.0',
+                ],
+                'offlinefunctions' => [
+                    'mobile_wordcloud_view' => [],
                 ],
             ],
         ],
         'lang' => [
-            ['close', 'wordcloud'],
-            ['open', 'wordcloud'],
             ['pluginname', 'wordcloud'],
             ['refreshtext', 'wordcloud'],
             ['selectagroup', 'moodle'],

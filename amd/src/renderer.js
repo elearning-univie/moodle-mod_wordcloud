@@ -61,11 +61,28 @@ const onWordHover = (item, dimension, event) => {
     tooltip.style.display = 'block';
 };
 
-const renderNewView = (entries) => {
-    const container = document.getElementById('mod-wordcloud-words-box');
-    const rendersettings = JSON.parse(wordcloudStyle.settings);
-    const colors = getNewCss();
-
+/**
+ * Renders the canvas-based ("modern") wordcloud view into the given container.
+ *
+ * Used both for the real activity page (with its defaults) and for the
+ * appearance preview shown from mod_form.php, which supplies its own
+ * container, rendersettings and colour palette.
+ *
+ * @param {Array} entries [word, count] pairs to render.
+ * @param {HTMLElement} [container] element to render into. Defaults to the real activity page's word box.
+ * @param {Object} [rendersettings] wordcloud2 render settings, including "alignmentmode". Defaults to the
+ *                                  settings configured via {@link init}.
+ * @param {string[]} [colors] colour palette to shade words with. Defaults to the colours set via
+ *                             mod_wordcloud/uicontroller.
+ * @param {string} [canvasId] id to give the (created if missing) canvas element.
+ */
+const renderNewView = (
+    entries,
+    container = document.getElementById('mod-wordcloud-words-box'),
+    rendersettings = JSON.parse(wordcloudStyle.settings),
+    colors = getNewCss(),
+    canvasId = 'mod-wordcloud-words-canvas'
+) => {
     // Snapshot the true counts before wordcloud2 gets a chance to mutate any
     // item's weight while trying to fit it on the canvas (see currentWordCounts).
     currentWordCounts = new Map(entries.map(([word, count]) => [word, count]));
@@ -84,10 +101,10 @@ const renderNewView = (entries) => {
         container.style.width = "100%";
     }
 
-    let canvas = container.querySelector('#mod-wordcloud-words-canvas');
+    let canvas = container.querySelector('#' + canvasId);
     if (!canvas) {
         canvas = document.createElement('canvas');
-        canvas.id = 'mod-wordcloud-words-canvas';
+        canvas.id = canvasId;
         container.appendChild(canvas);
     }
 
@@ -157,7 +174,19 @@ const renderNewView = (entries) => {
     });
 };
 
-const renderClassicView = (entries, wordcountrange) => {
+/**
+ * Renders the CSS-based ("classic") wordcloud view into the given container.
+ *
+ * Used both for the real activity page (with its defaults) and for the
+ * appearance preview shown from mod_form.php. Since the font-size and colour
+ * classes this relies on (.w1-.w6) are scoped to ".path-mod-wordcloud", the
+ * container must have that class somewhere in its ancestry for styling to apply.
+ *
+ * @param {Array} entries [word, count] pairs to render.
+ * @param {Object} wordcountrange {mincount, maxcount} across all entries.
+ * @param {HTMLElement} [container] element to render into. Defaults to the real activity page's word box.
+ */
+const renderClassicView = (entries, wordcountrange, container = document.getElementById('mod-wordcloud-words-box')) => {
     const steps = 6;
     const mincount = Number(wordcountrange.mincount);
     const maxcount = Number(wordcountrange.maxcount);
@@ -181,9 +210,11 @@ const renderClassicView = (entries, wordcountrange) => {
 
     setClassicCss();
 
-    const wordBox = document.getElementById('mod-wordcloud-words-box');
-    wordBox.classList.add('d-flex');
-    wordBox.innerHTML = cloudhtml;
+    // The real activity page's container already has "flex-wrap gap-2" baked
+    // into its markup (see wordcloud.mustache); adding them here too makes
+    // this self-contained for any container, e.g. the mod_form.php preview.
+    container.classList.add('d-flex', 'flex-wrap', 'gap-2');
+    container.innerHTML = cloudhtml;
 };
 
 // State variables to track sorting
@@ -297,6 +328,8 @@ const getRotationSettings = (mode) => {
             return {minRotation: 0, maxRotation: 0, rotationSteps: 1, rotateRatio: 0};
     }
 };
+
+export {renderNewView, renderClassicView};
 
 export const wordcloudStyle = {
     version: 0,
