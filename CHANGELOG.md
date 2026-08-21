@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v5.1-r2 (2026-08-22)
+
+* \[FIX] Fixed the moodle app view
+* \[FEATURE] Added preview function in activity settings
+
 ## v5.1-r1 (2026-07-10)
 
 * \[FIX] Fixed missing wordcloud activities in block timeline

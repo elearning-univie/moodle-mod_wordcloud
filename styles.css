@@ -139,6 +139,11 @@
     white-space: nowrap;
 }
 
+.wordcloud-preview-canvas-container {
+    width: 100%;
+    min-height: 300px;
+}
+
 .path-mod-wordcloud .sr-only {
     position: absolute;
     width: 1px;

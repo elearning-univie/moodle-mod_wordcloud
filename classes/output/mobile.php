@@ -50,7 +50,6 @@ class mobile {
         global $OUTPUT, $USER, $DB, $CFG;
 
         $args = (object) $args;
-        $versionname = $args->appversioncode >= 44000 ? 'latest' : 'ionic5';
         $cm = get_coursemodule_from_id('wordcloud', $args->cmid);
         $context = \context_module::instance($cm->id);
 
@@ -64,35 +63,17 @@ class mobile {
         $groupid = empty($args->group) ? 0 : $args->group;
         $groupmode = groups_get_activity_groupmode($cm);
 
-        $moodle4 = ($CFG->version >= 2022041900) ? true : false;
-        $wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
-        $cloudhtml = mod_wordcloud_get_cloudhtml($wordcloud->id, $groupmode, $groupid);
+        $wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance], '*', MUST_EXIST);
         $wordcloudconfig = get_config('wordcloud');
-        $colors = '';
+        $canedit = has_capability('mod/wordcloud:editentry', $context);
 
+        $cloud = mod_wordcloud_get_entries($wordcloud->id, $groupmode, $groupid, $canedit);
         $cansubmit = mod_wordcloud_can_submit($wordcloud, $context, $groupid);
-
-        if ($wordcloud->usemonocolor) {
-            if ($wordcloud->monocolor == 0) {
-                $colors = '#' . $wordcloud->monocolorhex;
-            } else {
-                $fontcolor = 'fontcolor' . $wordcloud->monocolor;
-                $colors = '#' . $wordcloudconfig->$fontcolor;
-            }
-        } else {
-            for ($i = 1; $i <= 6; $i++) {
-                $fontcolor = 'fontcolor' . $i;
-                $colors .= '.w' . $i . ' {color: #' . $wordcloudconfig->$fontcolor . ';} ';
-            }
-        }
 
         $data = [
             'wordcloud' => $wordcloud,
             'cmid' => $cm->id,
             'writeaccess' => $cansubmit['writeaccess'],
-            'timing' => $cansubmit['timing'],
-            'timeopen' => $cansubmit['timeopen'],
-            'timeclose' => $cansubmit['timeclose'],
         ];
 
         if ($groupmode) {
@@ -103,25 +84,75 @@ class mobile {
             $data['showgroups'] = false;
         }
 
-        if ($moodle4) {
-            $data['timing'] = null;
-        }
-
         return [
             'templates' => [
                 [
                     'id' => 'main',
-                    'html' => $OUTPUT->render_from_template("mod_wordcloud/mobile_view_page_$versionname", $data),
+                    'html' => $OUTPUT->render_from_template('mod_wordcloud/mobile_view_page', $data),
                 ],
             ],
-            'javascript' => file_get_contents($CFG->dirroot . '/mod/wordcloud/mobile/mobile_uicontroller.js'),
+            'javascript' => file_get_contents(__DIR__ . '/../../mobile/mobile_uicontroller.js'),
             'otherdata' => [
-                'cloudhtml' => $cloudhtml['cloudhtml'],
+                'entries' => $cloud['entries'],
+                'wordcountrange' => $cloud['wordcountrange'],
                 'word' => '',
-                'colors' => $colors,
+                'colors' => json_encode(self::get_colors($wordcloud, $wordcloudconfig)),
+                'renderstyle' => $wordcloud->renderstyle,
+                'rendersettings' => json_encode(self::get_rendersettings($wordcloud, $wordcloudconfig)),
+                'wordcloud2url' => $CFG->wwwroot . '/mod/wordcloud/js/wordcloud2/wordcloud2.js',
                 'group' => $groupid,
             ],
+            'files' => [],
         ];
+    }
+
+    /**
+     * Returns the 6 (random scheme) or 1 (sequentially shaded scheme) hex colours
+     * (without '#') configured for this instance, matching amd/src/uicontroller.js's
+     * getColorsToDisplay() input. Interpreted client-side in mobile_uicontroller.js,
+     * which reimplements that same shuffle/shade logic (the AMD module can't be
+     * imported into the mobile app's isolated JS context).
+     *
+     * @param \stdClass $wordcloud the wordcloud instance record.
+     * @param \stdClass $wordcloudconfig the mod_wordcloud plugin config.
+     * @return string[]
+     */
+    private static function get_colors($wordcloud, $wordcloudconfig) {
+        if ($wordcloud->usemonocolor) {
+            if ($wordcloud->monocolor == 0) {
+                return [$wordcloud->monocolorhex];
+            }
+
+            $fontcolor = 'fontcolor' . $wordcloud->monocolor;
+            return [$wordcloudconfig->$fontcolor];
+        }
+
+        $colors = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $fontcolor = 'fontcolor' . $i;
+            $colors[] = $wordcloudconfig->$fontcolor;
+        }
+
+        return $colors;
+    }
+
+    /**
+     * Returns the wordcloud2 render settings for this instance: the site-wide defaults
+     * (gridSize, backgroundColor, shrinkToFit, ...) overlaid with this instance's font
+     * and text alignment. Mirrors how view.php builds $rendersettings for the web view.
+     *
+     * @param \stdClass $wordcloud the wordcloud instance record.
+     * @param \stdClass $wordcloudconfig the mod_wordcloud plugin config.
+     * @return array
+     */
+    private static function get_rendersettings($wordcloud, $wordcloudconfig) {
+        $rendersettings = json_decode($wordcloudconfig->rendersettings, true) ?: [];
+        $instancesettings = json_decode($wordcloud->rendersettings, true) ?: [];
+
+        $rendersettings['fontFamily'] = $instancesettings['font'] ?? $wordcloudconfig->defaultfont;
+        $rendersettings['alignmentmode'] = $instancesettings['textalignment'] ?? $wordcloudconfig->defaulttextalignment;
+
+        return $rendersettings;
     }
 
     /**

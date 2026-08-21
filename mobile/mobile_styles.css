@@ -1,33 +1,37 @@
-.w1 {
+/*
+ * Plugin styles are downloaded once and applied app-wide, so these are scoped
+ * to #mod-wordcloud-words-box to avoid leaking into other plugins' pages.
+ */
+#mod-wordcloud-words-box .w1 {
     font-size: 1.5em;
 }
 
-.w2 {
+#mod-wordcloud-words-box .w2 {
     font-size: 2em;
 }
 
-.w3 {
+#mod-wordcloud-words-box .w3 {
     font-size: 2.5em;
 }
 
-.w4 {
+#mod-wordcloud-words-box .w4 {
     font-size: 3em;
 }
 
-.w5 {
+#mod-wordcloud-words-box .w5 {
     font-size: 3.5em;
 }
 
-.w6 {
+#mod-wordcloud-words-box .w6 {
     font-size: 4em;
 }
 
-.word {
+#mod-wordcloud-words-box .word {
     padding-left: 0.5em;
     padding-right: 0.5em;
     white-space: nowrap;
 }
 
-.center {
+#mod-wordcloud-words-box .center {
     text-align: center;
 }

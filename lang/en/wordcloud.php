@@ -27,7 +27,6 @@ $string['activityclose_help'] = 'If enabled, students will not be able to submit
 $string['activityopen'] = 'Allow submissions from';
 $string['activityopen_help'] = 'If enabled, students will not be able to submit words before this date. If disabled, a submission is possible right away.';
 $string['appearance'] = 'Appearance';
-$string['classicview'] = 'Classic view';
 $string['close'] = 'Closes: ';
 $string['closebeforeopen'] = 'Could not update the wordcloud. You have specified a close date before the open date.';
 $string['cloud'] = 'Wordcloud';
@@ -72,12 +71,12 @@ $string['monocolor_help'] = 'Choose one of the colors defined in the admin setti
 $string['monocolor_hex'] = 'Custom color';
 $string['monocolor_hex_help'] = 'Please fill in a six-digit hexadecimal value of the desired monocolor in the form "aabb11" (without the "#").';
 $string['monocolordesc'] = 'Set one color for the wordcloud words. The system then calculates 6 colors with different lightness value. Define the color values as hexcode without #.';
-$string['newview'] = 'Modern view';
 $string['notification'] = 'Please select a group to submit a word';
 $string['open'] = 'Opens: ';
 $string['pagetitle'] = 'Moodle Wordcloud';
 $string['pluginadministration'] = 'Wordcloud administration';
 $string['pluginname'] = 'Wordcloud';
+$string['previewbtn'] = 'Show preview';
 $string['privacy:metadata'] = 'The wordcloud plugin does not store any personal data.';
 $string['referlist'] = 'For an accessible view of submitted words, please select the option &quot;List&quot; in the drop-down list &quot;Display&quot;.';
 $string['refreshtext'] = 'Refresh the page to get the latest wordcloud content';
@@ -85,7 +84,11 @@ $string['refreshtime'] = 'Refresh time';
 $string['refreshtimedesc'] = 'Set the auto refresh interval time in seconds';
 $string['removewordcheck'] = 'Are you sure you want to remove the word \'{$a}\' from this wordcloud activity?';
 $string['rendersettings'] = 'Further style options';
-$string['rendersettingsdesc'] = 'Set further style options for the appearance of wordclouds for new and existing modules.';
+$string['rendersettingsdesc'] = '<p>Set further style options (in JSON format) to define the appearance of new and existing wordcloud modules. Further information on the available settings of the used third-party library \'Wordcloud2\' can be found here: <a href="https://github.com/timdream/wordcloud2.js/blob/gh-pages/API.md">https://github.com/timdream/wordcloud2.js/blob/gh-pages/API.md</a></p>
+<p>
+<strong>Please note</strong> - the following style options...
+<ul><li>are currently AVAILABLE: gridSize, backgroundColor, shrinkToFit, drawOutOfBound, minSize</li>
+<li>are PREDEFINED by other settings of the module or are in the code only. These options have no effect, even if they are added to the setting: weightFactor, color, minRotation, maxRotation, rotationsteps, rotateRatio</li></ul></p>';
 $string['renderstyle'] = 'Render style';
 $string['saved'] = 'Saved';
 $string['submitbtn'] = 'Submit';
