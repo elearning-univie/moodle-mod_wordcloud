@@ -64,7 +64,24 @@ $string['fullscreen'] = 'Fullscreen';
 $string['furtheroptions'] = 'Further options';
 $string['list'] = 'List';
 $string['modulename'] = 'Wordcloud';
-$string['modulename_help'] = 'This module allows teachers to visualize a list of tags as a word cloud. The importance of a tag is shown with fontsize, according to the number of mentions.';
+$string['modulename_help'] = '###### Key features
+* Flexible display options (currently: colour scheme, font, text alignment)
+* Customisable visibility of submitted words: always, after the deadline, after submitting a speaking request
+* Accessible use via a word list
+* Editing speaking requests
+* Export as a graphic or table
+* Specific completion conditions available
+
+###### Ways to use it
+* Do a live poll
+* Introduce a new topic
+* Do a brainstorming session
+* Assess prior knowledge
+* Obtain the mood
+* Ask a quick-fire question
+* Gather feedback easily';
+$string['modulename_summary'] = 'The wordcloud allows you to visualise words quickly and easily according to their frequency.';
+$string['modulename_tip'] = '<p><a href="https://wiki.univie.ac.at/x/39CZBg" target="_blank"><i class="icon fa fa-info-circle"></i>Instructions for teachers: "Wortwolke" (German)</a></p>';
 $string['modulenameplural'] = 'Wordclouds';
 $string['monocolor'] = 'Base color';
 $string['monocolor_help'] = 'Choose one of the colors defined in the admin settings for the mono-colored color scheme.';

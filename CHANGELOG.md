@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v5.2-r1 (2026-08-23)
+
+* \[UPDATE] Langstring changes 
+* Moodle 5.2 compatible version
+
 ## v5.1-r2 (2026-08-22)
 
 * \[FIX] Fixed the moodle app view
