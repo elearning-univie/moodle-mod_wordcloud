@@ -23,6 +23,16 @@
  */
 
 /**
+ * The only font the classic renderer can display.
+ *
+ * The classic view is built from CSS-styled spans whose rules (.w1 - .w6 in
+ * styles.css) set a size but no font-family, so the words are always shown in
+ * the theme's default sans-serif face. It can therefore only honour this one
+ * font; every other font has to be drawn by the canvas-based modern renderer.
+ */
+define('WORDCLOUD_CLASSIC_FONT', 'Arial, sans-serif');
+
+/**
  * Returns the information on whether the module supports a feature
  *
  * @param string $feature FEATURE_xx constant for requested feature
@@ -262,17 +272,24 @@ function mod_wordcloud_get_render_textalignments() {
 }
 
 /**
- * Returns the render style to use for the given text alignment.
+ * Returns the render style to use for the given text alignment and font.
+ *
+ * The classic (CSS-based) renderer can only lay words out horizontally and
+ * cannot apply a font, so it is used only when the activity asks for horizontal
+ * text in the one font it is able to show (see WORDCLOUD_CLASSIC_FONT). Every
+ * other combination is drawn by the modern, canvas-based renderer, which
+ * honours both settings.
  *
  * @param string $textalignment the text alignment code.
- * @return int the render style.
+ * @param string|null $font the font CSS value, as returned by mod_wordcloud_get_render_fonts().
+ * @return int 0 for the classic renderer, 1 for the modern one.
  */
-function mod_wordcloud_get_render_style($textalignment) {
-    if ($textalignment == 'h') {
+function mod_wordcloud_get_render_style($textalignment, $font = null) {
+    if ($textalignment == 'h' && $font === WORDCLOUD_CLASSIC_FONT) {
         return 0;
-    } else {
-        return 1;
     }
+
+    return 1;
 }
 
 /**

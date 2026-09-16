@@ -31,75 +31,6 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
  */
 class behat_mod_wordcloud extends behat_base {
     /**
-     * Focuses on a field and simulates pressing enter
-     *
-     * @Then I press Enter in the field with id :fieldId
-     *
-     * @param string $fieldid ID of the field
-     * @throws moodle_exception the field is not found or the action fails
-     */
-    public function i_press_enter_in_field($fieldid) {
-        $session = $this->getSession();
-        $driver = $session->getDriver();
-        $page = $session->getPage();
-
-        $field = $page->find('css', '#' . $fieldid);
-        if (!$field) {
-            throw new \moodle_exception(get_string('path_error', 'mod_wordcloud'));
-        }
-
-        // Field is visible and enabled.
-        if (!$field->isVisible()) {
-            throw new \moodle_exception(get_string('path_error', 'mod_wordcloud'));
-        }
-        if ($field->getAttribute('disabled')) {
-            throw new \moodle_exception(get_string('path_error', 'mod_wordcloud'));
-        }
-
-        try {
-            $field->click();
-        } catch (\Exception $e) {
-            throw new \moodle_exception(get_string('path_error', 'mod_wordcloud'));
-        }
-
-        try {
-            $driver->getWebDriverSession()->element('css selector', '#' . $fieldid)->sendKeys("\uE007");
-        } catch (\Exception $e) {
-            $session->executeScript("
-                var input = document.getElementById('" . $fieldid . "');
-                if (input) {
-                    var event = new KeyboardEvent('keydown', {
-                        key: 'Enter',
-                        code: 'Enter',
-                        keyCode: 13,
-                        which: 13,
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    input.dispatchEvent(event);
-                } else {
-                    throw new Error('JavaScript could not find the field with ID \"" . $fieldid . "\".');
-                }
-            ");
-        }
-        $session->wait(2000, "document.readyState === 'complete'");
-    }
-
-    /**
-     * Custom defintion for deleting
-     * @When I click the delete button
-     * @throws moodle_exception button not found
-     */
-    public function i_click_the_delete_button() {
-        $button = $this->getSession()->getPage()->find('css', 'button[data-action="delete"]');
-        if (null === $button) {
-            throw new \moodle_exception('path_error', 'mod_wordcloud');
-        }
-        $button->click();
-    }
-
-
-    /**
      * Custom defintion for exporting
      *
      * @When I click the export button
@@ -141,7 +72,7 @@ class behat_mod_wordcloud extends behat_base {
         $windownames = $driver->getWindowNames();
 
         if (count($windownames) <= 1) {
-            throw new \moodle_exception(get_string('error_notab', 'mod_wordcloud'));
+            throw new \moodle_exception('error_notab', 'mod_wordcloud');
         }
 
         $driver->switchToWindow(end($windownames));
@@ -149,10 +80,8 @@ class behat_mod_wordcloud extends behat_base {
         $currenturl = $session->getCurrentUrl();
 
         if (strpos($currenturl, $url) === false) {
-            throw new \moodle_exception(get_string('url_mismatch', 'mod_wordcloud', (object)[
-                'actual' => $currenturl,
-                'expected' => $url,
-            ]));
+            $debuginfo = "Expected the URL to contain '$url' but it was '$currenturl'.";
+            throw new \moodle_exception('url_mismatch', 'mod_wordcloud', '', null, $debuginfo);
         }
     }
 
@@ -183,7 +112,7 @@ class behat_mod_wordcloud extends behat_base {
         $content = download_file_content($url, ['Cookie' => 'MoodleSession=' . $cookie]);
 
         if (strpos($content, $text) === false) {
-            throw new \moodle_exception(get_string('export_content_mismatch', 'mod_wordcloud', $text));
+            throw new \moodle_exception('export_content_mismatch', 'mod_wordcloud', '', $text);
         }
     }
 }

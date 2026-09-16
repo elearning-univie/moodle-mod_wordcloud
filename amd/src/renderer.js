@@ -338,8 +338,28 @@ export const wordcloudStyle = {
 
 export const renderWordcloud = async(jsonentries, wordcountrange) => {
     const view = Number(wordcloudStyle.version) || 0;
-    const entries = JSON.parse(jsonentries) || [];
     const container = document.getElementById('mod-wordcloud-words-box');
+
+    // When the words are hidden by the activity's visibility setting, the web
+    // service returns a plain explanatory message in place of the JSON word
+    // list, so it must not be parsed as JSON.
+    let entries;
+    try {
+        entries = JSON.parse(jsonentries) || [];
+    } catch (e) {
+        entries = null;
+    }
+
+    if (!Array.isArray(entries)) {
+        document.getElementById('mod-wordcloud-view-menu').disabled = true;
+        container.innerHTML = '';
+        container.appendChild(Object.assign(document.createElement('div'), {
+            className: 'alert alert-info alert-block',
+            role: 'alert',
+            textContent: jsonentries,
+        }));
+        return;
+    }
 
     if (entries.length === 0) {
         document.getElementById('mod-wordcloud-view-menu').disabled = true;
