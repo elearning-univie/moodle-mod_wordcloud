@@ -264,7 +264,7 @@ class mod_wordcloud_mod_form extends moodleform_mod {
         }
 
         if (isset($data->font) && isset($data->textalignment)) {
-            $data->renderstyle = mod_wordcloud_get_render_style($data->textalignment);
+            $data->renderstyle = mod_wordcloud_get_render_style($data->textalignment, $data->font);
 
             $settings = [
                 'renderstyle'   => $data->renderstyle,

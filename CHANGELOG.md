@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v5.2-r2 (2026-09-14)
+* \[UPDATE] New behat tests
+* \[UPDATE] Changed old renderer to only work with Arial and horizontal orientation
+
 ## v5.2-r1 (2026-08-23)
 
 * \[UPDATE] Langstring changes 

@@ -213,5 +213,36 @@ function xmldb_wordcloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025041400.08, 'wordcloud');
     }
 
+    if ($oldversion < 2026082302) {
+        require_once(__DIR__ . '/../lib.php');
+
+        $records = $DB->get_records('wordcloud');
+
+        foreach ($records as $record) {
+            $settings = json_decode($record->rendersettings, true) ?: [];
+
+            $font = $settings['font'] ?? '';
+            $textalignment = $settings['textalignment'] ?? '';
+
+            if ($font === '' && $textalignment === '') {
+                continue;
+            }
+
+            $renderstyle = mod_wordcloud_get_render_style($textalignment, $font);
+
+            if ((int) $record->renderstyle === $renderstyle) {
+                continue;
+            }
+
+            $settings['renderstyle'] = $renderstyle;
+
+            $record->renderstyle = $renderstyle;
+            $record->rendersettings = json_encode($settings);
+            $DB->update_record('wordcloud', $record);
+        }
+
+        upgrade_mod_savepoint(true, 2026082302, 'wordcloud');
+    }
+
     return true;
 }

@@ -29,6 +29,14 @@ const sampleEntries = [
 ];
 
 /**
+ * The only font the classic renderer can display. Must match
+ * WORDCLOUD_CLASSIC_FONT in lib.php.
+ *
+ * @type {string}
+ */
+const CLASSIC_FONT = 'Arial, sans-serif';
+
+/**
  * The site-wide default font colours (fontcolor1-6) and base render settings,
  * passed in from mod_form.php.
  */
@@ -92,12 +100,15 @@ const renderPreview = (container) => {
     const fontField = document.getElementById('id_font');
     const alignmentField = document.getElementById('id_textalignment');
 
-    const fontFamily = fontField ? fontField.value : 'Arial, sans-serif';
+    const fontFamily = fontField ? fontField.value : CLASSIC_FONT;
     const alignment = alignmentField ? alignmentField.value : 'h';
 
     wordcloudColors.colors = getConfiguredColors();
 
-    if (alignment === 'h') {
+    // Mirrors mod_wordcloud_get_render_style(): the classic renderer cannot
+    // apply a font or rotate words, so it is only used for horizontal text in
+    // the single font it can display.
+    if (alignment === 'h' && fontFamily === CLASSIC_FONT) {
         const weights = sampleEntries.map(entry => entry[1]);
         const wordcountrange = {
             mincount: Math.min(...weights),

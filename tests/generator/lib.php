@@ -54,4 +54,69 @@ class mod_wordcloud_generator extends testing_module_generator {
 
         return parent::create_instance($record, (array)$options);
     }
+
+    /**
+     * Creates a submitted word entry in a wordcloud activity.
+     *
+     * Lets tests seed a wordcloud with words directly instead of driving the UI
+     * once per submission, which keeps feature files focused on the behaviour
+     * they actually assert.
+     *
+     * If the word already exists for the given activity and group its count is
+     * increased, mirroring what happens when a word is submitted repeatedly.
+     *
+     * @param array|stdClass $record Fields: wordcloudid (required), word (required),
+     *                               count (default 1), groupid (default 0), userid (optional).
+     * @return stdClass the wordcloud_map record.
+     */
+    public function create_entry($record) {
+        global $DB;
+
+        $record = (array) $record;
+
+        if (empty($record['wordcloudid'])) {
+            throw new coding_exception('The wordcloudid value is required when creating a wordcloud entry.');
+        }
+
+        if (!isset($record['word']) || trim($record['word']) === '') {
+            throw new coding_exception('The word value is required when creating a wordcloud entry.');
+        }
+
+        $wordcloudid = $record['wordcloudid'];
+        $word = trim($record['word']);
+        $groupid = $record['groupid'] ?? 0;
+        $count = isset($record['count']) ? (int) $record['count'] : 1;
+
+        $existing = $DB->get_record('wordcloud_map', [
+            'wordcloudid' => $wordcloudid,
+            'groupid' => $groupid,
+            'word' => $word,
+        ]);
+
+        if ($existing) {
+            $existing->count += $count;
+            $DB->update_record('wordcloud_map', $existing);
+            $mapid = $existing->id;
+        } else {
+            $mapid = $DB->insert_record('wordcloud_map', [
+                'wordcloudid' => $wordcloudid,
+                'groupid' => $groupid,
+                'word' => $word,
+                'count' => $count,
+            ]);
+        }
+
+        // Record who submitted the word, so that completion, the visibility
+        // rules and the privacy provider all behave as they would in real use.
+        if (!empty($record['userid'])) {
+            $rel = ['mapid' => $mapid, 'userid' => $record['userid']];
+            if (!$DB->record_exists('wordcloud_word_user_rel', $rel)) {
+                $DB->insert_record('wordcloud_word_user_rel', $rel);
+            }
+        }
+
+        $DB->set_field('wordcloud', 'lastwordchange', time(), ['id' => $wordcloudid]);
+
+        return $DB->get_record('wordcloud_map', ['id' => $mapid]);
+    }
 }
