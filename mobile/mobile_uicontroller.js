@@ -115,6 +115,17 @@ function mod_wordcloud_get_rotation_settings(mode) {
 }
 
 /**
+ * Escapes text for use in HTML; words are stored as entered.
+ *
+ * @param {*} text the text.
+ * @return {string}
+ */
+function mod_wordcloud_escape(text) {
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/**
  * Turns [word, count] entries into the classic word-cloud HTML markup, mirroring
  * the weight calculation used by renderClassicView() in amd/src/renderer.js.
  *
@@ -140,7 +151,8 @@ function mod_wordcloud_build_cloudhtml(entries, wordcountrange) {
             weight = 1;
         }
 
-        cloudhtml += '<span class="word center w' + weight + '" title="' + count + '">' + word + '</span>';
+        cloudhtml += '<span class="word center w' + weight + '" title="' + mod_wordcloud_escape(count) + '">' +
+            mod_wordcloud_escape(word) + '</span>';
     });
 
     return cloudhtml;
@@ -205,8 +217,29 @@ function mod_wordcloud_load_wordcloud2() {
 }
 
 /**
- * Renders the modern (canvas-based) view via wordcloud2, mirroring renderNewView()
- * in amd/src/renderer.js.
+ * Canvas layout tuning; keep in sync with CLOUD_LAYOUT in amd/src/renderer.js.
+ */
+var MOD_WORDCLOUD_LAYOUT = {
+    minHeight: 250,
+    maxHeight: 2000,
+    minReadableFont: 14,
+    minDrawFont: 8,
+    smallestRatio: 0.3,
+    maxFontRatio: 0.3,
+    fillRatio: 0.6,
+    fillRatioRotated: 0.5,
+    lineHeight: 1.2,
+    growFactor: 1.35,
+    maxAttempts: 4,
+};
+
+/**
+ * Stops an outdated render's redraw from overwriting a newer one.
+ */
+var modWordcloudRenderGeneration = 0;
+
+/**
+ * Renders the modern (canvas-based) view; a port of renderNewView() in amd/src/renderer.js.
  *
  * @param {HTMLElement} box #mod-wordcloud-words-box.
  * @param {Array} entries [word, count] pairs.
@@ -215,78 +248,162 @@ function mod_wordcloud_load_wordcloud2() {
  * @param {Object} wordcountrange {mincount, maxcount}, used only for the classic-view fallback.
  */
 function mod_wordcloud_render_modern(box, entries, colors, rendersettings, wordcountrange) {
+    var layout = MOD_WORDCLOUD_LAYOUT;
+    var generation = ++modWordcloudRenderGeneration;
+
     mod_wordcloud_load_wordcloud2().then(function(WordCloud) {
         var processedColors = mod_wordcloud_get_colors_to_display(colors);
 
-        box.innerHTML = '';
-        var canvas = document.createElement('canvas');
-        box.appendChild(canvas);
-
-        var baseHeight = 250;
-        var wordThreshold = 20;
-        var extraHeightPerWord = 15;
-        var height = baseHeight;
-        if (entries.length > wordThreshold) {
-            height += (entries.length - wordThreshold) * extraHeightPerWord;
-        }
-        box.style.height = height + 'px';
-
-        var width = box.clientWidth || 300;
-        var dpr = window.devicePixelRatio || 1;
-
-        canvas.width = Math.max(1, Math.round(width * dpr));
-        canvas.height = Math.max(1, Math.round(height * dpr));
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
-
-        var weights = entries.map(function(entry) {
-            return entry[1];
+        // Counts can arrive as strings; the biggest words are placed first.
+        var words = entries.map(function(entry) {
+            return [entry[0], Number(entry[1])];
+        }).sort(function(a, b) {
+            return b[1] - a[1];
         });
-        var maxWeight = Math.max.apply(null, weights) || 1;
-        var minWeight = Math.min.apply(null, weights) || 0;
-        var weightRange = (maxWeight - minWeight) || 1;
-        var targetMaxFontSize = Math.min(width, height) * 0.25;
-        var internalMaxFontSize = targetMaxFontSize * dpr;
-        var safeMinFontSize = 12 * dpr;
+        var countsByWord = new Map(words);
+
+        var counts = words.map(function(word) {
+            return word[1];
+        });
+        var maxCount = counts[0];
+        var minCount = counts[counts.length - 1];
+        var countRange = maxCount - minCount;
+
+        var relativeSizes = counts.map(function(count) {
+            if (countRange === 0) {
+                return 1;
+            }
+            return layout.smallestRatio + (1 - layout.smallestRatio) * (count - minCount) / countRange;
+        });
+        var smallestSize = Math.min.apply(null, relativeSizes);
+        var largestSize = Math.max.apply(null, relativeSizes);
+
+        var measureCtx = document.createElement('canvas').getContext('2d');
+        measureCtx.font = (rendersettings.fontWeight || 'normal') + ' 100px ' + (rendersettings.fontFamily || 'sans-serif');
+        var textWidths = words.map(function(word) {
+            return measureCtx.measureText(word[0]).width / 100;
+        });
 
         var rotation = mod_wordcloud_get_rotation_settings(rendersettings.alignmentmode);
-        var cleanRenderSettings = Object.assign({}, rendersettings);
-        delete cleanRenderSettings.weightFactor;
+        var rotates = rotation.rotateRatio > 0;
+        var alwaysRotated = rotation.rotateRatio >= 1;
+        var fillRatio = rotates ? layout.fillRatioRotated : layout.fillRatio;
 
-        var baseConfig = {
-            list: entries,
-            weightFactor: function(weight) {
-                if (maxWeight === 0) {
-                    return safeMinFontSize;
-                }
-                return Math.max(safeMinFontSize, (weight / maxWeight) * internalMaxFontSize);
-            },
-            color: function(word, weight) {
-                if (!processedColors.length) {
-                    return '#000000';
-                }
-                var normalizedWeight = (weight - minWeight) / weightRange;
-                var colorIndex = Math.min(Math.floor(normalizedWeight * processedColors.length), processedColors.length - 1);
-                return processedColors[colorIndex];
-            },
+        var areaPerScale = relativeSizes.reduce(function(sum, size, i) {
+            return sum + textWidths[i] * size * size * layout.lineHeight;
+        }, 0) || 1;
+        var longestPerScale = Math.max.apply(null, relativeSizes.map(function(size, i) {
+            return textWidths[i] * size;
+        })) || 1;
+
+        var heightFor = function(width) {
+            var scale = layout.minReadableFont / smallestSize;
+            var needed = scale * scale * areaPerScale / (fillRatio * width);
+            if (alwaysRotated) {
+                needed = Math.max(needed, scale * longestPerScale / 0.9);
+            }
+            return Math.min(layout.maxHeight, Math.max(layout.minHeight, Math.ceil(needed)));
         };
 
-        WordCloud(canvas, Object.assign({}, cleanRenderSettings, baseConfig, rotation));
+        var scaleFor = function(width, height) {
+            return Math.min(
+                Math.sqrt(fillRatio * width * height / areaPerScale),
+                0.9 * (alwaysRotated ? height : width) / longestPerScale,
+                layout.maxFontRatio * Math.min(width, height) / largestSize
+            );
+        };
+
+        var dpr = window.devicePixelRatio || 1;
+        var cleanRenderSettings = Object.assign({}, rendersettings);
+        delete cleanRenderSettings.weightFactor;
+        delete cleanRenderSettings.minSize;
+
+        box.innerHTML = '';
+        var canvas = document.createElement('canvas');
+        canvas.style.display = 'block';
+        box.appendChild(canvas);
+
+        var scale = null;
+
+        var draw = function(attempt, minimumHeight) {
+            var width = box.clientWidth || 300;
+            var height = Math.max(heightFor(width), minimumHeight);
+            box.style.height = height + 'px';
+
+            if (scale === null) {
+                scale = scaleFor(width, height);
+            }
+
+            canvas.width = Math.max(1, Math.round(width * dpr));
+            canvas.height = Math.max(1, Math.round(height * dpr));
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            // Weights are final font sizes, so shrinkToFit's retries really shrink the word.
+            var fontSizes = relativeSizes.map(function(size) {
+                return size * scale * dpr;
+            });
+            var list = words.map(function(word, i) {
+                return [word[0], fontSizes[i]];
+            });
+            var smallestFont = Math.min.apply(null, fontSizes);
+            var dropped = 0;
+
+            var onDrawn = function(e) {
+                if (!e.detail.drawn) {
+                    dropped++;
+                }
+            };
+
+            var onStop = function() {
+                canvas.removeEventListener('wordclouddrawn', onDrawn);
+                canvas.removeEventListener('wordcloudstop', onStop);
+
+                if (generation !== modWordcloudRenderGeneration || !canvas.isConnected) {
+                    return;
+                }
+
+                var shrunk = list.some(function(item, i) {
+                    return item[1] < fontSizes[i] * 0.99;
+                });
+                var canGrow = height < layout.maxHeight && attempt + 1 < layout.maxAttempts;
+
+                if ((dropped > 0 || shrunk) && canGrow) {
+                    draw(attempt + 1, Math.min(height * layout.growFactor, layout.maxHeight));
+                }
+            };
+
+            canvas.addEventListener('wordclouddrawn', onDrawn);
+            canvas.addEventListener('wordcloudstop', onStop);
+
+            WordCloud(canvas, Object.assign({}, cleanRenderSettings, rotation, {
+                list: list,
+                ellipticity: rendersettings.ellipticity !== undefined ? rendersettings.ellipticity : height / width,
+                weightFactor: function(size) {
+                    return size;
+                },
+                minSize: Math.max(Number(rendersettings.minSize) || 0, Math.min(layout.minDrawFont * dpr, smallestFont / 2)),
+                color: function(word) {
+                    if (!processedColors.length) {
+                        return '#000000';
+                    }
+                    var count = countsByWord.has(word) ? countsByWord.get(word) : minCount;
+                    var normalized = countRange === 0 ? 0 : (count - minCount) / countRange;
+                    var colorIndex = Math.min(Math.floor(normalized * processedColors.length), processedColors.length - 1);
+                    return processedColors[colorIndex];
+                },
+            }));
+        };
+
+        draw(0, 0);
     }).catch(function() {
-        // wordcloud2 failed to load - fall back to the classic view so the
-        // activity still shows something useful.
+        // Fall back to the classic view if wordcloud2 failed to load.
         mod_wordcloud_render_classic(box, entries, wordcountrange, colors);
     });
 }
 
 /**
- * Normalizes a value that may already be parsed or may still be a JSON string.
- *
- * The app auto-decodes any CONTENT_OTHERDATA string that looks like JSON before
- * exposing it here, so values like CONTENT_OTHERDATA.entries arrive as real arrays
- * or objects already. Values coming straight from a Web Service response (e.g.
- * response.entries in addWordCallDone) are untouched raw JSON strings (PARAM_RAW).
- * This handles both without needing to know which kind of source it came from.
+ * Parses JSON strings, and passes through values the app already decoded (CONTENT_OTHERDATA).
  *
  * @param {*} value a possibly-already-parsed value, a JSON string, or a plain string.
  * @return {*} the parsed value, or the original value if it wasn't a JSON string.
@@ -303,11 +420,8 @@ function mod_wordcloud_normalize(value) {
 }
 
 /**
- * Renders the wordcloud into #mod-wordcloud-words-box from the "entries" and
- * "wordcountrange" values returned by the mod_wordcloud_get_entries/add_word Web
- * Services, using either the classic or modern view depending on CONTENT_OTHERDATA.renderstyle
- * (matches how view.php picks a view for the web page). When entries isn't a wordlist
- * array (e.g. it's a "words are hidden until..." message), it's shown as plain text.
+ * Renders the entries in the classic or modern view, per CONTENT_OTHERDATA.renderstyle.
+ * Non-array entries are a "words are hidden" message and are shown as text.
  *
  * @param {string|Array} entriesraw [word, count] pairs (JSON-encoded or already parsed), or a plain message.
  * @param {string|Object} wordcountrangeraw {mincount, maxcount} (JSON-encoded or already parsed).

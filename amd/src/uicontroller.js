@@ -1,5 +1,11 @@
-const setHeight = () => {
+/**
+ * Widens the activity page's wordcloud as it gets taller. The width only grows.
+ */
+export const updateCloudWidth = () => {
     const wb = document.getElementById('mod-wordcloud-div');
+    if (!wb) {
+        return;
+    }
     const divheight = wb.offsetHeight;
     let newwidth = 0;
 
@@ -49,7 +55,10 @@ const hexToHsl = (color) => {
 };
 
 const exportListener = () => {
-    var exportmenu = document.getElementById('mod-wordcloud-export-menu');
+    const exportmenu = document.getElementById('mod-wordcloud-export-menu');
+    if (!exportmenu) {
+        return;
+    }
     exportmenu.onchange = function() {
         var selectedval = this.options[this.selectedIndex].value;
         if (selectedval == 'png') {
@@ -117,12 +126,15 @@ export const wordcloudColors = {
 };
 
 export const initlistener = () => {
-    var viewmenu = document.getElementById('mod-wordcloud-view-menu');
-    viewmenu.onchange = function() {
-        window.location.href = this.options[this.selectedIndex].value;
-    };
+    // The view menu only exists on view.php, not on wordlist.php.
+    const viewmenu = document.getElementById('mod-wordcloud-view-menu');
+    if (viewmenu) {
+        viewmenu.onchange = function() {
+            window.location.href = this.options[this.selectedIndex].value;
+        };
+    }
     exportListener();
-    setHeight();
+    updateCloudWidth();
 };
 
 export const init = colors => {
@@ -131,7 +143,7 @@ export const init = colors => {
     const callback = (mutationList) => {
         for (const mutation of mutationList) {
             if (mutation.type === 'childList') {
-                setHeight();
+                updateCloudWidth();
             }
         }
     };

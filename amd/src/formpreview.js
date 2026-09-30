@@ -28,12 +28,7 @@ const sampleEntries = [
     ["Discussion", 4],
 ];
 
-/**
- * The only font the classic renderer can display. Must match
- * WORDCLOUD_CLASSIC_FONT in lib.php.
- *
- * @type {string}
- */
+/** @type {string} Must match WORDCLOUD_CLASSIC_FONT in lib.php. */
 const CLASSIC_FONT = 'Arial, sans-serif';
 
 /**
@@ -67,13 +62,7 @@ const getConfiguredColors = () => {
     if (usemonocolor === '1') {
         const monocolor = getCheckedRadioValue('monocolor');
 
-        // uicontroller.js's getColorsToDisplay() treats a single-colour array
-        // differently to the 6-colour array: it passes colors[0] straight into
-        // hexToHsl(), which expects a leading '#' (it strips the first
-        // character assuming it's the '#'). The 6-colour branch, by contrast,
-        // expects bare hex and adds the '#' itself. This mirrors how view.php
-        // builds $colors for the web view: '#' . $fontcolor for the single-colour
-        // case, bare $fontcolor values in the 6-colour loop.
+        // A single colour needs a leading '#' for hexToHsl(), the 6-colour palette none (as in view.php).
         if (monocolor === '0') {
             const hexField = document.getElementById('id_monocolorhex');
             const hex = hexField && /^[0-9a-fA-F]{6}$/.test(hexField.value.trim())
@@ -105,9 +94,7 @@ const renderPreview = (container) => {
 
     wordcloudColors.colors = getConfiguredColors();
 
-    // Mirrors mod_wordcloud_get_render_style(): the classic renderer cannot
-    // apply a font or rotate words, so it is only used for horizontal text in
-    // the single font it can display.
+    // Same rule as mod_wordcloud_get_render_style().
     if (alignment === 'h' && fontFamily === CLASSIC_FONT) {
         const weights = sampleEntries.map(entry => entry[1]);
         const wordcountrange = {

@@ -7,7 +7,7 @@ import {renderWordcloud} from "mod_wordcloud/renderer";
 
 const addwordtowordcloud = (() => {
     // Private variables
-    let aid, timestamphtml, refreshtime;
+    let aid, timestamphtml, refreshtime, listview;
 
     // Function to add a new word
     const addWord = () => {
@@ -31,6 +31,9 @@ const addwordtowordcloud = (() => {
                         title: getString('warning', 'mod_wordcloud'),
                         body: returnval.warnings[0].message
                     }).then(modal => modal.show()).catch(notification.exception);
+                } else if (listview) {
+                    // The list view is a server-side table.
+                    window.location.reload();
                 } else {
                     // Update word cloud.
                     timestamphtml = returnval.timestamphtml;
@@ -65,10 +68,11 @@ const addwordtowordcloud = (() => {
     };
 
     return {
-        init: (refreshTime, aidParam, timestampHtmlParam) => {
+        init: (refreshTime, aidParam, timestampHtmlParam, listViewParam) => {
             refreshtime = refreshTime;
             aid = aidParam;
             timestamphtml = timestampHtmlParam;
+            listview = Number(listViewParam) === 1;
 
             const wordInput = document.getElementById('mod-wordcloud-new-word');
             const addButton = document.getElementById('mod-wordcloud-btn');
@@ -82,7 +86,9 @@ const addwordtowordcloud = (() => {
             addButton.addEventListener('click', addWord);
 
             // Start auto-refresh of word cloud
-            autoRefreshWords();
+            if (!listview) {
+                autoRefreshWords();
+            }
         }
     };
 })();

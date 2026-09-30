@@ -91,9 +91,9 @@ $exporturl = new moodle_url("/mod/wordcloud/export.php", ['id' => $id]);
 $exportmenu['0'] = get_string('exportdefault', 'mod_wordcloud');
 $exportmenu[$exporturl->out()] = get_string('exportcsv', 'mod_wordcloud');
 $exportmenu['png'] = get_string('exportpng', 'mod_wordcloud');
-echo html_writer::start_tag('div', ['id' => 'mod-wordcloud-list-export']);
-echo html_writer::label(get_string('export', 'mod_wordcloud'), 'mod-wordcloud-export-menu');
-echo html_writer::select($exportmenu, 'testname', '0', 0, ['id' => 'mod-wordcloud-export-menu']);
+echo html_writer::start_div('d-flex flex-wrap align-items-center gap-2', ['id' => 'mod-wordcloud-list-export']);
+echo html_writer::label(get_string('export', 'mod_wordcloud'), 'mod-wordcloud-export-menu', true, ['class' => 'mb-0']);
+echo html_writer::select($exportmenu, 'testname', '0', 0, ['id' => 'mod-wordcloud-export-menu', 'class' => 'w-auto']);
 echo html_writer::end_div();
 
 if ($groupmode) {
@@ -106,20 +106,7 @@ $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
 
 echo html_writer::start_div('', ['id' => 'mod-wordcloud-words-box']);
-$table = new mod_wordcloud\output\wordlisttable('uniqueid', $cm->id);
-
-$table->column_class['count'] = ' w-25';
-
-$groupmode = groups_get_activity_groupmode($cm);
-$groupid = $groupmode ? groups_get_activity_group($cm) : 0;
-if ($groupmode && $groupid === 0) {
-    $groupid = -1;
-}
-
-$sqlwhere = "wordcloudid = $wordcloud->id AND groupid = $groupid";
-$table->set_sql("*", "{wordcloud_map}", $sqlwhere);
-$table->define_baseurl($PAGE->url);
-$table->out(1000, false);
+echo mod_wordcloud_render_wordlist($wordcloud, $cm->id, (int) $groupmode, (int) $groupid, true, $PAGE->url);
 
 echo html_writer::end_div();
 echo $renderer->footer();

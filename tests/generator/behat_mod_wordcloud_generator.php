@@ -26,12 +26,6 @@ class behat_mod_wordcloud_generator extends behat_generator_base {
     /**
      * Get a list of the entities that Behat can create using the generator step.
      *
-     * Lets feature files seed submitted words directly, for example:
-     *
-     *     And the following "mod_wordcloud > entries" exist:
-     *       | wordcloud      | word       | count | user     |
-     *       | Test wordcloud | test word0 | 3     | student1 |
-     *
      * @return array
      */
     protected function get_creatable_entities(): array {

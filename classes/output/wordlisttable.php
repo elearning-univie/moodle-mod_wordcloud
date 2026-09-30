@@ -49,9 +49,49 @@ class wordlisttable extends table_sql {
             get_string('count', 'mod_wordcloud'),
         ]);
 
+        $this->set_attribute('id', 'mod-wordcloud-wordlist');
+        $this->column_class('count', 'w-25');
         $this->collapsible(false);
-        $this->pageable(false);
+        $this->pageable(true);
         $this->is_downloadable(false);
         $this->sortable(true, 'count', SORT_DESC);
+    }
+
+    /**
+     * Lists the words of a wordcloud; in group mode, "all participants" (group 0) sums them over all groups.
+     *
+     * @param int $wordcloudid the wordcloud instance id.
+     * @param int $groupmode the activity's group mode.
+     * @param int $groupid the selected group.
+     */
+    public function set_words_source(int $wordcloudid, int $groupmode, int $groupid): void {
+        if ($groupmode && $groupid === 0) {
+            $this->set_sql(
+                '*',
+                '(SELECT MIN(id) AS id, word, SUM(count) AS count
+                    FROM {wordcloud_map}
+                   WHERE wordcloudid = :wordcloudid AND groupid <> 0 AND count > 0
+                GROUP BY word) words',
+                '1 = 1',
+                ['wordcloudid' => $wordcloudid]
+            );
+        } else {
+            $this->set_sql(
+                '*',
+                '{wordcloud_map}',
+                'wordcloudid = :wordcloudid AND groupid = :groupid AND count > 0',
+                ['wordcloudid' => $wordcloudid, 'groupid' => $groupid]
+            );
+        }
+    }
+
+    /**
+     * Words are stored as entered, so they must be escaped.
+     *
+     * @param stdClass $row the table row.
+     * @return string
+     */
+    public function col_word($row) {
+        return s($row->word);
     }
 }

@@ -149,6 +149,16 @@ $rendersettings = json_encode($rendersettings, JSON_UNESCAPED_SLASHES | JSON_PRE
 
 $PAGE->requires->js_call_amd('mod_wordcloud/config');
 $PAGE->requires->js_call_amd('mod_wordcloud/exportpng', 'init', [$wordcloud->name]);
+if ($listview) {
+    $templatecontext['listhtml'] = mod_wordcloud_render_wordlist(
+        $wordcloud,
+        $cm->id,
+        (int) $groupmode,
+        (int) $groupid,
+        has_capability('mod/wordcloud:editentry', $context),
+        new moodle_url('/mod/wordcloud/view.php', ['id' => $id, 'listview' => 1])
+    );
+}
 $PAGE->requires->js_call_amd('mod_wordcloud/renderer', 'init', [$wordcloud->id, $renderstyle, $rendersettings]);
 echo $renderer->render_from_template('mod_wordcloud/wordcloud', $templatecontext);
 echo $renderer->footer();

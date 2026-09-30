@@ -107,11 +107,7 @@ class mobile {
     }
 
     /**
-     * Returns the 6 (random scheme) or 1 (sequentially shaded scheme) hex colours
-     * (without '#') configured for this instance, matching amd/src/uicontroller.js's
-     * getColorsToDisplay() input. Interpreted client-side in mobile_uicontroller.js,
-     * which reimplements that same shuffle/shade logic (the AMD module can't be
-     * imported into the mobile app's isolated JS context).
+     * Returns the instance's 6 (random) or 1 (shaded) hex colours, without '#'.
      *
      * @param \stdClass $wordcloud the wordcloud instance record.
      * @param \stdClass $wordcloudconfig the mod_wordcloud plugin config.
@@ -137,9 +133,7 @@ class mobile {
     }
 
     /**
-     * Returns the wordcloud2 render settings for this instance: the site-wide defaults
-     * (gridSize, backgroundColor, shrinkToFit, ...) overlaid with this instance's font
-     * and text alignment. Mirrors how view.php builds $rendersettings for the web view.
+     * Returns the site render settings with this instance's font and alignment, as view.php does.
      *
      * @param \stdClass $wordcloud the wordcloud instance record.
      * @param \stdClass $wordcloudconfig the mod_wordcloud plugin config.
