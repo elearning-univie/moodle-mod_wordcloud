@@ -56,14 +56,7 @@ class mod_wordcloud_generator extends testing_module_generator {
     }
 
     /**
-     * Creates a submitted word entry in a wordcloud activity.
-     *
-     * Lets tests seed a wordcloud with words directly instead of driving the UI
-     * once per submission, which keeps feature files focused on the behaviour
-     * they actually assert.
-     *
-     * If the word already exists for the given activity and group its count is
-     * increased, mirroring what happens when a word is submitted repeatedly.
+     * Creates a submitted word entry, or adds to its count if it already exists.
      *
      * @param array|stdClass $record Fields: wordcloudid (required), word (required),
      *                               count (default 1), groupid (default 0), userid (optional).
@@ -106,8 +99,7 @@ class mod_wordcloud_generator extends testing_module_generator {
             ]);
         }
 
-        // Record who submitted the word, so that completion, the visibility
-        // rules and the privacy provider all behave as they would in real use.
+        // Needed for completion, the visibility rules and privacy.
         if (!empty($record['userid'])) {
             $rel = ['mapid' => $mapid, 'userid' => $record['userid']];
             if (!$DB->record_exists('wordcloud_word_user_rel', $rel)) {

@@ -79,6 +79,7 @@ class editentrytable extends table_sql {
         $this->collapsible(false);
         $this->pageable(true);
         $this->is_downloadable(false);
+        $this->sortable(true, 'count', SORT_DESC);
 
         $this->no_sorting('response');
         $this->no_sorting('remove');

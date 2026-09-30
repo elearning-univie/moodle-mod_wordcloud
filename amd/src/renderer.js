@@ -1,7 +1,6 @@
 import wordCloud from "mod_wordcloud/wordcloud";
-import {initlistener, setClassicCss, getNewCss} from "mod_wordcloud/uicontroller";
+import {initlistener, setClassicCss, getNewCss, updateCloudWidth} from "mod_wordcloud/uicontroller";
 import notification from 'core/notification';
-import Templates from 'core/templates';
 import {get_string as getString} from 'core/str';
 import ajax from 'core/ajax';
 
@@ -62,11 +61,82 @@ const onWordHover = (item, dimension, event) => {
 };
 
 /**
- * Renders the canvas-based ("modern") wordcloud view into the given container.
+ * Layout tuning for the canvas ("modern") renderer. Sizes are in CSS pixels.
  *
- * Used both for the real activity page (with its defaults) and for the
- * appearance preview shown from mod_form.php, which supplies its own
- * container, rendersettings and colour palette.
+ * @type {Object}
+ */
+const CLOUD_LAYOUT = {
+    minHeight: 250,
+    maxHeight: 2000,
+    // The canvas grows until the least submitted word reaches this size.
+    minReadableFont: 14,
+    // Words shrunk below this are dropped, which triggers a redraw.
+    minDrawFont: 8,
+    // Size of the least submitted word relative to the most submitted one.
+    smallestRatio: 0.3,
+    // Largest word relative to the canvas' shorter side.
+    maxFontRatio: 0.3,
+    // Share of the canvas the words may cover; higher is more compact but redraws more often.
+    fillRatio: 0.6,
+    fillRatioRotated: 0.5,
+    lineHeight: 1.2,
+    // Height increase per redraw, and the most draws per render.
+    growFactor: 1.35,
+    maxAttempts: 4,
+};
+
+/** @type {WeakMap<HTMLElement, number>} Stops an outdated render's redraw from overwriting a newer one. */
+const renderGenerations = new WeakMap();
+
+/**
+ * Measures how wide each word is per pixel of font size.
+ *
+ * @param {string[]} words the words to measure.
+ * @param {string} fontFamily CSS font family the words are drawn in.
+ * @param {string} [fontWeight] CSS font weight the words are drawn in.
+ * @return {number[]} the width of each word at a font size of 1px.
+ */
+const measureTextWidths = (words, fontFamily, fontWeight = 'normal') => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `${fontWeight} 100px ${fontFamily}`;
+
+    return words.map(word => ctx.measureText(word).width / 100);
+};
+
+/**
+ * Returns the vertical padding and border of a border-box element.
+ *
+ * @param {HTMLElement} element the element.
+ * @return {number} padding plus border, in pixels.
+ */
+const getVerticalChrome = (element) => {
+    const cs = getComputedStyle(element);
+    if (cs.boxSizing !== 'border-box') {
+        return 0;
+    }
+    return parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) +
+        parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+};
+
+/**
+ * Returns the content box size of an element (inside its padding).
+ *
+ * @param {HTMLElement} element the element.
+ * @return {{width: number, height: number}} the content size in pixels.
+ */
+const getContentSize = (element) => {
+    const cs = getComputedStyle(element);
+    return {
+        width: Math.max(1, element.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)),
+        height: Math.max(1, element.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)),
+    };
+};
+
+/**
+ * Renders the canvas-based ("modern") wordcloud view, on the activity page or the mod_form.php preview.
+ *
+ * Font sizes are computed from the measured words so that all of them fit; if
+ * wordcloud2 still drops or shrinks one, the canvas is made taller and redrawn.
  *
  * @param {Array} entries [word, count] pairs to render.
  * @param {HTMLElement} [container] element to render into. Defaults to the real activity page's word box.
@@ -83,104 +153,179 @@ const renderNewView = (
     colors = getNewCss(),
     canvasId = 'mod-wordcloud-words-canvas'
 ) => {
-    // Snapshot the true counts before wordcloud2 gets a chance to mutate any
-    // item's weight while trying to fit it on the canvas (see currentWordCounts).
-    currentWordCounts = new Map(entries.map(([word, count]) => [word, count]));
+    // Counts arrive as strings.
+    const words = entries.map(([word, count]) => [word, Number(count)]);
 
-    const baseHeight = 250;
-    const wordThreshold = 20;
-    const extraHeightPerWord = 15;
+    // Kept aside, as wordcloud2 changes the list items it draws.
+    currentWordCounts = new Map(words);
+    const countsByWord = new Map(words);
 
-    let calculatedHeight = baseHeight;
-    if (entries.length > wordThreshold) {
-        calculatedHeight += (entries.length - wordThreshold) * extraHeightPerWord;
-    }
+    // Words are placed in list order, so the biggest go first.
+    words.sort((a, b) => b[1] - a[1]);
 
-    container.style.height = `${calculatedHeight}px`;
-    if (entries.length > 50) {
-        container.style.width = "100%";
-    }
+    const counts = words.map(([, count]) => count);
+    const maxCount = counts[0];
+    const minCount = counts[counts.length - 1];
+    const countRange = maxCount - minCount;
 
-    let canvas = container.querySelector('#' + canvasId);
-    if (!canvas) {
-        canvas = document.createElement('canvas');
-        canvas.id = canvasId;
-        container.appendChild(canvas);
-    }
+    const relativeSizes = counts.map(count => {
+        if (countRange === 0) {
+            return 1;
+        }
+        return CLOUD_LAYOUT.smallestRatio + (1 - CLOUD_LAYOUT.smallestRatio) * (count - minCount) / countRange;
+    });
+    const smallestSize = Math.min(...relativeSizes);
+    const largestSize = Math.max(...relativeSizes);
 
-    if (!canvas.dataset.tooltipBound) {
-        canvas.addEventListener('mouseleave', hideWordTooltip);
-        canvas.dataset.tooltipBound = '1';
-    }
-
-    const cs = getComputedStyle(container);
-    const width = container.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    const height = container.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(1, Math.round(width * dpr));
-    canvas.height = Math.max(1, Math.round(height * dpr));
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const textWidths = measureTextWidths(
+        words.map(([word]) => word),
+        rendersettings.fontFamily || 'sans-serif',
+        rendersettings.fontWeight
+    );
 
     const rotation = getRotationSettings(rendersettings.alignmentmode);
+    const rotates = rotation.rotateRatio > 0;
+    // In mixed modes shrinkToFit re-rolls the rotation, so only "vertical only" forces words upright.
+    const alwaysRotated = rotation.rotateRatio >= 1;
+    const fillRatio = rotates ? CLOUD_LAYOUT.fillRatioRotated : CLOUD_LAYOUT.fillRatio;
 
-    const weights = entries.map(e => e[1]);
-    const maxWeight = Math.max(...weights) || 1;
-    const minWeight = Math.min(...weights) || 0;
-    const weightRange = maxWeight - minWeight || 1;
-    const targetMaxFontSize = Math.min(width, height) * 0.25;
-    const internalMaxFontSize = targetMaxFontSize * dpr;
+    // Font size = scale * relative size; area and longest word per unit of scale.
+    const areaPerScale = relativeSizes.reduce(
+        (sum, size, i) => sum + textWidths[i] * size * size * CLOUD_LAYOUT.lineHeight,
+        0
+    ) || 1;
+    const longestPerScale = Math.max(...relativeSizes.map((size, i) => textWidths[i] * size)) || 1;
 
-    const safeMinFontSize = 12 * dpr;
-
-    const baseConfig = {
-        list: entries,
-        weightFactor: function(weight) {
-            if (maxWeight === 0) {
-                return safeMinFontSize;
-            }
-
-            const calculatedSize = (weight / maxWeight) * internalMaxFontSize;
-
-            return Math.max(safeMinFontSize, calculatedSize);
-        },
-        color: function(_, weight) {
-            if (!colors || colors.length === 0) {
-                return '#000000';
-            }
-
-            const normalizedWeight = (weight - minWeight) / weightRange;
-
-            let colorIndex = Math.floor(normalizedWeight * colors.length);
-            colorIndex = Math.min(colorIndex, colors.length - 1);
-
-            return colors[colorIndex];
-        },
-        hover: onWordHover,
-        ...rotation,
+    // Canvas height at which the least submitted word is readable.
+    const heightFor = (width) => {
+        const scale = CLOUD_LAYOUT.minReadableFont / smallestSize;
+        let needed = scale * scale * areaPerScale / (fillRatio * width);
+        if (alwaysRotated) {
+            needed = Math.max(needed, scale * longestPerScale / 0.9);
+        }
+        return Math.min(CLOUD_LAYOUT.maxHeight, Math.max(CLOUD_LAYOUT.minHeight, Math.ceil(needed)));
     };
+
+    const scaleFor = (width, height) => {
+        const byArea = Math.sqrt(fillRatio * width * height / areaPerScale);
+        const byLongestWord = 0.9 * (alwaysRotated ? height : width) / longestPerScale;
+        const byMaxFont = CLOUD_LAYOUT.maxFontRatio * Math.min(width, height) / largestSize;
+        return Math.min(byArea, byLongestWord, byMaxFont);
+    };
+
+    const dpr = window.devicePixelRatio || 1;
+    const generation = (renderGenerations.get(container) || 0) + 1;
+    renderGenerations.set(container, generation);
 
     const cleanRenderSettings = {...rendersettings};
     delete cleanRenderSettings.weightFactor;
+    delete cleanRenderSettings.minSize;
 
-    wordCloud(canvas, {
-        ...cleanRenderSettings,
-        ...baseConfig
-    });
+    // Fixed on the first draw, so redraws only add room.
+    let scale = null;
+
+    const draw = (attempt, minimumHeight) => {
+        const chrome = getVerticalChrome(container);
+        const applyContentHeight = (contentHeight) => {
+            container.style.height = `${Math.round(contentHeight + chrome)}px`;
+        };
+
+        applyContentHeight(Math.max(heightFor(getContentSize(container).width), minimumHeight));
+
+        // Widen the activity page's cloud before sizing the canvas; it won't follow later.
+        if (container.closest('#mod-wordcloud-div')) {
+            updateCloudWidth();
+            applyContentHeight(Math.max(heightFor(getContentSize(container).width), minimumHeight));
+        }
+
+        const {width, height} = getContentSize(container);
+
+        if (scale === null) {
+            scale = scaleFor(width, height);
+        }
+
+        let canvas = container.querySelector('#' + canvasId);
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = canvasId;
+            container.appendChild(canvas);
+        }
+
+        if (!canvas.dataset.tooltipBound) {
+            canvas.addEventListener('mouseleave', hideWordTooltip);
+            canvas.dataset.tooltipBound = '1';
+        }
+
+        canvas.style.display = 'block';
+        canvas.width = Math.max(1, Math.round(width * dpr));
+        canvas.height = Math.max(1, Math.round(height * dpr));
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+
+        // Weights are final font sizes, so shrinkToFit's "weight * 3/4" retries really shrink the word.
+        const fontSizes = relativeSizes.map(size => size * scale * dpr);
+        const list = words.map(([word], i) => [word, fontSizes[i]]);
+        const smallestFont = Math.min(...fontSizes);
+
+        let dropped = 0;
+
+        const onDrawn = (e) => {
+            if (!e.detail.drawn) {
+                dropped++;
+            }
+        };
+
+        const onStop = () => {
+            canvas.removeEventListener('wordclouddrawn', onDrawn);
+            canvas.removeEventListener('wordcloudstop', onStop);
+
+            if (renderGenerations.get(container) !== generation || !canvas.isConnected) {
+                return;
+            }
+
+            const shrunk = list.some(([, size], i) => size < fontSizes[i] * 0.99);
+            const canGrow = height < CLOUD_LAYOUT.maxHeight && attempt + 1 < CLOUD_LAYOUT.maxAttempts;
+
+            if ((dropped > 0 || shrunk) && canGrow) {
+                draw(attempt + 1, Math.min(height * CLOUD_LAYOUT.growFactor, CLOUD_LAYOUT.maxHeight));
+            }
+        };
+
+        canvas.addEventListener('wordclouddrawn', onDrawn);
+        canvas.addEventListener('wordcloudstop', onStop);
+
+        wordCloud(canvas, {
+            ...cleanRenderSettings,
+            ...rotation,
+            list,
+            // Fit the placement spiral to the canvas' shape, unless configured.
+            ellipticity: rendersettings.ellipticity !== undefined ? rendersettings.ellipticity : height / width,
+            weightFactor: (size) => size,
+            minSize: Math.max(
+                Number(rendersettings.minSize) || 0,
+                Math.min(CLOUD_LAYOUT.minDrawFont * dpr, smallestFont / 2)
+            ),
+            color: (word) => {
+                if (!colors || colors.length === 0) {
+                    return '#000000';
+                }
+
+                const count = countsByWord.has(word) ? countsByWord.get(word) : minCount;
+                const normalized = countRange === 0 ? 0 : (count - minCount) / countRange;
+                const colorIndex = Math.min(Math.floor(normalized * colors.length), colors.length - 1);
+
+                return colors[colorIndex];
+            },
+            hover: onWordHover,
+        });
+    };
+
+    draw(0, 0);
 };
 
 /**
- * Renders the CSS-based ("classic") wordcloud view into the given container.
- *
- * Used both for the real activity page (with its defaults) and for the
- * appearance preview shown from mod_form.php. Since the font-size and colour
- * classes this relies on (.w1-.w6) are scoped to ".path-mod-wordcloud", the
- * container must have that class somewhere in its ancestry for styling to apply.
+ * Renders the CSS-based ("classic") wordcloud view. Its .w1-.w6 styles are
+ * scoped to ".path-mod-wordcloud", which must be an ancestor of the container.
  *
  * @param {Array} entries [word, count] pairs to render.
  * @param {Object} wordcountrange {mincount, maxcount} across all entries.
@@ -192,99 +337,21 @@ const renderClassicView = (entries, wordcountrange, container = document.getElem
     const maxcount = Number(wordcountrange.maxcount);
     const range = (maxcount - mincount) * 1.0001;
 
-    let cloudhtml = '';
-
-    entries.forEach(entry => {
-        const [word, count] = entry;
-        let weight;
-
-        if (range >= 3) {
-            weight = 1 + Math.floor(steps * (count - mincount) / range);
-        } else {
-            weight = 1;
-        }
-
-        const fontsize = 'w' + weight;
-        cloudhtml += `<span class="word center ${fontsize}" title="${count}">${word}</span>`;
+    // Words are stored as entered, so they are set as text, never as HTML.
+    const spans = entries.map(([word, count]) => {
+        const weight = range >= 3 ? 1 + Math.floor(steps * (count - mincount) / range) : 1;
+        return Object.assign(document.createElement('span'), {
+            className: `word center w${weight}`,
+            title: `${count}`,
+            textContent: word,
+        });
     });
 
     setClassicCss();
 
-    // The real activity page's container already has "flex-wrap gap-2" baked
-    // into its markup (see wordcloud.mustache); adding them here too makes
-    // this self-contained for any container, e.g. the mod_form.php preview.
+    // Also needed by containers other than the activity page's, e.g. the preview.
     container.classList.add('d-flex', 'flex-wrap', 'gap-2');
-    container.innerHTML = cloudhtml;
-};
-
-// State variables to track sorting
-let currentSort = 'count'; // Default sort column
-let sortAscending = false;
-
-const renderListView = (entries) => {
-    const wordBox = document.getElementById('mod-wordcloud-words-box');
-
-    const sortedEntries = [...entries].sort((a, b) => {
-        if (currentSort === 'word') {
-            const comparison = a[0].localeCompare(b[0], undefined, {sensitivity: 'base'});
-            return sortAscending ? comparison : -comparison;
-        } else {
-            // Numeric sort: subtracting forced numbers handles asc/desc cleanly.
-            return sortAscending ? a[1] - b[1] : b[1] - a[1];
-        }
-    });
-
-    const context = {
-        words: sortedEntries.map(([word, count]) => ({
-            word: word,
-            count: count
-        })),
-        sortWordAsc: currentSort === 'word' && sortAscending,
-        sortWordDesc: currentSort === 'word' && !sortAscending,
-        sortCountAsc: currentSort === 'count' && sortAscending,
-        sortCountDesc: currentSort === 'count' && !sortAscending
-    };
-
-    Templates.render('mod_wordcloud/wordlist', context)
-        .then((html, js) => {
-            wordBox.innerHTML = html;
-            Templates.runTemplateJS(js);
-
-            attachSortListeners(entries);
-
-            // Listen for the link-style reset click.
-            const resetBtn = document.getElementById('wordcloud-reset-btn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentSort = 'count';
-                    sortAscending = false;
-
-                    renderListView(entries);
-                });
-            }
-
-            return html;
-        }).catch(notification.exception);
-};
-
-const attachSortListeners = (entries) => {
-    const headers = document.querySelectorAll('#wordcloud-table .sortable-header');
-
-    headers.forEach(header => {
-        header.addEventListener('click', (e) => {
-            const clickedSort = e.currentTarget.getAttribute('data-sort');
-
-            if (currentSort === clickedSort) {
-                sortAscending = !sortAscending;
-            } else {
-                currentSort = clickedSort;
-                sortAscending = true;
-            }
-
-            renderListView(entries);
-        });
-    });
+    container.replaceChildren(...spans);
 };
 
 const getRotationSettings = (mode) => {
@@ -340,9 +407,12 @@ export const renderWordcloud = async(jsonentries, wordcountrange) => {
     const view = Number(wordcloudStyle.version) || 0;
     const container = document.getElementById('mod-wordcloud-words-box');
 
-    // When the words are hidden by the activity's visibility setting, the web
-    // service returns a plain explanatory message in place of the JSON word
-    // list, so it must not be parsed as JSON.
+    // The list view (2) is a server-side table.
+    if (view === 2) {
+        return;
+    }
+
+    // Words hidden by the visibility setting come as a plain message, not JSON.
     let entries;
     try {
         entries = JSON.parse(jsonentries) || [];
@@ -371,18 +441,10 @@ export const renderWordcloud = async(jsonentries, wordcountrange) => {
         container.innerHTML = '';
     }
 
-    switch (view) {
-        case 1:
-            renderNewView(entries);
-            break;
-        case 2:
-            renderListView(entries);
-            break;
-        default: {
-            const wcr = JSON.parse(wordcountrange);
-            renderClassicView(entries, wcr);
-            break;
-        }
+    if (view === 1) {
+        renderNewView(entries);
+    } else {
+        renderClassicView(entries, JSON.parse(wordcountrange));
     }
 };
 

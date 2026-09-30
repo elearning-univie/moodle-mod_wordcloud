@@ -236,7 +236,7 @@ class mod_wordcloud_external extends external_api {
         $record = $DB->get_record('wordcloud', ['id' => $params['aid']]);
 
         if ($record->lastwordchange > $timestamphtml) {
-            $cloudhtml = mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid, $canedit);
+            $cloudhtml = mod_wordcloud_get_cloudhtml($params['aid'], $groupmode, $groupid, 0, $canedit);
             return [
                 'cloudhtml' => $cloudhtml['cloudhtml'],
                 'sumcount' => $cloudhtml['sumcount'],

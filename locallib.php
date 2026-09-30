@@ -22,9 +22,89 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__ . '/../../lib/tablelib.php');
+
 define('WORDCLOUD_WORD_LENGTH', 40);
 define('WORDCLOUD_MAX_WORDS', 300);
 define('WORDCLOUD_MAX_TIME', 2147483647);
+define('WORDCLOUD_LIST_PAGE_SIZE', 20);
+define('WORDCLOUD_PERPAGE_OPTIONS', [5, 10, 20, 50, 100, TABLE_SHOW_ALL_PAGE_SIZE]);
+
+/**
+ * Returns the words per page for the word lists from the URL or the user's preference, and remembers it.
+ *
+ * @return int
+ */
+function mod_wordcloud_get_perpage(): int {
+    $default = (int) get_user_preferences('mod_wordcloud_perpage', WORDCLOUD_LIST_PAGE_SIZE);
+    $perpage = optional_param('perpage', $default, PARAM_INT);
+    if (!in_array($perpage, WORDCLOUD_PERPAGE_OPTIONS, true)) {
+        $perpage = WORDCLOUD_LIST_PAGE_SIZE;
+    }
+    set_user_preference('mod_wordcloud_perpage', $perpage);
+    return $perpage;
+}
+
+/**
+ * Returns the "Entries per page" dropdown for the word lists.
+ *
+ * @param moodle_url $url the page to reload, with its parameters.
+ * @param int $perpage the selected number of words per page.
+ * @return single_select
+ */
+function mod_wordcloud_perpage_select(moodle_url $url, int $perpage): single_select {
+    $url = new moodle_url($url);
+    $url->remove_params('page', 'perpage');
+
+    $options = [];
+    foreach (WORDCLOUD_PERPAGE_OPTIONS as $option) {
+        $options[$option] = $option === TABLE_SHOW_ALL_PAGE_SIZE ? get_string('all') : $option;
+    }
+
+    $select = new single_select($url, 'perpage', $options, $perpage, null);
+    $select->set_label(get_string('entriesperpage', 'mod_wordcloud'));
+    $select->class .= ' my-3';
+    return $select;
+}
+
+/**
+ * Returns the paginated word list, or the message explaining why the words are hidden.
+ *
+ * @param stdClass $wordcloud the wordcloud instance.
+ * @param int $cmid the course module id.
+ * @param int $groupmode the activity's group mode.
+ * @param int $groupid the selected group, 0 for all participants.
+ * @param bool $canedit whether the user may always see the words.
+ * @param moodle_url $url the page the list is shown on.
+ * @return string HTML
+ */
+function mod_wordcloud_render_wordlist(
+    stdClass $wordcloud,
+    int $cmid,
+    int $groupmode,
+    int $groupid,
+    bool $canedit,
+    moodle_url $url
+): string {
+    global $OUTPUT;
+
+    $entries = mod_wordcloud_get_entries($wordcloud->id, $groupmode, $groupid, $canedit)['entries'];
+    if (!is_array(json_decode($entries))) {
+        return $OUTPUT->notification($entries, \core\output\notification::NOTIFY_INFO, false);
+    }
+
+    $perpage = mod_wordcloud_get_perpage();
+    $table = new mod_wordcloud\output\wordlisttable('mod_wordcloud_wordlist', $cmid);
+    $table->set_words_source($wordcloud->id, $groupmode, $groupid);
+    $table->define_baseurl($url);
+
+    ob_start();
+    echo $OUTPUT->render(mod_wordcloud_perpage_select($url, $perpage));
+    $table->out($perpage, false);
+    return ob_get_clean();
+}
 
 use core_privacy\local\request\transform;
 
@@ -193,7 +273,7 @@ function mod_wordcloud_get_cloudhtml($wordcloudid, $groupmode = 0, $groupid = 0,
             }
             $fontsize = 'w' . $weight;
             $cloudhtml .= '<span class="word center ' . $fontsize . '"
-                title="' . $row->count . '">' . $row->word . '</span>';
+                title="' . s($row->count) . '">' . s($row->word) . '</span>';
         }
     }
 

@@ -26,10 +26,63 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
+use Behat\Mink\Exception\ExpectationException;
+
 /**
  * Steps definitions for the wordcloud behat tests.
  */
 class behat_mod_wordcloud extends behat_base {
+    /**
+     * Resolves "mod_wordcloud > Wordlist" and "mod_wordcloud > Edit words" pages for a wordcloud name or idnumber.
+     *
+     * @param string $type the page type.
+     * @param string $identifier the wordcloud name or idnumber.
+     * @return moodle_url
+     */
+    protected function resolve_page_instance_url(string $type, string $identifier): moodle_url {
+        $cm = $this->get_course_module_for_identifier($identifier);
+        if (!$cm) {
+            throw new Exception("The wordcloud '$identifier' does not exist.");
+        }
+
+        switch (strtolower($type)) {
+            case 'wordlist':
+                return new moodle_url('/mod/wordcloud/wordlist.php', ['id' => $cm->id]);
+            case 'edit words':
+                return new moodle_url('/mod/wordcloud/editentry.php', ['id' => $cm->id]);
+            default:
+                throw new Exception("Unrecognised wordcloud page type '$type'.");
+        }
+    }
+
+    /**
+     * Checks the canvas of the modern view spans the full width of the words box.
+     *
+     * @Then the wordcloud canvas should fill its box
+     */
+    public function the_wordcloud_canvas_should_fill_its_box() {
+        $this->require_javascript();
+
+        $js = "(function() {
+            var box = document.getElementById('mod-wordcloud-words-box');
+            var canvas = document.getElementById('mod-wordcloud-words-canvas');
+            if (!box || !canvas) {
+                return 'no canvas';
+            }
+            var cs = getComputedStyle(box);
+            var inner = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            return Math.abs(inner - canvas.clientWidth) <= 2 ? 'ok' : canvas.clientWidth + 'px of ' + inner + 'px';
+        })()";
+
+        $this->spin(function ($context) use ($js) {
+            $result = $context->evaluate_script($js);
+            if ($result !== 'ok') {
+                throw new ExpectationException("The wordcloud canvas does not fill its box ($result).", $context->getSession());
+            }
+            return true;
+        });
+    }
+
     /**
      * Custom defintion for exporting
      *
@@ -86,14 +139,8 @@ class behat_mod_wordcloud extends behat_base {
     }
 
     /**
-     * Downloads the file at the currently open tab's URL (using the logged-in user's
-     * session) and asserts the given text is present in its content.
-     *
-     * Checking the actual downloaded content is more reliable than only comparing the
-     * tab's URL: the URL check is sensitive to things that legitimately differ between
-     * environments (wwwroot, course module id), while this confirms the export genuinely
-     * contains the expected data. Call this after "the download page should be ...", once
-     * the new tab has been switched to.
+     * Downloads the current tab's URL with the user's session and checks its content.
+     * Use after "the download page should be ...".
      *
      * @Then the downloaded file should contain :text
      *

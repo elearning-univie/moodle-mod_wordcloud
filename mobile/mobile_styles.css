@@ -1,7 +1,4 @@
-/*
- * Plugin styles are downloaded once and applied app-wide, so these are scoped
- * to #mod-wordcloud-words-box to avoid leaking into other plugins' pages.
- */
+/* Scoped to the words box, as plugin styles apply app-wide. */
 #mod-wordcloud-words-box .w1 {
     font-size: 1.5em;
 }

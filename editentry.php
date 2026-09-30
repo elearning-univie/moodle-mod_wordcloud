@@ -23,13 +23,13 @@
  */
 
 require('../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
-$perpage = optional_param('perpage', 20, PARAM_INT);
 
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'wordcloud');
 $context = context_module::instance($cm->id);
@@ -37,11 +37,8 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 require_capability('mod/wordcloud:editentry', $context);
 
-$params = [];
-$params['id'] = $id;
-if ($perpage) {
-    $params['perpage'] = $perpage;
-}
+$perpage = mod_wordcloud_get_perpage();
+$params = ['id' => $id];
 
 $wordcloud = $DB->get_record('wordcloud', ['id' => $cm->instance]);
 
@@ -77,7 +74,7 @@ if ($deleteselected) {
         );
 
         $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
-        $word = '<strong>' . $DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected]) . '</strong>';
+        $word = html_writer::tag('strong', s($DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected])));
 
         echo $OUTPUT->header();
         echo $OUTPUT->confirm(get_string('removewordcheck', 'mod_wordcloud', $word), $continue, $PAGE->url);
@@ -86,7 +83,7 @@ if ($deleteselected) {
     }
 }
 
-$table = new mod_wordcloud\output\editentrytable('uniqueid', $cm->id);
+$table = new mod_wordcloud\output\editentrytable('mod_wordcloud_editentry', $cm->id);
 
 $groupmode = groups_get_activity_groupmode($cm);
 $groupid = $groupmode ? groups_get_activity_group($cm) : 0;
@@ -116,6 +113,7 @@ echo html_writer::tag(
 $PAGE->requires->js_call_amd('mod_wordcloud/editword', 'init');
 
 echo html_writer::start_div('tablewidth');
-$table->out(20, false);
+echo $OUTPUT->render(mod_wordcloud_perpage_select($PAGE->url, $perpage));
+$table->out($perpage, false);
 echo html_writer::end_div();
 echo $OUTPUT->footer();

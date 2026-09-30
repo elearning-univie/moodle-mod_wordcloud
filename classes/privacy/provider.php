@@ -33,10 +33,8 @@ use core_privacy\local\request\writer;
 /**
  * Privacy provider for mod_wordcloud.
  *
- * The plugin itself stores which word a user submitted (via wordcloud_word_user_rel,
- * linking a user to a wordcloud_map entry). The word text and its aggregated count in
- * wordcloud_map are shared/collective data belonging to the activity as a whole, not to
- * any single user, so only the wordcloud_word_user_rel link is treated as personal data.
+ * Only the user-to-word link (wordcloud_word_user_rel) is personal data; the words
+ * and their counts in wordcloud_map are the activity's collective data.
  *
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +42,8 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\core_userlist_provider,
-    \core_privacy\local\request\plugin\provider {
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\user_preference_provider {
     /**
      * Returns metadata about this plugin's data storage.
      *
@@ -61,7 +60,26 @@ class provider implements
             'privacy:metadata:wordcloud_word_user_rel'
         );
 
+        $collection->add_user_preference('mod_wordcloud_perpage', 'privacy:metadata:preference:perpage');
+
         return $collection;
+    }
+
+    /**
+     * Export the user's preferences.
+     *
+     * @param int $userid The user to export preferences for.
+     */
+    public static function export_user_preferences(int $userid) {
+        $perpage = get_user_preferences('mod_wordcloud_perpage', null, $userid);
+        if ($perpage !== null) {
+            writer::export_user_preference(
+                'mod_wordcloud',
+                'mod_wordcloud_perpage',
+                $perpage,
+                get_string('privacy:metadata:preference:perpage', 'mod_wordcloud')
+            );
+        }
     }
 
     /**

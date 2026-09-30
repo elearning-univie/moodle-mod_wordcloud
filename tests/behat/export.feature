@@ -32,8 +32,6 @@ Feature: Exporting the submitted words
     When I click the export button
     And I select "Export CSV" from the export dropdown
     Then the download page should be "/mod/wordcloud/export.php?id="
-    # Checking the downloaded content rather than only the URL, so the export is
-    # verified end to end regardless of wwwroot or course module id.
     And the downloaded file should contain "test word0"
     And the downloaded file should contain "test word3"
     And the downloaded file should contain "test word5"

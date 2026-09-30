@@ -30,8 +30,6 @@ Feature: Deleting and restoring a wordcloud activity
     Given I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
     When I delete "Test wordcloud" activity
-    # Deletion is handed off to an ad-hoc task, so it has to be run before the
-    # recycle bin reflects the change.
     And I run all adhoc tasks
     And I navigate to "Recycle bin" in current page administration
     Then I should see "Test wordcloud"

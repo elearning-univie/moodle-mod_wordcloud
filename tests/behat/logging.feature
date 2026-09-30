@@ -41,8 +41,6 @@ Feature: Wordcloud activity is recorded in the logs
     And I navigate to "Reports > Logs" in site administration
     And I set the field "id" to "Course 1"
     And I press "Get these logs"
-    # "Pause live updates" only freezes the auto-refreshing table on the Live logs
-    # page itself; it has no effect on whether events get recorded, so student1's
-    # actions must still show up in the persistent Logs report.
+    # Pausing only freezes the Live logs table; events are still recorded.
     Then I should see "Student 1"
     And I should see "Course module viewed"
