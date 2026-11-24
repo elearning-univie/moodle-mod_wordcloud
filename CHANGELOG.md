@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v5.0-r3 (unreleased)
+* [SECURITY] Words could be renamed, recounted or removed across wordcloud instances by id; the edit page did not check the session key and used a predictable confirmation token
+
 ## v5.0-r2 (2026-07-10)
 * [FIX] Bug with not displayed Wordcloud activities in block timeline
 

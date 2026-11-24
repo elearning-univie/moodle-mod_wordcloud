@@ -279,7 +279,9 @@ class mod_wordcloud_external extends external_api {
                 continue;
             }
 
-            $record = $DB->get_record('wordcloud_map', ['id' => $updateentry['wordid'], 'groupid' => $groupid]);
+            // Only words of this wordcloud and the active group can be changed.
+            $record = $DB->get_record('wordcloud_map',
+                ['id' => $updateentry['wordid'], 'wordcloudid' => $params['aid'], 'groupid' => $groupid]);
 
             if ($record) {
                 $checkrec = $DB->get_record('wordcloud_map',

@@ -27,8 +27,8 @@ require('../../config.php');
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
-$deleteselected = optional_param('deleteselected', null, PARAM_INT);
-$confirm = optional_param('confirm', null, PARAM_ALPHANUM);
+$deleteselected = optional_param('deleteselected', 0, PARAM_INT);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
 $perpage = optional_param('perpage', 20, PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'wordcloud');
@@ -61,36 +61,41 @@ $activityheader->set_attrs([
     'hidecompletion' => true,
 ]);
 
-if ($deleteselected) {
-    if (!$DB->record_exists('wordcloud_map', ['id' => $deleteselected])) {
-        redirect($PAGE->url);
-    }
-
-    if ($confirm == md5($deleteselected)) {
-        $DB->delete_records('wordcloud_map', ['id' => $deleteselected]);
-        $DB->delete_records('wordcloud_word_user_rel', ['mapid' => $deleteselected]);
-        redirect($PAGE->url);
-    } else {
-        $deleteurl = new moodle_url('/mod/wordcloud/editentry.php',
-            ['id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)]);
-
-        $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
-        $word = '<strong>' . $DB->get_field('wordcloud_map', 'word', ['id' => $deleteselected]) . '</strong>';
-
-        echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('removewordcheck', 'mod_wordcloud', $word), $continue, $PAGE->url);
-        echo $OUTPUT->footer();
-        die();
-    }
-}
-
-$table = new mod_wordcloud\output\editentrytable('uniqueid', $cm->id);
-
 $groupmode = groups_get_activity_groupmode($cm);
 $groupid = $groupmode ? groups_get_activity_group($cm) : 0;
 if ($groupmode && $groupid === 0) {
+    // "All participants" cannot be edited.
     $groupid = -1;
 }
+
+if ($deleteselected) {
+    // Only words of this wordcloud and the active group can be removed.
+    $entry = $DB->get_record('wordcloud_map', ['id' => $deleteselected, 'wordcloudid' => $wordcloud->id, 'groupid' => $groupid]);
+    if (!$entry) {
+        redirect($PAGE->url);
+    }
+
+    if ($confirm) {
+        require_sesskey();
+        $DB->delete_records('wordcloud_map', ['id' => $entry->id]);
+        $DB->delete_records('wordcloud_word_user_rel', ['mapid' => $entry->id]);
+        redirect($PAGE->url);
+    }
+
+    $deleteurl = new moodle_url('/mod/wordcloud/editentry.php',
+        ['id' => $id, 'deleteselected' => $entry->id, 'confirm' => 1]);
+
+    // The button posts the session key, which is checked above.
+    $continue = new \single_button($deleteurl, get_string('remove', 'moodle'), 'post');
+    $word = html_writer::tag('strong', s($entry->word));
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->confirm(get_string('removewordcheck', 'mod_wordcloud', $word), $continue, $PAGE->url);
+    echo $OUTPUT->footer();
+    die();
+}
+
+$table = new mod_wordcloud\output\editentrytable('uniqueid', $cm->id);
 
 $sqlwhere = "wordcloudid = $wordcloud->id AND groupid = $groupid";
 $table->set_sql("*", "{wordcloud_map}", $sqlwhere);
